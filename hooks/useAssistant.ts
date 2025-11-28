@@ -223,18 +223,23 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
   const startVoiceInteraction = useCallback(async () => {
     if (voiceStatus === 'listening' || voiceStatus === 'connecting') return;
     
-    // Check Gemini Instance for Live API
+    // Always use Web Speech API first (more reliable and free)
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        startBasicVoiceRecognition();
+        return;
+    }
+    
+    // Fallback to Gemini Live API if Web Speech not available
     const ai = geminiService.getGoogleGenAIInstance();
     if (!ai) {
-        setError('Please add your Gemini API key in Settings to use voice features.');
+        setError('Voice features not supported. Please use a modern browser or add Gemini API key.');
         setVoiceStatus('error');
         return;
     }
     
-    // Fallback to basic speech recognition if Live API not available
     if (!ai.live) {
-        console.warn('Live API not available, using basic speech recognition');
-        startBasicVoiceRecognition();
+        setError('Voice features require Web Speech API or Gemini Live API.');
+        setVoiceStatus('error');
         return;
     }
 
@@ -400,7 +405,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
 
   const startBasicVoiceRecognition = useCallback(() => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      setError('Speech recognition not supported in this browser.');
+      setError('Speech recognition not supported. Please use Chrome, Edge, or Safari.');
       setVoiceStatus('error');
       return;
     }
@@ -411,9 +416,11 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
+    recognition.maxAlternatives = 1;
 
     setVoiceStatus('listening');
     setError(null);
+    setLiveTranscript('Listening...');
 
     recognition.onresult = async (event: any) => {
       const transcript = event.results[0][0].transcript;
@@ -422,6 +429,19 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       if (event.results[0].isFinal) {
         setVoiceStatus('idle');
         updateMessages(prev => [...prev, { role: 'user', text: transcript }]);
+        
+        // Check if we have any AI service available
+        const ai = geminiService.getGoogleGenAIInstance();
+        if (!ai) {
+          const fallbackResponse = `I heard: "${transcript}". Please add your Gemini API key in Settings for AI responses.`;
+          updateMessages(prev => [...prev, { role: 'model', text: fallbackResponse }]);
+          
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(fallbackResponse);
+            speechSynthesis.speak(utterance);
+          }
+          return;
+        }
         
         // Get AI response
         try {
@@ -441,12 +461,20 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
           updateMessages(prev => [...prev, { role: 'model', text: response }]);
           
           // Text-to-speech
-          if ('speechSynthesis' in window) {
+          if ('speechSynthesis' in window && response) {
             const utterance = new SpeechSynthesisUtterance(response);
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
             speechSynthesis.speak(utterance);
           }
         } catch (e) {
-          setError('Error getting AI response');
+          const errorResponse = 'Sorry, I had trouble processing that. Please try again.';
+          updateMessages(prev => [...prev, { role: 'model', text: errorResponse }]);
+          
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(errorResponse);
+            speechSynthesis.speak(utterance);
+          }
         } finally {
           setStreamingModelResponse(null);
           setLiveTranscript('');
@@ -454,18 +482,27 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       }
     };
 
-    recognition.onerror = () => {
-      setError('Speech recognition error. Please try again.');
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      setError(`Speech recognition error: ${event.error}. Please check microphone permissions.`);
       setVoiceStatus('error');
-    };
-
-    recognition.onend = () => {
-      setVoiceStatus('idle');
       setLiveTranscript('');
     };
 
-    recognition.start();
-  }, [messages, repoContext, updateMessages]);
+    recognition.onend = () => {
+      if (voiceStatus === 'listening') {
+        setVoiceStatus('idle');
+        setLiveTranscript('');
+      }
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      setError('Could not start speech recognition. Please check microphone permissions.');
+      setVoiceStatus('error');
+    }
+  }, [messages, repoContext, updateMessages, voiceStatus]);
 
   return {
     messages,
