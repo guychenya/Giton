@@ -15,7 +15,8 @@ import Icon from './components/Icon';
 import Logo from './components/Logo';
 import Assistant from './components/Assistant';
 import VoiceAssistant from './components/VoiceAssistant';
-import SettingsModal, { AppSettings } from './components/SettingsModal';
+import SettingsPage from './components/SettingsPage';
+import { AppSettings } from './components/SettingsModal';
 import { useAssistant, AssistantActions, Message } from './hooks/useAssistant';
 import { fetchRepoData, RepoData, fetchSuggestedRepos, RepoGroup } from './utils/githubUtils';
 import { geminiService } from './services/geminiService';
@@ -532,7 +533,7 @@ const App: React.FC = () => {
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Modern SaaS Navbar */}
+        {/* Clean Navbar */}
         <nav className="relative z-20 border-b border-white/10 bg-gray-900/80 backdrop-blur-xl">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
@@ -549,25 +550,26 @@ const App: React.FC = () => {
                 )}
               </div>
               
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <button 
                   onClick={() => setIsSavedProjectsModalOpen(true)}
-                  className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-white transition-colors"
+                  title="Library"
                 >
-                  <Icon icon="library" className="w-4 h-4" />
-                  <span>Library</span>
+                  <Icon icon="library" className="w-5 h-5" />
                 </button>
                 
-                <UserDropdown
-                  user={{
-                    name: 'Demo User',
-                    email: 'demo@giton.ai',
-                    plan: 'free'
-                  }}
-                  onSettings={() => setIsSettingsModalOpen(true)}
-                  onBilling={() => setIsSettingsModalOpen(true)}
-                  onSignOut={() => console.log('Sign out')}
-                />
+                <button
+                  onClick={() => setIsSettingsModalOpen(true)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                  title="Settings"
+                >
+                  <Icon icon="settings" className="w-5 h-5" />
+                </button>
+                
+                <button className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-medium text-sm">
+                  D
+                </button>
               </div>
             </div>
           </div>
@@ -585,10 +587,20 @@ const App: React.FC = () => {
               </p>
               
               <div className="max-w-2xl mx-auto mb-16">
-                <UnifiedSearch 
-                  onSelectRepo={(repoPath) => loadRepo(repoPath)}
-                  placeholder="Enter GitHub repo URL or search..."
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Enter GitHub repo URL or search..."
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const value = e.currentTarget.value;
+                        if (value.trim()) loadRepo(value);
+                      }
+                    }}
+                    className="w-full bg-white/10 border border-white/20 rounded-full px-6 py-4 pl-14 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg"
+                  />
+                  <Icon icon="search" className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
+                </div>
               </div>
             </div>
           )}
@@ -664,10 +676,85 @@ const App: React.FC = () => {
           {/* Content Area */}
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {isLoadingRepo ? (
-              <div className="flex flex-col items-center justify-center py-32 space-y-4">
-                <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-xl text-gray-300 animate-pulse">Analyzing repository...</p>
-                <p className="text-sm text-gray-500">This may take a few moments</p>
+              <div className="flex flex-col items-center justify-center py-20 space-y-8">
+                {/* Animated Logo/Icon */}
+                <div className="relative w-32 h-32">
+                  {/* Outer rotating ring */}
+                  <div className="absolute inset-0 border-4 border-purple-500/20 rounded-full"></div>
+                  <div className="absolute inset-0 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
+                  
+                  {/* Water fill effect */}
+                  <div className="absolute inset-2 rounded-full overflow-hidden bg-gray-800">
+                    <div 
+                      className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-purple-600 via-purple-500 to-blue-500 transition-all duration-1000 ease-out"
+                      style={{ height: `${loadingProgress}%` }}
+                    >
+                      {/* Wave animation */}
+                      <div className="absolute top-0 left-0 right-0 h-3 opacity-50">
+                        <div className="absolute inset-0 bg-white/20 animate-wave"></div>
+                      </div>
+                    </div>
+                    
+                    {/* GitOn icon/text in center */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-2xl font-bold text-white z-10">G</span>
+                    </div>
+                  </div>
+                  
+                  {/* Progress percentage */}
+                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-purple-400 font-semibold">
+                    {loadingProgress}%
+                  </div>
+                </div>
+
+                {/* Progress stages */}
+                <div className="space-y-4 w-full max-w-md">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full transition-colors ${
+                      loadingProgress >= 10 ? 'bg-green-500' : 'bg-gray-600'
+                    }`}></div>
+                    <span className={`text-sm transition-colors ${
+                      loadingProgress >= 10 ? 'text-white' : 'text-gray-500'
+                    }`}>Connecting to GitHub...</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full transition-colors ${
+                      loadingProgress >= 45 ? 'bg-green-500' : loadingProgress >= 10 ? 'bg-yellow-500 animate-pulse' : 'bg-gray-600'
+                    }`}></div>
+                    <span className={`text-sm transition-colors ${
+                      loadingProgress >= 45 ? 'text-white' : loadingProgress >= 10 ? 'text-yellow-400' : 'text-gray-500'
+                    }`}>Fetching repository data...</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full transition-colors ${
+                      loadingProgress >= 75 ? 'bg-green-500' : loadingProgress >= 45 ? 'bg-yellow-500 animate-pulse' : 'bg-gray-600'
+                    }`}></div>
+                    <span className={`text-sm transition-colors ${
+                      loadingProgress >= 75 ? 'text-white' : loadingProgress >= 45 ? 'text-yellow-400' : 'text-gray-500'
+                    }`}>Analyzing with AI...</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full transition-colors ${
+                      loadingProgress >= 100 ? 'bg-green-500' : loadingProgress >= 75 ? 'bg-yellow-500 animate-pulse' : 'bg-gray-600'
+                    }`}></div>
+                    <span className={`text-sm transition-colors ${
+                      loadingProgress >= 100 ? 'text-white' : loadingProgress >= 75 ? 'text-yellow-400' : 'text-gray-500'
+                    }`}>Generating insights...</span>
+                  </div>
+                </div>
+
+                {/* Progress bar */}
+                <div className="w-full max-w-md">
+                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500 transition-all duration-500 ease-out"
+                      style={{ width: `${loadingProgress}%` }}
+                    ></div>
+                  </div>
+                </div>
               </div>
             ) : filteredExamples.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -785,45 +872,19 @@ const App: React.FC = () => {
         onSave={(title, content, type) => handleSaveToProject(title, content, type as 'guide' | 'chat')}
       />
       
-      <SettingsModal
-        isOpen={isSettingsModalOpen}
-        onClose={() => setIsSettingsModalOpen(false)}
-        onSave={(settings) => {
-          setAppSettings(settings);
-          initializeLLMService(settings);
-          geminiService.reinitialize();
-          
-          // Update voice settings
-          if (settings.alwaysListening && settings.voiceEnabled) {
-            if (!isVoiceListening) {
-              startVoiceInteraction();
-              setIsVoiceListening(true);
-            }
-          } else {
-            if (isVoiceListening) {
-              stopVoiceInteraction();
-              setIsVoiceListening(false);
-            }
-          }
-        }}
-      />
-
-      {/* Floating Voice Assistant */}
-      {appSettings?.voiceEnabled && (
-        <VoiceAssistant
-          isListening={voiceStatus === 'listening'}
-          onToggle={() => {
-            if (voiceStatus === 'listening') {
-              stopVoiceInteraction();
-            } else {
-              startVoiceInteraction();
-            }
+      {isSettingsModalOpen && (
+        <SettingsPage
+          onClose={() => setIsSettingsModalOpen(false)}
+          onSave={(settings) => {
+            setAppSettings(settings);
+            initializeLLMService(settings);
+            geminiService.reinitialize();
+            setIsSettingsModalOpen(false);
           }}
-          transcript={liveTranscript || voiceTranscript}
-          isProcessing={isVoiceProcessing}
-          error={voiceError}
         />
       )}
+
+
 
        <style>
         {`
@@ -854,6 +915,13 @@ const App: React.FC = () => {
           }
           .animate-card-in {
             animation: card-in 0.4s ease-out backwards;
+          }
+          @keyframes wave {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+          .animate-wave {
+            animation: wave 2s linear infinite;
           }
         `}
        </style>
