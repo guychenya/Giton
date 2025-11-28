@@ -862,14 +862,12 @@ const App: React.FC = () => {
       {/* Floating Voice Assistant */}
       {appSettings?.voiceEnabled && (
         <VoiceAssistant
-          isListening={isVoiceListening}
+          isListening={voiceStatus === 'listening'}
           onToggle={() => {
-            if (isVoiceListening) {
+            if (voiceStatus === 'listening') {
               stopVoiceInteraction();
-              setIsVoiceListening(false);
             } else {
               startVoiceInteraction();
-              setIsVoiceListening(true);
             }
           }}
           transcript={liveTranscript || voiceTranscript}

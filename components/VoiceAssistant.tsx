@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Icon from './Icon';
+import AudioWaveform from './AudioWaveform';
 
 interface VoiceAssistantProps {
   isListening: boolean;
@@ -97,20 +98,21 @@ const VoiceAssistant: React.FC<VoiceAssistantProps> = ({
           </div>
         )}
         
-        {/* Wave Animation During Listening */}
+        {/* Real Audio Wave Visualization */}
         {isListening && (
           <div className="absolute bottom-20 right-0 w-80 max-w-sm">
             <div className="bg-gray-900/95 backdrop-blur border border-purple-500/30 rounded-2xl p-4 shadow-xl">
-              <div className="flex items-center gap-3">
-                <div className="flex gap-1">
-                  <div className="w-1 h-8 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '0ms'}}></div>
-                  <div className="w-1 h-6 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '150ms'}}></div>
-                  <div className="w-1 h-10 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '300ms'}}></div>
-                  <div className="w-1 h-4 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '450ms'}}></div>
-                  <div className="w-1 h-8 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '600ms'}}></div>
-                </div>
-                <span className="text-purple-300 text-sm">Listening...</span>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-purple-300 text-sm font-medium">Recording</span>
+                <button 
+                  onClick={onToggle}
+                  className="ml-auto text-red-400 hover:text-red-300 text-xs underline"
+                >
+                  Stop
+                </button>
               </div>
+              <AudioWaveform isActive={isListening} />
             </div>
           </div>
         )}

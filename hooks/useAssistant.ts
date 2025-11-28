@@ -186,7 +186,19 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
   const stopVoiceInteraction = useCallback(async () => {
     setVoiceStatus('idle');
     setLiveTranscript('');
+    setError(null);
 
+    // Stop Web Speech Recognition
+    if ((window as any).currentRecognition) {
+      try {
+        (window as any).currentRecognition.stop();
+        (window as any).currentRecognition = null;
+      } catch (e) {
+        console.warn('Error stopping recognition:', e);
+      }
+    }
+
+    // Stop Gemini Live session
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach(track => track.stop());
       mediaStreamRef.current = null;
@@ -474,13 +486,13 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
     };
 
     recognition.onend = () => {
-      if (voiceStatus === 'listening') {
-        setVoiceStatus('idle');
-        setLiveTranscript('');
-      }
+      setVoiceStatus('idle');
+      setLiveTranscript('');
     };
 
     try {
+      // Store recognition instance globally for stopping
+      (window as any).currentRecognition = recognition;
       recognition.start();
     } catch (e) {
       setError('Could not start speech recognition. Please check microphone permissions.');
