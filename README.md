@@ -1,43 +1,42 @@
 # GitOn 🚀
 
-A dynamic web application that uses the Gemini API to analyze any GitHub repository and provide instant documentation, examples, and interactive analysis.
+A modern SaaS application that uses AI to analyze any GitHub repository and provide instant documentation, examples, and interactive analysis.
 
 ## 🌟 Features
 
-- **Repository Analysis**: Analyze any public GitHub repository instantly
-- **AI-Powered Documentation**: Generate comprehensive guides and examples
-- **Interactive Assistant**: Voice and text-based AI assistant for repository exploration
-- **Architecture Diagrams**: Auto-generate system architecture diagrams using Mermaid
+- **Smart Repository Search**: Search by username, repo name, or paste URL - auto-expands user repos
+- **AI-Powered Documentation**: Generate comprehensive guides with multiple AI providers (Gemini, OpenAI, Claude)
+- **Interactive Assistant**: Chat with AI about your code with model selection
+- **Architecture Diagrams**: Auto-generate system design diagrams with Mermaid
 - **PRD Generation**: Create Product Requirements Documents automatically
-- **Project Library**: Save and manage analyzed projects
-- **Real-time Search**: Filter and search through generated content
-- **Voice Interaction**: Voice-enabled assistant for hands-free exploration
+- **Project Library**: Save and manage analyzed projects with IndexedDB
+- **API Key Validation**: Test and verify API keys with lightning-fast validation
+- **Professional UI**: Clean GitHub-style settings, tabular layouts, smooth animations
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 - **React 18** - Modern React with hooks and functional components
 - **TypeScript** - Type-safe JavaScript development
-- **Tailwind CSS** - Utility-first CSS framework for styling
-- **Vite** - Fast build tool and development server
+- **Tailwind CSS** - Utility-first CSS framework
+- **Vite** - Lightning-fast build tool
 
 ### AI & APIs
-- **Google Gemini API** - Advanced AI for repository analysis and content generation
-- **GitHub API** - Repository data fetching and analysis
-- **Web Speech API** - Voice recognition and synthesis
+- **Google Gemini API** - Primary AI for analysis and chat
+- **OpenRouter** - Access to Claude, GPT-4, Llama models
+- **OpenAI API** - Direct GPT integration
+- **GitHub API** - Repository data and user search
 
-### Visualization
-- **Mermaid** - Diagram generation for architecture visualization
+### Visualization & UX
+- **Mermaid.js** - System architecture diagrams
 - **Custom Markdown Renderer** - Rich content display
+- **Animated Loading States** - Water fill effects, progress indicators
+- **Smooth Transitions** - Professional animations throughout
 
 ### Data Management
-- **IndexedDB** - Client-side database for project persistence
-- **Local Storage** - Session and preference management
-
-### Development Tools
-- **ESM Modules** - Modern JavaScript module system
-- **Import Maps** - Dependency management
-- **PostCSS** - CSS processing
+- **IndexedDB** - Client-side project persistence
+- **Local Storage** - Settings and preferences
+- **Real-time Validation** - API key verification
 
 ## 🚀 Quick Start
 
@@ -74,29 +73,30 @@ A dynamic web application that uses the Gemini API to analyze any GitHub reposit
 
 ## 🌐 Deploy to Netlify
 
-### Method 1: Direct Deploy (Recommended)
+### Quick Deploy
 
-1. **Fork this repository** to your GitHub account
+1. **Fork this repository**
 
 2. **Connect to Netlify**
    - Go to [Netlify](https://netlify.com)
    - Click "New site from Git"
-   - Connect your GitHub account
    - Select your forked repository
 
-3. **Configure build settings**
-   - Build command: `echo "No build step needed"`
-   - Publish directory: `.` (root directory)
+3. **Configure build**
+   - Build command: `npm run build`
+   - Publish directory: `dist`
 
 4. **Set environment variables**
-   In Netlify dashboard → Site settings → Environment variables:
    ```
-   GEMINI_API_KEY = your_gemini_api_key_here
+   VITE_GEMINI_API_KEY = your_gemini_api_key_here
    ```
 
-5. **Deploy**
-   - Click "Deploy site"
-   - Your site will be live at `https://your-site-name.netlify.app`
+5. **Deploy** - Your site will be live at `https://your-site-name.netlify.app`
+
+### Post-Deploy
+- Users can add their own API keys in Settings
+- API keys are validated before use
+- All data stored locally in browser
 
 ### Method 2: Manual Deploy
 
@@ -123,25 +123,22 @@ A dynamic web application that uses the Gemini API to analyze any GitHub reposit
 
 ```
 giton/
-├── components/          # React components
-│   ├── Assistant.tsx    # AI assistant interface
-│   ├── ExampleCard.tsx  # Repository analysis cards
-│   └── ...
-├── hooks/              # Custom React hooks
-│   ├── useAssistant.ts # Assistant functionality
-│   └── ...
-├── services/           # API services
-│   ├── geminiService.ts # Gemini AI integration
-│   └── llmService.ts   # Language model utilities
-├── utils/              # Utility functions
-│   ├── githubUtils.ts  # GitHub API integration
-│   └── db.ts          # IndexedDB operations
-├── data/               # Static data
-├── lib/                # Core libraries
-├── App.tsx             # Main application component
-├── index.html          # Entry HTML file
-├── index.tsx           # React entry point
-└── vite.config.ts      # Vite configuration
+├── components/
+│   ├── Assistant.tsx           # AI chat with model selector
+│   ├── SettingsPage.tsx        # GitHub-style settings
+│   ├── UnifiedSearch.tsx       # Smart search with auto-expand
+│   ├── ArchitectureModal.tsx   # Mermaid diagram viewer
+│   ├── ExampleCard.tsx         # Repository analysis cards
+│   └── ExampleDetailModal.tsx  # Enhanced loading states
+├── services/
+│   ├── geminiService.ts        # Gemini AI integration
+│   ├── llmService.ts           # Multi-provider LLM support
+│   └── openRouterService.ts    # OpenRouter integration
+├── utils/
+│   ├── githubUtils.ts          # GitHub API + search
+│   └── db.ts                   # IndexedDB for projects
+├── App.tsx                     # Main app with water-fill loading
+└── vite.config.ts              # Build configuration
 ```
 
 ## 🔧 Configuration
@@ -150,7 +147,13 @@ giton/
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `GEMINI_API_KEY` | Google Gemini API key for AI features | Yes |
+| `VITE_GEMINI_API_KEY` | Google Gemini API key | Recommended |
+
+### User Settings (In-App)
+- **API Keys**: Add Gemini, OpenAI, OpenRouter keys
+- **Validation**: Test keys with ⚡ lightning icon
+- **Model Selection**: Choose AI model in chat interface
+- **Auto-save**: Toggle automatic project saving
 
 ### Vite Configuration
 
@@ -161,12 +164,20 @@ The project uses Vite with custom configuration for:
 
 ## 🎯 Usage
 
-1. **Enter a GitHub repository URL** (e.g., `facebook/react`)
-2. **Wait for analysis** - The AI will analyze the repository structure
-3. **Explore generated content** - Browse cards with examples and documentation
-4. **Use the assistant** - Ask questions via text or voice
-5. **Generate diagrams** - Create architecture visualizations
-6. **Save projects** - Store analyzed repositories for later reference
+### Quick Start
+1. **Search**: Type a username (e.g., `facebook`) or repo name, or paste a GitHub URL
+2. **Auto-expand**: Username searches automatically show all repos
+3. **Analyze**: Select a repo and watch the beautiful loading animation
+4. **Explore**: Browse AI-generated cards with documentation
+5. **Chat**: Use the assistant with model selection (Gemini, GPT-4, Claude)
+6. **Export**: Save diagrams, PRDs, and docs in multiple formats
+
+### Advanced Features
+- **API Key Management**: Validate keys with ⚡ lightning icon
+- **Model Switching**: Change AI models on-the-fly in chat
+- **Project Library**: Access saved analyses anytime
+- **Architecture Diagrams**: Generate and export system designs
+- **New Chat Sessions**: Start fresh conversations easily
 
 ## 🤝 Contributing
 
