@@ -6,6 +6,7 @@ import ExampleDetailModal from './components/ExampleDetailModal';
 import ArchitectureModal from './components/ArchitectureModal';
 import PRDModal from './components/PRDModal';
 import RepoSearchModal from './components/RepoSearchModal';
+import UserSearchModal from './components/UserSearchModal';
 import SavedProjectsModal from './components/SavedProjectsModal';
 import ReportViewerModal from './components/ReportViewerModal';
 import Icon from './components/Icon';
@@ -39,6 +40,7 @@ const App: React.FC = () => {
   
   // Modals State
   const [isRepoSearchModalOpen, setIsRepoSearchModalOpen] = useState(false);
+  const [isUserSearchModalOpen, setIsUserSearchModalOpen] = useState(false);
   const [isSavedProjectsModalOpen, setIsSavedProjectsModalOpen] = useState(false);
   const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
@@ -565,6 +567,15 @@ const App: React.FC = () => {
                 >
                     <Icon icon="search" className="w-4 h-4" />
                 </button>
+                
+                <button 
+                    type="button"
+                    onClick={() => setIsUserSearchModalOpen(true)}
+                    className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-blue-300 hover:text-white transition-colors"
+                    title="Search by GitHub username"
+                >
+                    <Icon icon="user" className="w-4 h-4" />
+                </button>
 
                 <button 
                     type="submit"
@@ -702,16 +713,26 @@ const App: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col items-center text-center py-8 px-4 w-full max-w-4xl">
-              <button 
-                onClick={() => setIsRepoSearchModalOpen(true)}
-                className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-6 border border-white/10 hover:bg-white/20 hover:scale-110 transition-all cursor-pointer group shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)]"
-                aria-label="Search repositories"
-              >
-                 <Icon icon="search" className="w-10 h-10 text-purple-400 group-hover:text-purple-300 transition-colors" />
-              </button>
+              <div className="flex gap-4 mb-6">
+                <button 
+                  onClick={() => setIsRepoSearchModalOpen(true)}
+                  className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center border border-white/10 hover:bg-white/20 hover:scale-110 transition-all cursor-pointer group shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)]"
+                  aria-label="Search repositories"
+                >
+                   <Icon icon="search" className="w-10 h-10 text-purple-400 group-hover:text-purple-300 transition-colors" />
+                </button>
+                
+                <button 
+                  onClick={() => setIsUserSearchModalOpen(true)}
+                  className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center border border-white/10 hover:bg-white/20 hover:scale-110 transition-all cursor-pointer group shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)]"
+                  aria-label="Search by username"
+                >
+                   <Icon icon="user" className="w-10 h-10 text-blue-400 group-hover:text-blue-300 transition-colors" />
+                </button>
+              </div>
               <h2 className="text-2xl font-bold text-gray-200 mb-2">Start Your Exploration</h2>
               <p className="text-gray-400 max-w-md mb-10">
-                Click the icon above to search, or enter a GitHub URL directly. Try one of these popular repositories:
+                Search by repository name or GitHub username. Enter a GitHub URL directly, or try these popular repositories:
               </p>
               
               {areSuggestionsLoading ? (
@@ -774,6 +795,12 @@ const App: React.FC = () => {
       <RepoSearchModal
           isOpen={isRepoSearchModalOpen}
           onClose={() => setIsRepoSearchModalOpen(false)}
+          onSelectRepo={handleSelectRepoFromSearch}
+      />
+      
+      <UserSearchModal
+          isOpen={isUserSearchModalOpen}
+          onClose={() => setIsUserSearchModalOpen(false)}
           onSelectRepo={handleSelectRepoFromSearch}
       />
 
