@@ -11,11 +11,11 @@ class GeminiService {
   }
 
   private initializeGoogleAI() {
-    // Try environment variable first, then settings
-    let apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    // Try environment variable first (Netlify build-time injection)
+    let apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY;
     
     // Try to get from settings if available
-    if (!apiKey || apiKey === 'YOUR_API_KEY') {
+    if (!apiKey || apiKey === 'YOUR_API_KEY' || apiKey === 'undefined') {
       try {
         const settings = localStorage.getItem('giton-settings');
         if (settings) {
@@ -27,10 +27,13 @@ class GeminiService {
       }
     }
     
-    if (apiKey && apiKey !== 'YOUR_API_KEY') {
+    console.log('API Key status:', apiKey ? 'Found' : 'Not found');
+    
+    if (apiKey && apiKey !== 'YOUR_API_KEY' && apiKey !== 'undefined') {
       this.googleAi = new GoogleGenAI({ apiKey });
+      console.log('Gemini AI initialized successfully');
     } else {
-      console.warn("Gemini API Key not found. Please add it in Settings.");
+      console.warn("Gemini API Key not found. Please add it in Settings or check Netlify environment variables.");
       this.googleAi = null;
     }
   }
