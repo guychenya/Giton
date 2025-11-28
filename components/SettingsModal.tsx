@@ -11,8 +11,11 @@ export interface AppSettings {
   geminiApiKey: string;
   huggingFaceApiKey: string;
   openaiApiKey: string;
-  preferredLLM: 'gemini' | 'huggingface' | 'openai';
+  openRouterApiKey: string;
+  preferredLLM: 'gemini' | 'huggingface' | 'openai' | 'openrouter';
+  preferredModel: string;
   voiceEnabled: boolean;
+  alwaysListening: boolean;
   theme: 'dark' | 'light';
   autoSave: boolean;
 }
@@ -21,8 +24,11 @@ const defaultSettings: AppSettings = {
   geminiApiKey: '',
   huggingFaceApiKey: '',
   openaiApiKey: '',
-  preferredLLM: 'gemini',
+  openRouterApiKey: '',
+  preferredLLM: 'openrouter',
+  preferredModel: 'anthropic/claude-3.5-sonnet',
   voiceEnabled: true,
+  alwaysListening: false,
   theme: 'dark',
   autoSave: true,
 };
@@ -144,6 +150,24 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
                 </p>
               </div>
 
+              {/* OpenRouter API Key */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  OpenRouter API Key
+                  <span className="text-green-400 ml-1">✓ Best Choice</span>
+                </label>
+                <input
+                  type={showApiKeys ? "text" : "password"}
+                  value={settings.openRouterApiKey}
+                  onChange={(e) => updateSetting('openRouterApiKey', e.target.value)}
+                  placeholder="Enter your OpenRouter API key"
+                  className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Get your key from <a href="https://openrouter.ai/keys" target="_blank" className="text-green-400 hover:underline">OpenRouter</a> - Access Claude, GPT-4, Llama & more
+                </p>
+              </div>
+
               {/* OpenAI API Key */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -172,11 +196,34 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
                   onChange={(e) => updateSetting('preferredLLM', e.target.value as any)}
                   className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
-                  <option value="gemini">Google Gemini (Recommended)</option>
-                  <option value="huggingface">HuggingFace (Free)</option>
-                  <option value="openai">OpenAI (Premium)</option>
+                  <option value="openrouter">OpenRouter (Best - Multiple Models)</option>
+                  <option value="gemini">Google Gemini</option>
+                  <option value="openai">OpenAI Direct</option>
+                  <option value="huggingface">HuggingFace (Limited)</option>
                 </select>
               </div>
+
+              {/* Model Selection for OpenRouter */}
+              {settings.preferredLLM === 'openrouter' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Preferred Model
+                  </label>
+                  <select
+                    value={settings.preferredModel}
+                    onChange={(e) => updateSetting('preferredModel', e.target.value)}
+                    className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (Best)</option>
+                    <option value="openai/gpt-4o">GPT-4o</option>
+                    <option value="openai/gpt-4o-mini">GPT-4o Mini (Faster)</option>
+                    <option value="meta-llama/llama-3.1-70b-instruct">Llama 3.1 70B</option>
+                    <option value="google/gemini-pro-1.5">Gemini Pro 1.5</option>
+                    <option value="anthropic/claude-3-haiku">Claude 3 Haiku (Fast)</option>
+                    <option value="mistralai/mistral-7b-instruct">Mistral 7B (Free)</option>
+                  </select>
+                </div>
+              )}
             </div>
           )}
 
@@ -203,6 +250,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
                   />
                 </button>
               </div>
+
+              {/* Always Listening */}
+              {settings.voiceEnabled && (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium text-gray-300">Always Listening</label>
+                    <p className="text-xs text-gray-400">Continuous voice activation (experimental)</p>
+                  </div>
+                  <button
+                    onClick={() => updateSetting('alwaysListening', !settings.alwaysListening)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      settings.alwaysListening ? 'bg-green-600' : 'bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        settings.alwaysListening ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              )}
 
               {/* Auto Save */}
               <div className="flex items-center justify-between">
@@ -255,10 +324,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
                 </p>
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-white">$9.99</span>
+                    <span className="text-2xl font-bold text-white">$19.99</span>
                     <span className="text-gray-400">/month</span>
                   </div>
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                  <button 
+                    onClick={() => window.open('https://buy.stripe.com/test_placeholder', '_blank')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                  >
                     Upgrade Now
                   </button>
                 </div>

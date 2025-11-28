@@ -39,10 +39,15 @@ const Icon: React.FC<IconProps> = ({ icon, className }) => {
         </svg>
       );
     case 'folder':
-    case 'library':
       return (
         <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+        </svg>
+      );
+    case 'library':
+      return (
+        <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819" />
         </svg>
       );
     case 'trash':
@@ -121,13 +126,8 @@ const Icon: React.FC<IconProps> = ({ icon, className }) => {
     // --- Voice Assistant Icons ---
     case 'microphone':
       return (
-        <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8.25 4.5a3.75 3.75 0 117.5 0v6a3.75 3.75 0 11-7.5 0v-6z" />
-          <path d="M12 14.25c4.142 0 7.5-3.358 7.5-7.5V6h1.5v.75a9 9 0 01-18 0V6h1.5v.75c0 4.142 3.358 7.5 7.5 7.5z" />
-          <path d="M12 15.75a7.5 7.5 0 00-7.5-7.5H3v.75c0 4.97 4.03 9 9 9s9-4.03 9-9v-.75h-1.5a7.5 7.5 0 00-7.5 7.5z" opacity="0.2" />
-          <path d="M12 17.25c-3.5 0-6.65-1.6-8.54-4.2l-1.2 1.6C4.6 18.1 8.1 20.25 12 20.25c3.9 0 7.4-2.15 9.74-5.6l-1.2-1.6c-1.89 2.6-5.04 4.2-8.54 4.2z" />
-          <path d="M12 20.25v2.25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M9 22.5h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
         </svg>
       );
     case 'stop':
@@ -284,6 +284,7 @@ const Icon: React.FC<IconProps> = ({ icon, className }) => {
 
     // Generic Code File (Default)
     default:
+      console.warn(`Icon '${icon}' not found, using default`);
       return (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" className={className}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />

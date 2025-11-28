@@ -1,4 +1,5 @@
 import { AppSettings } from '../components/SettingsModal';
+import { OpenRouterService } from './openRouterService';
 
 export interface LLMProvider {
   name: string;
@@ -230,6 +231,10 @@ export class LLMService {
   private initializeProviders() {
     this.providers.clear();
 
+    if (this.settings.openRouterApiKey) {
+      this.providers.set('openrouter', new OpenRouterProvider(this.settings.openRouterApiKey, this.settings.preferredModel));
+    }
+
     if (this.settings.huggingFaceApiKey) {
       this.providers.set('huggingface', new HuggingFaceProvider(this.settings.huggingFaceApiKey));
     }
@@ -295,6 +300,35 @@ export const initializeLLMService = (settings: AppSettings) => {
   llmService = new LLMService(settings);
   return llmService;
 };
+
+class OpenRouterProvider implements LLMProvider {
+  name = 'OpenRouter';
+  private service: OpenRouterService;
+  private model: string;
+
+  constructor(apiKey: string, model: string = 'anthropic/claude-3.5-sonnet') {
+    this.service = new OpenRouterService(apiKey);
+    this.model = model;
+  }
+
+  isAvailable(): boolean {
+    return true;
+  }
+
+  async *chat(messages: any[], systemPrompt: string): AsyncGenerator<string> {
+    const formattedMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages.map(msg => ({ role: msg.role, content: msg.text }))
+    ];
+
+    yield* this.service.chat(formattedMessages, this.model);
+  }
+
+  async generateContent(prompt: string, context: string): Promise<string> {
+    const fullPrompt = `Context: ${context}\n\nTask: ${prompt}\n\nResponse:`;
+    return this.service.generateContent(fullPrompt, this.model);
+  }
+}
 
 export const getLLMService = (): LLMService | null => {
   return llmService;

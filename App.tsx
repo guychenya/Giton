@@ -11,6 +11,7 @@ import ReportViewerModal from './components/ReportViewerModal';
 import Icon from './components/Icon';
 import Logo from './components/Logo';
 import Assistant from './components/Assistant';
+import VoiceAssistant from './components/VoiceAssistant';
 import SettingsModal, { AppSettings } from './components/SettingsModal';
 import { useAssistant, AssistantActions, Message } from './hooks/useAssistant';
 import { fetchRepoData, RepoData, fetchSuggestedRepos, RepoGroup } from './utils/githubUtils';
@@ -46,6 +47,12 @@ const App: React.FC = () => {
   
   // Settings State
   const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
+  
+  // Voice Assistant State
+  const [isVoiceListening, setIsVoiceListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | undefined>();
 
   // Architecture Diagram State
   const [architectureDiagram, setArchitectureDiagram] = useState('');
@@ -809,8 +816,32 @@ const App: React.FC = () => {
           setAppSettings(settings);
           initializeLLMService(settings);
           geminiService.reinitialize();
+          
+          // Update voice settings
+          if (settings.alwaysListening && settings.voiceEnabled) {
+            setIsVoiceListening(true);
+          }
         }}
       />
+
+      {/* Floating Voice Assistant */}
+      {appSettings?.voiceEnabled && (
+        <VoiceAssistant
+          isListening={isVoiceListening}
+          onToggle={() => {
+            if (isVoiceListening) {
+              stopVoiceInteraction();
+              setIsVoiceListening(false);
+            } else {
+              startVoiceInteraction();
+              setIsVoiceListening(true);
+            }
+          }}
+          transcript={liveTranscript || voiceTranscript}
+          isProcessing={isVoiceProcessing}
+          error={voiceError}
+        />
+      )}
 
        <style>
         {`
