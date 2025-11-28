@@ -1,6 +1,5 @@
 [build]
-  # No build command needed for this static site
-  command = "echo 'No build step required'"
+  command = "echo 'Static React app'"
   publish = "."
 
 [build.environment]
