@@ -586,21 +586,11 @@ const App: React.FC = () => {
                 AI-powered GitHub repository analysis. Get instant documentation, examples, and insights.
               </p>
               
-              <div className="max-w-2xl mx-auto mb-16">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Enter GitHub repo URL or search..."
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const value = e.currentTarget.value;
-                        if (value.trim()) loadRepo(value);
-                      }
-                    }}
-                    className="w-full bg-white/10 border border-white/20 rounded-full px-6 py-4 pl-14 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg"
-                  />
-                  <Icon icon="search" className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
-                </div>
+              <div className="max-w-3xl mx-auto mb-16">
+                <UnifiedSearch 
+                  onSelectRepo={(repoPath) => loadRepo(repoPath)}
+                  placeholder="Search by username, repo name, or paste URL..."
+                />
               </div>
             </div>
           )}

@@ -66,6 +66,29 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
         }
       }
 
+      // Check if it's a username-only (no spaces, no special chars)
+      const isLikelyUsername = /^[a-zA-Z0-9-]+$/.test(searchQuery);
+      
+      if (isLikelyUsername) {
+        // Try to fetch user directly
+        try {
+          const userResponse = await fetch(`https://api.github.com/users/${searchQuery}`);
+          if (userResponse.ok) {
+            const user = await userResponse.json();
+            // Auto-expand this user's repos
+            setSelectedUser(user);
+            setIsLoadingRepos(true);
+            const repos = await githubAuthService.getUserRepositories(user.login);
+            setUserRepos(repos);
+            setIsLoadingRepos(false);
+            setIsSearching(false);
+            return;
+          }
+        } catch (e) {
+          // Not a valid username, continue with normal search
+        }
+      }
+
       // Search users
       const users = await githubAuthService.searchUsers(searchQuery);
       users.slice(0, 5).forEach(user => {
@@ -79,11 +102,11 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
         });
       });
 
-      // Search repositories (using GitHub search API)
+      // Search repositories
       const repoResponse = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(searchQuery)}&per_page=10`);
       if (repoResponse.ok) {
         const repoData = await repoResponse.json();
-        repoData.items?.slice(0, 5).forEach((repo: any) => {
+        repoData.items?.slice(0, 10).forEach((repo: any) => {
           searchResults.push({
             type: 'repo',
             id: repo.full_name,
@@ -158,7 +181,7 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
   };
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-2xl">
+    <div ref={searchRef} className="relative w-full">
       <div className="relative">
         <input
           type="text"
@@ -166,105 +189,116 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => setShowResults(true)}
           placeholder={placeholder}
-          className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 pl-12 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+          className="w-full bg-white/10 border border-white/20 rounded-full px-6 py-4 pl-14 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg shadow-lg"
         />
-        <Icon icon="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Icon icon="search" className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
         
         {isSearching && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute right-5 top-1/2 -translate-y-1/2">
+            <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         )}
       </div>
 
-      {/* Search Results Dropdown */}
+      {/* Search Results - Enlarged */}
       {showResults && (query.trim() || selectedUser) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-gray-900/95 backdrop-blur border border-white/10 rounded-lg shadow-xl z-50 max-h-96 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-4 bg-gray-900/98 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-50 max-h-[600px] overflow-hidden animate-scale-in">
           {selectedUser ? (
-            // User's repositories
+            // User's repositories - Enlarged
             <div>
-              <div className="p-3 border-b border-white/10 bg-blue-600/10">
-                <div className="flex items-center gap-3">
-                  <img src={selectedUser.avatar_url} alt={selectedUser.login} className="w-8 h-8 rounded-full" />
-                  <div>
-                    <div className="font-medium text-white">{selectedUser.login}</div>
-                    <div className="text-xs text-gray-400">Select a repository</div>
+              <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-600/10 to-blue-600/10">
+                <div className="flex items-center gap-4">
+                  <img src={selectedUser.avatar_url} alt={selectedUser.login} className="w-12 h-12 rounded-full border-2 border-purple-500/30" />
+                  <div className="flex-1">
+                    <div className="text-lg font-semibold text-white">{selectedUser.login}</div>
+                    <div className="text-sm text-gray-400">{userRepos.length} repositories</div>
                   </div>
                   <button
                     onClick={() => {
                       setSelectedUser(null);
                       setQuery('');
                     }}
-                    className="ml-auto text-gray-400 hover:text-white"
+                    className="text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
                   >
-                    <Icon icon="close" className="w-4 h-4" />
+                    <Icon icon="close" className="w-5 h-5" />
                   </button>
                 </div>
               </div>
               
-              <div className="max-h-80 overflow-y-auto">
+              <div className="max-h-[500px] overflow-y-auto p-2">
                 {isLoadingRepos ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="flex items-center justify-center py-16">
+                    <div className="w-8 h-8 border-3 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
-                  userRepos.map((repo) => (
-                    <button
-                      key={repo.full_name}
-                      onClick={() => handleRepoSelect(repo)}
-                      className="w-full flex items-center gap-3 p-3 hover:bg-white/5 transition-colors text-left"
-                    >
-                      <Icon icon="folder" className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-white truncate">{repo.name}</span>
-                          {repo.private && <Icon icon="lock" className="w-3 h-3 text-yellow-400" />}
+                  <div className="grid grid-cols-1 gap-2">
+                    {userRepos.map((repo) => (
+                      <button
+                        key={repo.full_name}
+                        onClick={() => handleRepoSelect(repo)}
+                        className="w-full flex items-start gap-4 p-4 hover:bg-white/5 rounded-xl transition-all text-left border border-transparent hover:border-purple-500/30"
+                      >
+                        <Icon icon="folder" className="w-5 h-5 text-purple-400 flex-shrink-0 mt-1" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-white truncate">{repo.name}</span>
+                            {repo.private && <Icon icon="lock" className="w-4 h-4 text-yellow-400" />}
+                          </div>
+                          {repo.description && (
+                            <div className="text-sm text-gray-400 line-clamp-2 mb-2">{repo.description}</div>
+                          )}
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            {repo.language && (
+                              <span className="flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+                                {repo.language}
+                              </span>
+                            )}
+                            <span className="flex items-center gap-1">
+                              <Icon icon="star" className="w-3 h-3 text-yellow-400" />
+                              {repo.stargazers_count}
+                            </span>
+                            <span>Updated {new Date(repo.updated_at).toLocaleDateString()}</span>
+                          </div>
                         </div>
-                        {repo.description && (
-                          <div className="text-sm text-gray-400 truncate">{repo.description}</div>
-                        )}
-                        <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                          {repo.language && <span>{repo.language}</span>}
-                          <span className="flex items-center gap-1">
-                            <Icon icon="star" className="w-3 h-3" />
-                            {repo.stargazers_count}
-                          </span>
-                        </div>
-                      </div>
-                    </button>
-                  ))
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
           ) : (
-            // Search results
-            <div className="max-h-80 overflow-y-auto">
+            // Search results - Enlarged
+            <div className="max-h-[500px] overflow-y-auto p-2">
               {results.length === 0 && !isSearching && query.trim() && (
-                <div className="p-4 text-center text-gray-400">
-                  No results found. Try a different search term.
+                <div className="p-8 text-center text-gray-400">
+                  <Icon icon="search" className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>No results found. Try a different search term.</p>
                 </div>
               )}
               
-              {results.map((result) => (
-                <button
-                  key={`${result.type}-${result.id}`}
-                  onClick={() => handleResultClick(result)}
-                  className="w-full flex items-center gap-3 p-3 hover:bg-white/5 transition-colors text-left"
-                >
-                  {result.avatar ? (
-                    <img src={result.avatar} alt={result.title} className="w-8 h-8 rounded-full" />
-                  ) : (
-                    <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
-                      <Icon icon={getResultIcon(result.type)} className="w-4 h-4 text-gray-400" />
+              <div className="grid grid-cols-1 gap-2">
+                {results.map((result) => (
+                  <button
+                    key={`${result.type}-${result.id}`}
+                    onClick={() => handleResultClick(result)}
+                    className="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all text-left border border-transparent hover:border-purple-500/30"
+                  >
+                    {result.avatar ? (
+                      <img src={result.avatar} alt={result.title} className="w-10 h-10 rounded-full" />
+                    ) : (
+                      <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                        <Icon icon={getResultIcon(result.type)} className="w-5 h-5 text-gray-400" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-white truncate mb-1">{result.title}</div>
+                      <div className="text-sm text-gray-400 truncate">{result.subtitle}</div>
                     </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-white truncate">{result.title}</div>
-                    <div className="text-sm text-gray-400 truncate">{result.subtitle}</div>
-                  </div>
-                  <div className="text-xs text-gray-500 capitalize">{result.type}</div>
-                </button>
-              ))}
+                    <div className="px-2 py-1 bg-purple-600/20 text-purple-300 text-xs font-medium rounded capitalize">{result.type}</div>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -274,3 +308,13 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
 };
 
 export default UnifiedSearch;
+
+      <style>{`
+        @keyframes scale-in {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+      `}</style>
