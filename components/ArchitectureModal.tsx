@@ -69,8 +69,17 @@ const ArchitectureModal: React.FC<ArchitectureModalProps> = ({ isOpen, onClose, 
       
       try {
         setRenderError(null);
+        
+        // Decode HTML entities that might be in the diagram code
+        const cleanCode = diagramCode
+          .replace(/&quot;/g, '"')
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&#39;/g, "'");
+        
         const id = `mermaid-${Date.now()}`;
-        const { svg } = await mermaid.render(id, diagramCode);
+        const { svg } = await mermaid.render(id, cleanCode);
         setSvgContent(svg);
       } catch (error) {
         console.error("Mermaid render error:", error);
