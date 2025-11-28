@@ -24,8 +24,10 @@ const defaultSettings: AppSettings = {
 const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [activeSection, setActiveSection] = useState('api-keys');
-  const [showApiKeys, setShowApiKeys] = useState(false);
+  const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({});
   const [saved, setSaved] = useState(false);
+  const [validating, setValidating] = useState<Record<string, boolean>>({});
+  const [validated, setValidated] = useState<Record<string, boolean | null>>({});
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('giton-settings');
@@ -47,6 +49,47 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
 
   const updateSetting = <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+    // Clear validation when key changes
+    if (key.toString().includes('ApiKey')) {
+      setValidated(prev => ({ ...prev, [key.toString()]: null }));
+    }
+  };
+
+  const validateApiKey = async (keyName: string, apiKey: string) => {
+    if (!apiKey || apiKey.trim() === '') return;
+    
+    setValidating(prev => ({ ...prev, [keyName]: true }));
+    
+    try {
+      let isValid = false;
+      
+      if (keyName === 'geminiApiKey') {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        isValid = response.ok;
+      } else if (keyName === 'openaiApiKey') {
+        const response = await fetch('https://api.openai.com/v1/models', {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+        isValid = response.ok;
+      } else if (keyName === 'openRouterApiKey') {
+        const response = await fetch('https://openrouter.ai/api/v1/models', {
+          headers: { 'Authorization': `Bearer ${apiKey}` }
+        });
+        isValid = response.ok;
+      } else {
+        isValid = true; // Skip validation for other keys
+      }
+      
+      setValidated(prev => ({ ...prev, [keyName]: isValid }));
+    } catch (error) {
+      setValidated(prev => ({ ...prev, [keyName]: false }));
+    } finally {
+      setValidating(prev => ({ ...prev, [keyName]: false }));
+    }
+  };
+
+  const toggleShowKey = (keyName: string) => {
+    setShowApiKeys(prev => ({ ...prev, [keyName]: !prev[keyName] }));
   };
 
   const sections = [
@@ -104,98 +147,231 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto p-8">
             {activeSection === 'api-keys' && (
-              <div className="space-y-8">
+              <div className="space-y-6">
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-2">API Keys</h2>
-                  <p className="text-gray-400">Configure your API keys for AI services</p>
+                  <p className="text-gray-400">Manage your API keys for AI services</p>
                 </div>
 
-                <div className="flex items-center justify-end">
-                  <button
-                    onClick={() => setShowApiKeys(!showApiKeys)}
-                    className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-2"
-                  >
-                    <Icon icon={showApiKeys ? 'eye-off' : 'eye'} className="w-4 h-4" />
-                    {showApiKeys ? 'Hide' : 'Show'} API Keys
-                  </button>
-                </div>
+                {/* API Keys Table */}
+                <div className="bg-white/5 border border-white/10 rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-white/5 border-b border-white/10">
+                      <tr>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Service</th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">API Key</th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                        <th className="text-right px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/10">
+                      {/* Gemini */}
+                      <tr className="hover:bg-white/5 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-purple-600/20 rounded-lg flex items-center justify-center">
+                              <span className="text-purple-400 font-bold text-sm">G</span>
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-white">Google Gemini</div>
+                              <div className="text-xs text-gray-400">Recommended</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type={showApiKeys['geminiApiKey'] ? 'text' : 'password'}
+                              value={settings.geminiApiKey}
+                              onChange={(e) => updateSetting('geminiApiKey', e.target.value)}
+                              placeholder="sk-..." 
+                              className="flex-1 bg-black/30 border border-white/20 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <button
+                              onClick={() => toggleShowKey('geminiApiKey')}
+                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                              title={showApiKeys['geminiApiKey'] ? 'Hide' : 'Show'}
+                            >
+                              <Icon icon={showApiKeys['geminiApiKey'] ? 'eye-off' : 'eye'} className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {validated['geminiApiKey'] === true && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-600/20 text-green-400 text-xs font-medium rounded">
+                              <Icon icon="check" className="w-3 h-3" /> Valid
+                            </span>
+                          )}
+                          {validated['geminiApiKey'] === false && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-600/20 text-red-400 text-xs font-medium rounded">
+                              <Icon icon="close" className="w-3 h-3" /> Invalid
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => validateApiKey('geminiApiKey', settings.geminiApiKey)}
+                              disabled={validating['geminiApiKey'] || !settings.geminiApiKey}
+                              className="p-2 text-yellow-400 hover:text-yellow-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              title="Validate API Key"
+                            >
+                              {validating['geminiApiKey'] ? (
+                                <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <Icon icon="lightning" className="w-4 h-4" />
+                              )}
+                            </button>
+                            <a
+                              href="https://aistudio.google.com/app/apikey"
+                              target="_blank"
+                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                              title="Get API Key"
+                            >
+                              <Icon icon="external-link" className="w-4 h-4" />
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
 
-                {/* Gemini */}
-                <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-1">Google Gemini</h3>
-                      <p className="text-sm text-gray-400">Best for voice and live interactions</p>
-                    </div>
-                    <span className="px-2 py-1 bg-green-600/20 text-green-400 text-xs font-medium rounded">Recommended</span>
-                  </div>
-                  <input
-                    type={showApiKeys ? 'text' : 'password'}
-                    value={settings.geminiApiKey}
-                    onChange={(e) => updateSetting('geminiApiKey', e.target.value)}
-                    placeholder="Enter your Gemini API key"
-                    className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <a
-                    href="https://aistudio.google.com/app/apikey"
-                    target="_blank"
-                    className="text-sm text-purple-400 hover:text-purple-300 mt-2 inline-block"
-                  >
-                    Get API Key →
-                  </a>
-                </div>
+                      {/* OpenRouter */}
+                      <tr className="hover:bg-white/5 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center">
+                              <span className="text-blue-400 font-bold text-sm">OR</span>
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-white">OpenRouter</div>
+                              <div className="text-xs text-gray-400">Multiple models</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type={showApiKeys['openRouterApiKey'] ? 'text' : 'password'}
+                              value={settings.openRouterApiKey}
+                              onChange={(e) => updateSetting('openRouterApiKey', e.target.value)}
+                              placeholder="sk-or-..."
+                              className="flex-1 bg-black/30 border border-white/20 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <button
+                              onClick={() => toggleShowKey('openRouterApiKey')}
+                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                            >
+                              <Icon icon={showApiKeys['openRouterApiKey'] ? 'eye-off' : 'eye'} className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {validated['openRouterApiKey'] === true && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-600/20 text-green-400 text-xs font-medium rounded">
+                              <Icon icon="check" className="w-3 h-3" /> Valid
+                            </span>
+                          )}
+                          {validated['openRouterApiKey'] === false && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-600/20 text-red-400 text-xs font-medium rounded">
+                              <Icon icon="close" className="w-3 h-3" /> Invalid
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => validateApiKey('openRouterApiKey', settings.openRouterApiKey)}
+                              disabled={validating['openRouterApiKey'] || !settings.openRouterApiKey}
+                              className="p-2 text-yellow-400 hover:text-yellow-300 disabled:opacity-50 transition-colors"
+                            >
+                              {validating['openRouterApiKey'] ? (
+                                <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <Icon icon="lightning" className="w-4 h-4" />
+                              )}
+                            </button>
+                            <a
+                              href="https://openrouter.ai/keys"
+                              target="_blank"
+                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                            >
+                              <Icon icon="external-link" className="w-4 h-4" />
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
 
-                {/* OpenRouter */}
-                <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-1">OpenRouter</h3>
-                      <p className="text-sm text-gray-400">Access Claude, GPT-4, Llama & more</p>
-                    </div>
-                  </div>
-                  <input
-                    type={showApiKeys ? 'text' : 'password'}
-                    value={settings.openRouterApiKey}
-                    onChange={(e) => updateSetting('openRouterApiKey', e.target.value)}
-                    placeholder="Enter your OpenRouter API key"
-                    className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <a
-                    href="https://openrouter.ai/keys"
-                    target="_blank"
-                    className="text-sm text-purple-400 hover:text-purple-300 mt-2 inline-block"
-                  >
-                    Get API Key →
-                  </a>
-                </div>
-
-                {/* OpenAI */}
-                <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-1">OpenAI</h3>
-                      <p className="text-sm text-gray-400">Direct access to GPT models</p>
-                    </div>
-                  </div>
-                  <input
-                    type={showApiKeys ? 'text' : 'password'}
-                    value={settings.openaiApiKey}
-                    onChange={(e) => updateSetting('openaiApiKey', e.target.value)}
-                    placeholder="Enter your OpenAI API key"
-                    className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <a
-                    href="https://platform.openai.com/api-keys"
-                    target="_blank"
-                    className="text-sm text-purple-400 hover:text-purple-300 mt-2 inline-block"
-                  >
-                    Get API Key →
-                  </a>
+                      {/* OpenAI */}
+                      <tr className="hover:bg-white/5 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-green-600/20 rounded-lg flex items-center justify-center">
+                              <span className="text-green-400 font-bold text-sm">AI</span>
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-white">OpenAI</div>
+                              <div className="text-xs text-gray-400">GPT models</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type={showApiKeys['openaiApiKey'] ? 'text' : 'password'}
+                              value={settings.openaiApiKey}
+                              onChange={(e) => updateSetting('openaiApiKey', e.target.value)}
+                              placeholder="sk-..."
+                              className="flex-1 bg-black/30 border border-white/20 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <button
+                              onClick={() => toggleShowKey('openaiApiKey')}
+                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                            >
+                              <Icon icon={showApiKeys['openaiApiKey'] ? 'eye-off' : 'eye'} className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {validated['openaiApiKey'] === true && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-600/20 text-green-400 text-xs font-medium rounded">
+                              <Icon icon="check" className="w-3 h-3" /> Valid
+                            </span>
+                          )}
+                          {validated['openaiApiKey'] === false && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-600/20 text-red-400 text-xs font-medium rounded">
+                              <Icon icon="close" className="w-3 h-3" /> Invalid
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => validateApiKey('openaiApiKey', settings.openaiApiKey)}
+                              disabled={validating['openaiApiKey'] || !settings.openaiApiKey}
+                              className="p-2 text-yellow-400 hover:text-yellow-300 disabled:opacity-50 transition-colors"
+                            >
+                              {validating['openaiApiKey'] ? (
+                                <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <Icon icon="lightning" className="w-4 h-4" />
+                              )}
+                            </button>
+                            <a
+                              href="https://platform.openai.com/api-keys"
+                              target="_blank"
+                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                            >
+                              <Icon icon="external-link" className="w-4 h-4" />
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
 
                 {/* Preferred Provider */}
                 <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Preferred AI Provider</h3>
+                  <label className="block text-sm font-medium text-gray-300 mb-3">Default AI Provider</label>
                   <select
                     value={settings.preferredLLM}
                     onChange={(e) => updateSetting('preferredLLM', e.target.value as any)}
