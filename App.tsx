@@ -554,9 +554,9 @@ const App: React.FC = () => {
                 <button 
                   onClick={() => setIsSavedProjectsModalOpen(true)}
                   className="text-gray-400 hover:text-white transition-colors"
-                  title="Library"
+                  title="Projects"
                 >
-                  <Icon icon="library" className="w-5 h-5" />
+                  <Icon icon="folder-open" className="w-5 h-5" />
                 </button>
                 
                 <button

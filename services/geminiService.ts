@@ -70,7 +70,7 @@ class GeminiService {
 
   async analyzeRepository(repoContext: string): Promise<Example[]> {
     if (!this.googleAi) {
-      throw new Error("Please add your Gemini API key in Settings (click the user icon in the top right)");
+      throw new Error("Please add your Gemini API key in Settings (click the ⚙️ settings icon in the top right)");
     }
     
     const prompt = `
