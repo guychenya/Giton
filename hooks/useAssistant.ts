@@ -231,10 +231,10 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
         return;
     }
     
-    // Check if Live API is available
+    // Fallback to basic speech recognition if Live API not available
     if (!ai.live) {
-        setError('Voice features require Gemini Live API. Please check your API key permissions.');
-        setVoiceStatus('error');
+        console.warn('Live API not available, using basic speech recognition');
+        startBasicVoiceRecognition();
         return;
     }
 
@@ -397,6 +397,75 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       setVoiceStatus('error');
     }
   }, [voiceStatus, actions, stopVoiceInteraction, updateMessages, liveTranscript, repoContext]);
+
+  const startBasicVoiceRecognition = useCallback(() => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      setError('Speech recognition not supported in this browser.');
+      setVoiceStatus('error');
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    setVoiceStatus('listening');
+    setError(null);
+
+    recognition.onresult = async (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setLiveTranscript(transcript);
+      
+      if (event.results[0].isFinal) {
+        setVoiceStatus('idle');
+        updateMessages(prev => [...prev, { role: 'user', text: transcript }]);
+        
+        // Get AI response
+        try {
+          let response = '';
+          setStreamingModelResponse({ role: 'model', text: '' });
+          
+          const stream = geminiService.chat(
+            [...messages, { role: 'user', text: transcript }], 
+            `You are a voice assistant for GitOn. Keep responses concise and conversational. ${repoContext}`
+          );
+          
+          for await (const chunk of stream) {
+            response += chunk;
+            setStreamingModelResponse({ role: 'model', text: response });
+          }
+          
+          updateMessages(prev => [...prev, { role: 'model', text: response }]);
+          
+          // Text-to-speech
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(response);
+            speechSynthesis.speak(utterance);
+          }
+        } catch (e) {
+          setError('Error getting AI response');
+        } finally {
+          setStreamingModelResponse(null);
+          setLiveTranscript('');
+        }
+      }
+    };
+
+    recognition.onerror = () => {
+      setError('Speech recognition error. Please try again.');
+      setVoiceStatus('error');
+    };
+
+    recognition.onend = () => {
+      setVoiceStatus('idle');
+      setLiveTranscript('');
+    };
+
+    recognition.start();
+  }, [messages, repoContext, updateMessages]);
 
   return {
     messages,
