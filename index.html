@@ -1,32 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GitExplore AI - GitHub Repository Analyzer</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitOn - GitHub Repository Analyzer</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.3.1",
-    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
-    "@google/genai": "https://esm.sh/@google/genai@0.14.0",
-    "mermaid": "https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.esm.min.mjs",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/"
-  }
-}
-</script>
-<style>
-  html, body, #root {
-    height: 100%;
-  }
-</style>
-<link rel="stylesheet" href="/index.css">
+    <style>
+        html, body, #root { height: 100%; margin: 0; }
+        body { background-color: #111827; color: white; font-family: system-ui; }
+    </style>
 </head>
-  <body class="bg-gray-900">
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+<body>
+    <div id="root">
+        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column;">
+            <h1 style="font-size: 3rem; font-weight: bold; background: linear-gradient(to right, #a855f7, #ec4899, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem;">GitOn</h1>
+            <p style="color: #9ca3af; margin-bottom: 2rem;">GitHub Repository Analyzer</p>
+            <div style="border: 1px solid #374151; border-radius: 0.5rem; padding: 1rem; background: rgba(255,255,255,0.05);">
+                <p>🚀 Loading GitOn...</p>
+                <p style="font-size: 0.875rem; color: #6b7280;">Analyzing repositories with AI</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        function App() {
+            const [loading, setLoading] = useState(true);
+            
+            useEffect(() => {
+                setTimeout(() => setLoading(false), 2000);
+            }, []);
+            
+            if (loading) {
+                return (
+                    <div className="flex items-center justify-center h-screen flex-col bg-gray-900">
+                        <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400 bg-clip-text text-transparent mb-4">
+                            GitOn
+                        </h1>
+                        <p className="text-gray-300 mb-8">GitHub Repository Analyzer</p>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+                        <p className="text-gray-400 mt-4">Loading AI-powered analysis...</p>
+                    </div>
+                );
+            }
+            
+            return (
+                <div className="min-h-screen bg-gray-900 text-white p-8">
+                    <div className="max-w-4xl mx-auto text-center">
+                        <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400 bg-clip-text text-transparent mb-4">
+                            GitOn
+                        </h1>
+                        <p className="text-xl text-gray-300 mb-8">
+                            AI-powered GitHub Repository Analyzer
+                        </p>
+                        
+                        <div className="bg-white/5 border border-white/10 rounded-lg p-6 mb-8">
+                            <h2 className="text-2xl font-bold mb-4">🚀 Coming Soon</h2>
+                            <p className="text-gray-300 mb-4">
+                                GitOn will analyze any GitHub repository and provide:
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                                <div className="bg-white/5 p-4 rounded">
+                                    <h3 className="font-bold text-purple-400">🤖 AI Analysis</h3>
+                                    <p className="text-sm text-gray-400">Smart code documentation</p>
+                                </div>
+                                <div className="bg-white/5 p-4 rounded">
+                                    <h3 className="font-bold text-blue-400">🎯 Interactive Examples</h3>
+                                    <p className="text-sm text-gray-400">Live code examples</p>
+                                </div>
+                                <div className="bg-white/5 p-4 rounded">
+                                    <h3 className="font-bold text-pink-400">🎤 Voice Assistant</h3>
+                                    <p className="text-sm text-gray-400">Voice-enabled exploration</p>
+                                </div>
+                                <div className="bg-white/5 p-4 rounded">
+                                    <h3 className="font-bold text-green-400">📊 Architecture Diagrams</h3>
+                                    <p className="text-sm text-gray-400">Visual system design</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="text-sm text-gray-500">
+                            Made with ❤️ by <a href="https://www.linkedin.com/in/guychenya/" className="text-purple-400 hover:text-purple-300">Guy Chenya</a>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
 </html>
