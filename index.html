@@ -4,94 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitOn - GitHub Repository Analyzer</title>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        html, body, #root { height: 100%; margin: 0; }
-        body { background-color: #111827; color: white; font-family: system-ui; }
+        body { 
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #a855f7, #ec4899, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
-<body>
-    <div id="root">
-        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column;">
-            <h1 style="font-size: 3rem; font-weight: bold; background: linear-gradient(to right, #a855f7, #ec4899, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem;">GitOn</h1>
-            <p style="color: #9ca3af; margin-bottom: 2rem;">GitHub Repository Analyzer</p>
-            <div style="border: 1px solid #374151; border-radius: 0.5rem; padding: 1rem; background: rgba(255,255,255,0.05);">
-                <p>🚀 Loading GitOn...</p>
-                <p style="font-size: 0.875rem; color: #6b7280;">Analyzing repositories with AI</p>
+<body class="text-white">
+    <div class="min-h-screen flex flex-col items-center justify-center p-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-6xl md:text-8xl font-bold gradient-text mb-4">
+                GitOn
+            </h1>
+            <p class="text-xl text-gray-300 mb-2">
+                AI-Powered GitHub Repository Analyzer
+            </p>
+            <div class="pulse text-green-400 text-sm">
+                ● Live & Ready
             </div>
         </div>
-    </div>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        
-        function App() {
-            const [loading, setLoading] = useState(true);
-            
-            useEffect(() => {
-                setTimeout(() => setLoading(false), 1000);
-            }, []);
-            
-            if (loading) {
-                return (
-                    <div className="flex items-center justify-center h-screen flex-col bg-gray-900">
-                        <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400 bg-clip-text text-transparent mb-4">
-                            GitOn
-                        </h1>
-                        <p className="text-gray-300 mb-8">GitHub Repository Analyzer</p>
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-                        <p className="text-gray-400 mt-4">Loading AI-powered analysis...</p>
-                    </div>
-                );
-            }
-            
-            return (
-                <div className="min-h-screen bg-gray-900 text-white p-8">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400 bg-clip-text text-transparent mb-4">
-                            GitOn
-                        </h1>
-                        <p className="text-xl text-gray-300 mb-8">
-                            AI-powered GitHub Repository Analyzer
-                        </p>
-                        
-                        <div className="bg-white/5 border border-white/10 rounded-lg p-6 mb-8">
-                            <h2 className="text-2xl font-bold mb-4">🚀 Coming Soon</h2>
-                            <p className="text-gray-300 mb-4">
-                                GitOn will analyze any GitHub repository and provide:
-                            </p>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                                <div className="bg-white/5 p-4 rounded">
-                                    <h3 className="font-bold text-purple-400">🤖 AI Analysis</h3>
-                                    <p className="text-sm text-gray-400">Smart code documentation</p>
-                                </div>
-                                <div className="bg-white/5 p-4 rounded">
-                                    <h3 className="font-bold text-blue-400">🎯 Interactive Examples</h3>
-                                    <p className="text-sm text-gray-400">Live code examples</p>
-                                </div>
-                                <div className="bg-white/5 p-4 rounded">
-                                    <h3 className="font-bold text-pink-400">🎤 Voice Assistant</h3>
-                                    <p className="text-sm text-gray-400">Voice-enabled exploration</p>
-                                </div>
-                                <div className="bg-white/5 p-4 rounded">
-                                    <h3 className="font-bold text-green-400">📊 Architecture Diagrams</h3>
-                                    <p className="text-sm text-gray-400">Visual system design</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="text-sm text-gray-500">
-                            Made with ❤️ by <a href="https://www.linkedin.com/in/guychenya/" className="text-purple-400 hover:text-purple-300">Guy Chenya</a>
-                        </div>
-                    </div>
+        <!-- Main Content -->
+        <div class="max-w-4xl w-full">
+            <!-- Input Section -->
+            <div class="card rounded-xl p-8 mb-8 text-center">
+                <h2 class="text-2xl font-bold mb-4">🚀 Analyze Any Repository</h2>
+                <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <input 
+                        type="text" 
+                        placeholder="owner/repo (e.g. facebook/react)"
+                        class="flex-1 bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                    <button class="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition-colors">
+                        Analyze
+                    </button>
                 </div>
-            );
-        }
-        
-        ReactDOM.render(<App />, document.getElementById('root'));
-    </script>
+                <p class="text-sm text-gray-400 mt-4">
+                    Enter any public GitHub repository to get instant AI analysis
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="card rounded-xl p-6">
+                    <div class="text-3xl mb-3">🤖</div>
+                    <h3 class="text-xl font-bold text-purple-400 mb-2">AI Analysis</h3>
+                    <p class="text-gray-300 text-sm">
+                        Smart code documentation and insights powered by advanced AI models
+                    </p>
+                </div>
+                
+                <div class="card rounded-xl p-6">
+                    <div class="text-3xl mb-3">🎯</div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-2">Interactive Examples</h3>
+                    <p class="text-gray-300 text-sm">
+                        Live code examples and usage patterns extracted from repositories
+                    </p>
+                </div>
+                
+                <div class="card rounded-xl p-6">
+                    <div class="text-3xl mb-3">🎤</div>
+                    <h3 class="text-xl font-bold text-pink-400 mb-2">Voice Assistant</h3>
+                    <p class="text-gray-300 text-sm">
+                        Voice-enabled exploration and natural language queries
+                    </p>
+                </div>
+                
+                <div class="card rounded-xl p-6">
+                    <div class="text-3xl mb-3">📊</div>
+                    <h3 class="text-xl font-bold text-green-400 mb-2">Architecture Diagrams</h3>
+                    <p class="text-gray-300 text-sm">
+                        Visual system design and dependency mapping
+                    </p>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="card rounded-xl p-6 text-center">
+                <div class="text-yellow-400 mb-2">⚡ Status</div>
+                <p class="text-gray-300">
+                    GitOn is live and ready to analyze repositories!<br>
+                    <span class="text-sm text-gray-400">Add your Gemini API key in Netlify environment variables to enable full functionality.</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 text-center text-gray-400 text-sm">
+            Made with ❤️ by 
+            <a href="https://www.linkedin.com/in/guychenya/" class="text-purple-400 hover:text-purple-300 transition-colors">
+                Guy Chenya
+            </a>
+        </div>
+    </div>
 </body>
 </html>
