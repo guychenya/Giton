@@ -808,6 +808,7 @@ const App: React.FC = () => {
         onSave={(settings) => {
           setAppSettings(settings);
           initializeLLMService(settings);
+          geminiService.reinitialize();
         }}
       />
 

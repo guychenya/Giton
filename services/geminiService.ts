@@ -11,12 +11,32 @@ class GeminiService {
   }
 
   private initializeGoogleAI() {
-    if (process.env.API_KEY && process.env.API_KEY !== 'YOUR_API_KEY') {
-      this.googleAi = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // Try environment variable first, then settings
+    let apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    
+    // Try to get from settings if available
+    if (!apiKey || apiKey === 'YOUR_API_KEY') {
+      try {
+        const settings = localStorage.getItem('giton-settings');
+        if (settings) {
+          const parsed = JSON.parse(settings);
+          apiKey = parsed.geminiApiKey;
+        }
+      } catch (e) {
+        console.warn('Could not load API key from settings');
+      }
+    }
+    
+    if (apiKey && apiKey !== 'YOUR_API_KEY') {
+      this.googleAi = new GoogleGenAI({ apiKey });
     } else {
-      console.warn("Google API Key not found or is placeholder. AI features may be limited.");
+      console.warn("Gemini API Key not found. Please add it in Settings.");
       this.googleAi = null;
     }
+  }
+  
+  public reinitialize() {
+    this.initializeGoogleAI();
   }
 
   public getGoogleGenAIInstance(): GoogleGenAI | null {

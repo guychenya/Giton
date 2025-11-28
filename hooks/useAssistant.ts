@@ -226,7 +226,14 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
     // Check Gemini Instance for Live API
     const ai = geminiService.getGoogleGenAIInstance();
     if (!ai) {
-        setError('Google AI service not initialized. API Key might be missing.');
+        setError('Please add your Gemini API key in Settings to use voice features.');
+        setVoiceStatus('error');
+        return;
+    }
+    
+    // Check if Live API is available
+    if (!ai.live) {
+        setError('Voice features require Gemini Live API. Please check your API key permissions.');
         setVoiceStatus('error');
         return;
     }
@@ -250,7 +257,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       let groundingMetadata: GroundingMetadata | undefined;
 
       sessionPromiseRef.current = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+        model: 'gemini-2.0-flash-exp',
         config: {
           responseModalities: [Modality.AUDIO],
           inputAudioTranscription: {},
