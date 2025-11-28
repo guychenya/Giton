@@ -57,7 +57,7 @@ const Logo: React.FC<LogoProps> = ({ onClick }) => {
         </svg>
       </div>
       <span className="hidden sm:inline text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-400 to-blue-300 group-hover:opacity-80 transition-opacity">
-        GitExplore AI
+        GitOn
       </span>
     </button>
   );

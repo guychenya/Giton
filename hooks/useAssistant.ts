@@ -25,7 +25,7 @@ export interface AssistantActions {
   performGoogleSearch: (query: string) => Promise<string> | string | void;
 }
 
-const createTextSystemInstruction = (context: string) => `You are a helpful and friendly assistant for "GitExplore AI". 
+const createTextSystemInstruction = (context: string) => `You are a helpful and friendly assistant for "GitOn". 
 Your goal is to help users understand the GitHub repository they are currently viewing.
 
 Current Repository Context:
@@ -37,7 +37,7 @@ ${context}
 - If the user asks about specific code, try to infer from the file structure or general knowledge of the framework/language.
 `;
 
-const createVoiceSystemInstruction = (context: string) => `You are a voice assistant for "GitExplore AI".
+const createVoiceSystemInstruction = (context: string) => `You are a voice assistant for "GitOn".
 You are helping a user explore a GitHub repository.
 
 Current Repository Context:

@@ -23,7 +23,7 @@ export interface SavedReport {
   createdAt: number;
 }
 
-const DB_NAME = 'GitExploreDB';
+const DB_NAME = 'GitOnDB';
 const DB_VERSION = 2; // Increment version for new store
 const STORE_PROJECTS = 'projects';
 const STORE_REPORTS = 'reports';

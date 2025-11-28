@@ -11,9 +11,11 @@ import ReportViewerModal from './components/ReportViewerModal';
 import Icon from './components/Icon';
 import Logo from './components/Logo';
 import Assistant from './components/Assistant';
+import SettingsModal, { AppSettings } from './components/SettingsModal';
 import { useAssistant, AssistantActions, Message } from './hooks/useAssistant';
 import { fetchRepoData, RepoData, fetchSuggestedRepos, RepoGroup } from './utils/githubUtils';
 import { geminiService } from './services/geminiService';
+import { initializeLLMService, getLLMService } from './services/llmService';
 import { db, SavedReport } from './utils/db'; 
 
 const App: React.FC = () => {
@@ -40,6 +42,10 @@ const App: React.FC = () => {
   const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState(false);
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
   const [isReportViewerModalOpen, setIsReportViewerModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  
+  // Settings State
+  const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
 
   // Architecture Diagram State
   const [architectureDiagram, setArchitectureDiagram] = useState('');
@@ -79,15 +85,27 @@ const App: React.FC = () => {
       repoDataRef.current = repoData;
   }, [repoData]);
 
-  // Load dynamic suggestions on mount
+  // Load settings and suggestions on mount
   useEffect(() => {
+    // Load settings
+    const savedSettings = localStorage.getItem('giton-settings');
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        setAppSettings(settings);
+        initializeLLMService(settings);
+      } catch (e) {
+        console.error('Failed to load settings:', e);
+      }
+    }
+    
+    // Load suggestions
     const loadSuggestions = async () => {
         try {
             const data = await fetchSuggestedRepos();
             setSuggestions(data);
         } catch (error) {
             console.error("Error loading suggestions:", error);
-            // Fallback handled in utils, but good to be safe
         } finally {
             setAreSuggestionsLoading(false);
         }
@@ -514,6 +532,13 @@ const App: React.FC = () => {
                 >
                   <Icon icon="library" className="w-5 h-5" />
                 </button>
+                <button 
+                  onClick={() => setIsSettingsModalOpen(true)}
+                  className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-2 text-gray-300 hover:text-white transition-colors"
+                  title="Settings"
+                >
+                  <Icon icon="settings" className="w-5 h-5" />
+                </button>
              </div>
              
              <form onSubmit={handleAnalyzeRepo} className="flex-1 max-w-md ml-4 flex gap-2">
@@ -775,6 +800,15 @@ const App: React.FC = () => {
         content={reportViewerContent}
         reportType={reportViewerType}
         onSave={(title, content, type) => handleSaveToProject(title, content, type as 'guide' | 'chat')}
+      />
+      
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        onSave={(settings) => {
+          setAppSettings(settings);
+          initializeLLMService(settings);
+        }}
       />
 
        <style>
