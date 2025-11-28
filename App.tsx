@@ -819,7 +819,15 @@ const App: React.FC = () => {
           
           // Update voice settings
           if (settings.alwaysListening && settings.voiceEnabled) {
-            setIsVoiceListening(true);
+            if (!isVoiceListening) {
+              startVoiceInteraction();
+              setIsVoiceListening(true);
+            }
+          } else {
+            if (isVoiceListening) {
+              stopVoiceInteraction();
+              setIsVoiceListening(false);
+            }
           }
         }}
       />

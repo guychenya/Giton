@@ -223,22 +223,17 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
   const startVoiceInteraction = useCallback(async () => {
     if (voiceStatus === 'listening' || voiceStatus === 'connecting') return;
     
-    // Always use Web Speech API first (more reliable and free)
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        startBasicVoiceRecognition();
-        return;
-    }
-    
-    // Fallback to Gemini Live API if Web Speech not available
+    // Try Gemini Live API first (best experience)
     const ai = geminiService.getGoogleGenAIInstance();
-    if (!ai) {
-        setError('Voice features not supported. Please use a modern browser or add Gemini API key.');
-        setVoiceStatus('error');
+    if (ai && ai.live) {
+        console.log('Using Gemini Live API for premium voice experience');
+        // Continue with existing Gemini Live implementation
+    } else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        console.log('Fallback to enhanced Web Speech API');
+        startEnhancedVoiceRecognition();
         return;
-    }
-    
-    if (!ai.live) {
-        setError('Voice features require Web Speech API or Gemini Live API.');
+    } else {
+        setError('Voice features not supported. Please use a modern browser or add Gemini API key.');
         setVoiceStatus('error');
         return;
     }
@@ -403,7 +398,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
     }
   }, [voiceStatus, actions, stopVoiceInteraction, updateMessages, liveTranscript, repoContext]);
 
-  const startBasicVoiceRecognition = useCallback(() => {
+  const startEnhancedVoiceRecognition = useCallback(() => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       setError('Speech recognition not supported. Please use Chrome, Edge, or Safari.');
       setVoiceStatus('error');
@@ -420,13 +415,14 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
 
     setVoiceStatus('listening');
     setError(null);
-    setLiveTranscript('Listening...');
+    setLiveTranscript('🎤 Listening...');
 
     recognition.onresult = async (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setLiveTranscript(transcript);
       
+      // Only show final transcript, hide interim results for cleaner UX
       if (event.results[0].isFinal) {
+        setLiveTranscript('');
         setVoiceStatus('idle');
         updateMessages(prev => [...prev, { role: 'user', text: transcript }]);
         
@@ -435,11 +431,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
         if (!ai) {
           const fallbackResponse = `I heard: "${transcript}". Please add your Gemini API key in Settings for AI responses.`;
           updateMessages(prev => [...prev, { role: 'model', text: fallbackResponse }]);
-          
-          if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(fallbackResponse);
-            speechSynthesis.speak(utterance);
-          }
+          await playResponseAudio(fallbackResponse);
           return;
         }
         
@@ -460,21 +452,13 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
           
           updateMessages(prev => [...prev, { role: 'model', text: response }]);
           
-          // Text-to-speech
-          if ('speechSynthesis' in window && response) {
-            const utterance = new SpeechSynthesisUtterance(response);
-            utterance.rate = 0.9;
-            utterance.pitch = 1;
-            speechSynthesis.speak(utterance);
-          }
+          // Enhanced text-to-speech with ElevenLabs fallback
+          await playResponseAudio(response);
         } catch (e) {
           const errorResponse = 'Sorry, I had trouble processing that. Please try again.';
           updateMessages(prev => [...prev, { role: 'model', text: errorResponse }]);
           
-          if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(errorResponse);
-            speechSynthesis.speak(utterance);
-          }
+          await playResponseAudio(errorResponse);
         } finally {
           setStreamingModelResponse(null);
           setLiveTranscript('');
@@ -503,6 +487,46 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       setVoiceStatus('error');
     }
   }, [messages, repoContext, updateMessages, voiceStatus]);
+
+  const playResponseAudio = useCallback(async (text: string) => {
+    try {
+      // Try ElevenLabs first if available
+      const settings = JSON.parse(localStorage.getItem('giton-settings') || '{}');
+      
+      if (settings.elevenLabsApiKey) {
+        const { ElevenLabsService } = await import('../services/elevenLabsService');
+        const elevenLabs = new ElevenLabsService(settings.elevenLabsApiKey);
+        
+        const audioBuffer = await elevenLabs.textToSpeech(text);
+        await elevenLabs.playAudio(audioBuffer);
+        return;
+      }
+    } catch (error) {
+      console.warn('ElevenLabs TTS failed, falling back to browser TTS:', error);
+    }
+    
+    // Fallback to browser TTS with better settings
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.85;
+      utterance.pitch = 1.1;
+      utterance.volume = 0.9;
+      
+      // Try to use a better voice if available
+      const voices = speechSynthesis.getVoices();
+      const preferredVoice = voices.find(voice => 
+        voice.name.includes('Google') || 
+        voice.name.includes('Microsoft') ||
+        voice.name.includes('Enhanced')
+      );
+      
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+      
+      speechSynthesis.speak(utterance);
+    }
+  }, []);
 
   return {
     messages,

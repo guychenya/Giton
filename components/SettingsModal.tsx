@@ -12,6 +12,7 @@ export interface AppSettings {
   huggingFaceApiKey: string;
   openaiApiKey: string;
   openRouterApiKey: string;
+  elevenLabsApiKey: string;
   preferredLLM: 'gemini' | 'huggingface' | 'openai' | 'openrouter';
   preferredModel: string;
   voiceEnabled: boolean;
@@ -25,7 +26,8 @@ const defaultSettings: AppSettings = {
   huggingFaceApiKey: '',
   openaiApiKey: '',
   openRouterApiKey: '',
-  preferredLLM: 'openrouter',
+  elevenLabsApiKey: '',
+  preferredLLM: 'gemini',
   preferredModel: 'anthropic/claude-3.5-sonnet',
   voiceEnabled: true,
   alwaysListening: false,
@@ -118,7 +120,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Google Gemini API Key
-                  <span className="text-green-400 ml-1">✓ Recommended</span>
+                  <span className="text-green-400 ml-1">✓ Best Voice Experience</span>
                 </label>
                 <input
                   type={showApiKeys ? "text" : "password"}
@@ -128,7 +130,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
                   className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-purple-400 hover:underline">Google AI Studio</a>
+                  Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-purple-400 hover:underline">Google AI Studio</a> - Enables Gemini Live
+                </p>
+              </div>
+
+              {/* ElevenLabs API Key */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  ElevenLabs API Key
+                  <span className="text-blue-400 ml-1">Premium Voice</span>
+                </label>
+                <input
+                  type={showApiKeys ? "text" : "password"}
+                  value={settings.elevenLabsApiKey}
+                  onChange={(e) => updateSetting('elevenLabsApiKey', e.target.value)}
+                  placeholder="Enter your ElevenLabs API key"
+                  className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Get your key from <a href="https://elevenlabs.io/app/speech-synthesis" target="_blank" className="text-blue-400 hover:underline">ElevenLabs</a> - Professional voice synthesis
                 </p>
               </div>
 
@@ -196,8 +216,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
                   onChange={(e) => updateSetting('preferredLLM', e.target.value as any)}
                   className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
-                  <option value="openrouter">OpenRouter (Best - Multiple Models)</option>
-                  <option value="gemini">Google Gemini</option>
+                  <option value="gemini">Google Gemini (Best Voice + Live API)</option>
+                  <option value="openrouter">OpenRouter (Multiple Models)</option>
                   <option value="openai">OpenAI Direct</option>
                   <option value="huggingface">HuggingFace (Limited)</option>
                 </select>
