@@ -141,16 +141,49 @@ class GeminiService {
 
   async generateArchitectureDiagram(repoContext: string): Promise<string> {
     const prompt = `
-      Generate a Mermaid.js flowchart definition for this system.
-      - Use 'graph TB'.
-      - NO HTML labels. Use simple text strings in double quotes.
-      - Do NOT use parentheses () or brackets [] inside labels.
-      - Return ONLY the mermaid code.
+      Generate a valid Mermaid.js flowchart for this system architecture.
+      
+      STRICT RULES:
+      1. Start with: graph TD
+      2. Use ONLY alphanumeric node IDs (A, B, C1, DB, API, etc.)
+      3. Use simple text labels in square brackets: A["Frontend"]
+      4. NO special characters in node IDs
+      5. Use arrows: --> for connections
+      6. Keep labels short and simple
+      
+      Example format:
+      graph TD
+          A["Frontend"] --> B["API Gateway"]
+          B --> C["Database"]
+          B --> D["Auth Service"]
+      
+      Return ONLY the mermaid code, no explanations.
+      
       Repository Context:
       ${repoContext}
     `;
-    const res = await this.callGoogleAPI('gemini-2.5-flash', prompt);
-    return (res.text || '').replace(/```mermaid/g, '').replace(/```/g, '').trim();
+    
+    try {
+      const res = await this.callGoogleAPI('gemini-2.5-flash', prompt);
+      let diagramCode = (res.text || '').replace(/```mermaid/g, '').replace(/```/g, '').trim();
+      
+      // Validate and fix common issues
+      if (!diagramCode.startsWith('graph')) {
+        diagramCode = 'graph TD\n' + diagramCode;
+      }
+      
+      // Remove any invalid characters from node IDs
+      diagramCode = diagramCode.replace(/[^a-zA-Z0-9\[\]"\-\>\s\n]/g, '');
+      
+      return diagramCode;
+    } catch (error) {
+      console.error('Error generating diagram:', error);
+      // Return a simple fallback diagram
+      return `graph TD
+    A["Frontend"] --> B["Backend API"]
+    B --> C["Database"]
+    B --> D["External Services"]`;
+    }
   }
 
   async generatePRD(repoContext: string): Promise<string> {
