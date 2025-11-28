@@ -369,19 +369,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
                   </table>
                 </div>
 
-                {/* Preferred Provider */}
-                <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                  <label className="block text-sm font-medium text-gray-300 mb-3">Default AI Provider</label>
-                  <select
-                    value={settings.preferredLLM}
-                    onChange={(e) => updateSetting('preferredLLM', e.target.value as any)}
-                    className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="gemini">Google Gemini</option>
-                    <option value="openrouter">OpenRouter</option>
-                    <option value="openai">OpenAI</option>
-                  </select>
-                </div>
+
               </div>
             )}
 

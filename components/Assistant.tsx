@@ -274,11 +274,22 @@ const Assistant: React.FC<AssistantProps> = ({
       >
         <div className={`flex-1 flex flex-col min-h-0 overflow-hidden transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
           <header className="flex items-center justify-between p-4 border-b border-white/10 flex-shrink-0">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-1">
               <Icon icon="audio_spark" className="w-6 h-6 text-purple-400" />
               <h2 id="assistant-title" className="text-lg font-bold text-white">
                 Assistant
               </h2>
+              
+              {/* Model Selector */}
+              <select
+                className="ml-auto mr-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 hover:bg-white/10 transition-colors"
+                title="Select AI Model"
+              >
+                <option value="gemini">Gemini 2.5</option>
+                <option value="gpt-4">GPT-4</option>
+                <option value="claude">Claude 3.5</option>
+                <option value="gpt-4-mini">GPT-4 Mini</option>
+              </select>
             </div>
             <div className="flex items-center">
               <button
