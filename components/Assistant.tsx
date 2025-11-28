@@ -298,11 +298,27 @@ const Assistant: React.FC<AssistantProps> = ({
                   </button>
                   {isMenuOpen && (
                       <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-white/10 rounded-lg shadow-xl z-10 animate-fade-in-sm">
-                          <button onClick={handleExportMD} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors">Export as MD</button>
-                          <button onClick={handleExportTXT} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors">Export as TXT</button>
-                          <button onClick={handleExportPDF} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors">Export as PDF</button>
+                          <button onClick={handleExportMD} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <Icon icon="document" className="w-4 h-4" />
+                            Export as MD
+                          </button>
+                          <button onClick={handleExportTXT} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <Icon icon="document" className="w-4 h-4" />
+                            Export as TXT
+                          </button>
+                          <button onClick={handleExportPDF} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <Icon icon="document" className="w-4 h-4" />
+                            Export as PDF
+                          </button>
                           <div className="border-t border-white/10 my-1"></div>
-                          <button onClick={handleClearChat} className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors">Clear Chat</button>
+                          <button onClick={handleClearChat} className="w-full text-left px-4 py-2 text-sm text-blue-400 hover:bg-blue-500/20 transition-colors flex items-center gap-2">
+                            <Icon icon="plus" className="w-4 h-4" />
+                            New Chat
+                          </button>
+                          <button onClick={handleClearChat} className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors flex items-center gap-2">
+                            <Icon icon="trash" className="w-4 h-4" />
+                            Clear Chat
+                          </button>
                       </div>
                   )}
               </div>
