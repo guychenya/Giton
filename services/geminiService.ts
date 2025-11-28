@@ -69,6 +69,10 @@ class GeminiService {
   }
 
   async analyzeRepository(repoContext: string): Promise<Example[]> {
+    if (!this.googleAi) {
+      throw new Error("Please add your Gemini API key in Settings (click the user icon in the top right)");
+    }
+    
     const prompt = `
       Analyze the following GitHub repository information (README, topics, and file structure).
       Your goal is to create a curated list of "Modules", "Features", "Key Concepts", or "Examples".

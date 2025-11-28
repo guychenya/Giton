@@ -9,6 +9,8 @@ import UnifiedSearch from './components/UnifiedSearch';
 import UserDropdown from './components/UserDropdown';
 import SavedProjectsModal from './components/SavedProjectsModal';
 import ReportViewerModal from './components/ReportViewerModal';
+import RepoSearchModal from './components/RepoSearchModal';
+import UserSearchModal from './components/UserSearchModal';
 import Icon from './components/Icon';
 import Logo from './components/Logo';
 import Assistant from './components/Assistant';
