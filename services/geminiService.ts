@@ -158,25 +158,41 @@ class GeminiService {
   async *chat(messages: Message[], systemInstruction: string): AsyncGenerator<string, void, unknown> {
       if (!this.googleAi) throw new Error("AI not initialized");
       
-      const chat = this.googleAi.chats.create({
-          model: 'gemini-2.5-flash',
-          config: { systemInstruction }
-      });
-
-      const history = messages.slice(0, -1).map(m => ({
-          role: m.role === 'user' ? 'user' : 'model',
-          parts: [{ text: m.text }]
-      }));
-
-      // Note: We can't easily set full history on a new chat instance in standard SDK without sending it. 
-      // For simplicity in this restoration, we'll just send the last message with the context implied by system instruction.
-      // A production app would maintain the Chat instance.
-      
-      const lastMsg = messages[messages.length - 1].text;
-      const resultStream = await chat.sendMessageStream(lastMsg);
-      
-      for await (const chunk of resultStream) {
-          yield chunk.text || '';
+      try {
+          const model = this.googleAi.models.get('gemini-2.5-flash');
+          
+          // Build conversation history
+          const contents: Content[] = [];
+          
+          // Add system instruction as first message
+          if (systemInstruction) {
+              contents.push({
+                  role: 'user',
+                  parts: [{ text: systemInstruction }]
+              });
+              contents.push({
+                  role: 'model', 
+                  parts: [{ text: 'I understand. I\'ll help you with the repository analysis.' }]
+              });
+          }
+          
+          // Add conversation history
+          messages.forEach(msg => {
+              contents.push({
+                  role: msg.role === 'user' ? 'user' : 'model',
+                  parts: [{ text: msg.text }]
+              });
+          });
+          
+          const response = await model.generateContentStream({ contents });
+          
+          for await (const chunk of response) {
+              const text = chunk.text;
+              if (text) yield text;
+          }
+      } catch (error) {
+          console.error('Chat error:', error);
+          yield 'Sorry, I encountered an error. Please try again.';
       }
   }
 }
