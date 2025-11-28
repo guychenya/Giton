@@ -532,16 +532,30 @@ const App: React.FC = () => {
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="relative z-10 flex flex-col items-center flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
-          <div className="w-full flex items-center justify-between mb-8 max-w-6xl">
-             <div className="flex items-center gap-4">
+        {/* Modern SaaS Navbar */}
+        <nav className="relative z-20 border-b border-white/10 bg-gray-900/80 backdrop-blur-xl">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center gap-6">
                 <Logo onClick={handleGoHome} />
+                {repoData && (
+                  <div className="hidden md:flex items-center gap-3 text-sm">
+                    <span className="text-gray-400">Analyzing:</span>
+                    <span className="font-semibold text-white">{repoData.owner}/{repoData.repo}</span>
+                    <span className="flex items-center gap-1 text-yellow-400">
+                      <Icon icon="star" className="w-3 h-3" /> {formatStars(repoData.stars)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-3">
                 <button 
                   onClick={() => setIsSavedProjectsModalOpen(true)}
-                  className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-2 text-blue-300 hover:text-white transition-colors"
-                  title="Saved Projects Library"
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 hover:text-white transition-colors"
                 >
-                  <Icon icon="library" className="w-5 h-5" />
+                  <Icon icon="library" className="w-4 h-4" />
+                  <span>Library</span>
                 </button>
                 
                 <UserDropdown
@@ -554,42 +568,60 @@ const App: React.FC = () => {
                   onBilling={() => setIsSettingsModalOpen(true)}
                   onSignOut={() => console.log('Sign out')}
                 />
-             </div>
-             
-             <div className="flex-1 max-w-2xl ml-4">
-                <UnifiedSearch 
-                  onSelectRepo={(repoPath) => {
-                    setRepoUrl(repoPath);
-                    loadRepo(repoPath);
-                  }}
-                  placeholder="Search repos, users, or paste GitHub URL..."
-                />
-             </div>
+              </div>
+            </div>
           </div>
+        </nav>
 
-          <header className="text-center mb-8">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400">
-              GitOn
-            </h1>
-            <p className="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">
-              {repoData 
-                  ? `Exploring ${repoData.owner}/${repoData.repo}: ${repoData.description}` 
-                  : "Instant documentation, examples, and interactive analysis for any public GitHub repository."}
-            </p>
-            {repoData && (
-                <div className="mt-4 flex gap-4 justify-center text-sm text-gray-400 flex-wrap">
-                    <span className="flex items-center gap-1"><Icon icon="star" className="w-4 h-4 text-yellow-400" /> {repoData.stars.toLocaleString()}</span>
-                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-400"></span> {repoData.language}</span>
-                    {repoData.topics.length > 0 && (
-                         <div className="hidden sm:flex items-center gap-2 border-l border-gray-700 pl-4">
-                             {repoData.topics.slice(0, 3).map(t => (
-                                 <span key={t} className="bg-white/5 px-2 py-0.5 rounded-full text-xs">{t}</span>
-                             ))}
-                         </div>
-                    )}
+        <main className="relative z-10 flex flex-col items-center flex-1 overflow-y-auto">
+          {/* Hero Section */}
+          {!repoData && examples.length === 0 && (
+            <div className="w-full max-w-4xl mx-auto px-4 pt-20 pb-12 text-center">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400 mb-6">
+                GitOn
+              </h1>
+              <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+                AI-powered GitHub repository analysis. Get instant documentation, examples, and insights.
+              </p>
+              
+              <div className="max-w-2xl mx-auto mb-16">
+                <UnifiedSearch 
+                  onSelectRepo={(repoPath) => loadRepo(repoPath)}
+                  placeholder="Enter GitHub repo URL or search..."
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Active Repo Header */}
+          {repoData && examples.length > 0 && (
+            <div className="w-full border-b border-white/10 bg-gray-800/30 backdrop-blur-sm">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white mb-1">{repoData.owner}/{repoData.repo}</h2>
+                    <p className="text-gray-400 text-sm">{repoData.description}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={handleOpenArchitecture}
+                      className="px-4 py-2 text-sm font-medium bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Icon icon="backend" className="w-4 h-4" />
+                      Architecture
+                    </button>
+                    <button 
+                      onClick={handleOpenPRD}
+                      className="px-4 py-2 text-sm font-medium bg-teal-600/20 hover:bg-teal-600/30 text-teal-300 border border-teal-500/30 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Icon icon="document" className="w-4 h-4" />
+                      PRD
+                    </button>
+                  </div>
                 </div>
-            )}
-          </header>
+              </div>
+            </div>
+          )}
           
           {repoError && (
               <div className="bg-red-500/10 border border-red-500/20 text-red-300 px-4 py-3 rounded-lg mb-8 max-w-2xl w-full text-center">
@@ -597,138 +629,96 @@ const App: React.FC = () => {
               </div>
           )}
 
-          {examples.length > 0 && (
-            <div className="w-full max-w-lg mb-6">
-                <div className="flex items-center gap-4">
-                <div className="relative flex-grow">
-                    <input 
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Filter results..."
-                    className="w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg py-3 pl-12 pr-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-shadow duration-300"
-                    />
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2" aria-hidden="true">
-                    <Icon icon="search" className="w-6 h-6 text-gray-400" />
-                    </div>
-                </div>
-                <button
-                    onClick={handleToggleVoiceAssistant}
-                    className={`flex-shrink-0 p-3 text-white transition-all duration-300 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 ${voiceStatus === 'listening' ? 'ring-2 ring-purple-500 animate-pulse' : ''}`}
-                >
-                    <Icon icon={voiceStatus === 'listening' ? "stop" : "microphone"} className="w-6 h-6" />
-                </button>
-                </div>
-            </div>
-          )}
+
           
+          {/* Category Filters */}
           {examples.length > 0 && categories.length > 1 && (
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 animate-fade-in">
+            <div className="w-full border-b border-white/10 bg-gray-900/50">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div className="flex flex-wrap gap-2">
                   {categories.map(category => (
                     <button
                       key={category.name}
                       onClick={() => setActiveCategory(category.name)}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-1.5
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-2
                         ${activeCategory === category.name
                           ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
                           : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10'
                         }`}
                     >
                       {category.name}
-                      <span className={`text-xs font-medium px-1 py-0.5 rounded transition-colors ${
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
                           activeCategory === category.name 
                            ? 'bg-white/20 text-white' 
-                           : 'bg-white/10 text-gray-400 group-hover:bg-white/20'
+                           : 'bg-white/10 text-gray-400'
                       }`}>
                           {category.count}
                       </span>
                     </button>
                   ))}
-                  
-                  <button 
-                    onClick={handleOpenArchitecture}
-                    className="px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-1.5 bg-purple-900/40 hover:bg-purple-800/60 text-purple-200 border border-purple-500/30"
-                  >
-                     <Icon icon="backend" className="w-4 h-4" />
-                     System Design
-                  </button>
-
-                  <button 
-                    onClick={handleOpenPRD}
-                    className="px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-1.5 bg-teal-900/40 hover:bg-teal-800/60 text-teal-200 border border-teal-500/30"
-                  >
-                     <Icon icon="document" className="w-4 h-4" />
-                     PRD
-                  </button>
-              </div>
-          )}
-
-          {isLoadingRepo ? (
-             <div className="w-full h-64 flex flex-col items-center justify-center space-y-4">
-                 <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                 <p className="text-xl text-gray-300 animate-pulse">Analyzing repository structure...</p>
-                 <p className="text-sm text-gray-500">This might take a few seconds depending on the size</p>
-             </div>
-          ) : filteredExamples.length > 0 ? (
-            <div className="w-full max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6 pb-20">
-              {filteredExamples.map((example, index) => (
-                <div key={example.name + index} className="animate-card-in" style={{ animationDelay: `${index * 50}ms`}}>
-                  <ExampleCard
-                    {...example}
-                    onClick={() => handleCardClick(example)}
-                    onVoiceChat={() => handleVoiceDiscussion(example)}
-                  />
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center text-center py-8 px-4 w-full max-w-4xl">
-              <div className="w-full max-w-2xl mb-6">
-                <UnifiedSearch 
-                  onSelectRepo={(repoPath) => loadRepo(repoPath)}
-                  placeholder="Search repositories, users, or paste GitHub URL..."
-                />
               </div>
-              <h2 className="text-2xl font-bold text-gray-200 mb-2">Start Your Exploration</h2>
-              <p className="text-gray-400 max-w-md mb-10">
-                Search by repository name, GitHub username, or paste a URL directly. Try these popular repositories:
-              </p>
-              
-              {areSuggestionsLoading ? (
-                  <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
-                      {[1, 2, 3].map(i => (
-                          <div key={i} className="h-40 bg-white/5 rounded-lg border border-white/10"></div>
-                      ))}
-                  </div>
-              ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-                      {suggestions.map((group) => (
-                          <div key={group.category} className="flex flex-col gap-3">
-                              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider text-left pl-1">{group.category}</h3>
-                              {group.items.map(repo => (
-                                  <button 
-                                    key={repo.repo}
-                                    onClick={() => loadRepo(`${repo.owner}/${repo.repo}`)}
-                                    className="flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 rounded-lg transition-all text-left group"
-                                    title={repo.description}
-                                  >
-                                      <div className="flex flex-col overflow-hidden mr-2">
-                                          <span className="text-sm font-medium text-gray-200 group-hover:text-purple-300 transition-colors truncate">
-                                              {repo.owner}/<span className="text-white font-bold">{repo.repo}</span>
-                                          </span>
-                                          <span className="text-[10px] text-gray-500 truncate">{repo.description?.substring(0, 40)}...</span>
-                                      </div>
-                                      <span className="text-xs text-yellow-500 flex-shrink-0 flex items-center gap-1 bg-black/30 px-1.5 py-0.5 rounded">
-                                          <Icon icon="star" className="w-3 h-3" /> {formatStars(repo.stars)}
-                                      </span>
-                                  </button>
-                              ))}
-                          </div>
-                      ))}
-                  </div>
-              )}
             </div>
           )}
+
+          {/* Content Area */}
+          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {isLoadingRepo ? (
+              <div className="flex flex-col items-center justify-center py-32 space-y-4">
+                <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-xl text-gray-300 animate-pulse">Analyzing repository...</p>
+                <p className="text-sm text-gray-500">This may take a few moments</p>
+              </div>
+            ) : filteredExamples.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredExamples.map((example, index) => (
+                  <div key={example.name + index} className="animate-card-in" style={{ animationDelay: `${index * 50}ms`}}>
+                    <ExampleCard
+                      {...example}
+                      onClick={() => handleCardClick(example)}
+                      onVoiceChat={() => handleVoiceDiscussion(example)}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : !repoData ? (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold text-gray-300 mb-8">Popular Repositories</h3>
+                {areSuggestionsLoading ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="h-40 bg-white/5 rounded-lg border border-white/10"></div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {suggestions.map((group) => (
+                      <div key={group.category} className="flex flex-col gap-3">
+                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">{group.category}</h4>
+                        {group.items.map(repo => (
+                          <button 
+                            key={repo.repo}
+                            onClick={() => loadRepo(`${repo.owner}/${repo.repo}`)}
+                            className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 rounded-lg transition-all text-left group"
+                          >
+                            <div className="flex flex-col overflow-hidden mr-2">
+                              <span className="text-sm font-medium text-gray-200 group-hover:text-purple-300 transition-colors truncate">
+                                {repo.owner}/<span className="text-white font-bold">{repo.repo}</span>
+                              </span>
+                              <span className="text-xs text-gray-500 truncate">{repo.description?.substring(0, 50)}...</span>
+                            </div>
+                            <span className="text-xs text-yellow-400 flex-shrink-0 flex items-center gap-1">
+                              <Icon icon="star" className="w-3 h-3" /> {formatStars(repo.stars)}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </div>
 
           <footer className="mt-auto pt-8 text-center text-gray-500 text-sm max-w-4xl mx-auto space-y-2 pb-4">
             <p className="text-xs mt-4 text-gray-400">
