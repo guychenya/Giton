@@ -12,7 +12,7 @@
    - Add `GEMINI_API_KEY` = `your_api_key_here`
 6. **Deploy!**
 
-## Your App Features
+## GitOn Features
 - ✅ React 18 + TypeScript
 - ✅ Tailwind CSS styling  
 - ✅ Google Gemini AI integration
@@ -24,7 +24,7 @@
 ## Post-Deploy
 Your site will be live at: `https://your-site-name.netlify.app`
 
-The app analyzes any GitHub repository and provides:
+GitOn analyzes any GitHub repository and provides:
 - AI-powered documentation
 - Interactive examples
 - Voice-enabled assistant

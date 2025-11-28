@@ -556,7 +556,7 @@ const App: React.FC = () => {
 
           <header className="text-center mb-8">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400">
-              GitExplore AI
+              GitOn
             </h1>
             <p className="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">
               {repoData 

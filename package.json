@@ -1,5 +1,5 @@
 {
-  "name": "gitexplore-ai",
+  "name": "giton",
   "private": true,
   "version": "1.0.0",
   "description": "A dynamic web application that uses the Gemini API to analyze any GitHub repository.",

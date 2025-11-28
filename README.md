@@ -1,4 +1,4 @@
-# GitExplore AI 🚀
+# GitOn 🚀
 
 A dynamic web application that uses the Gemini API to analyze any GitHub repository and provide instant documentation, examples, and interactive analysis.
 
@@ -49,8 +49,8 @@ A dynamic web application that uses the Gemini API to analyze any GitHub reposit
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/gitexplore-ai.git
-   cd gitexplore-ai
+   git clone https://github.com/guychenya/Gitexplore.git
+   cd Gitexplore
    ```
 
 2. **Install dependencies**
@@ -122,7 +122,7 @@ A dynamic web application that uses the Gemini API to analyze any GitHub reposit
 ## 📁 Project Structure
 
 ```
-gitexplore-ai/
+giton/
 ├── components/          # React components
 │   ├── Assistant.tsx    # AI assistant interface
 │   ├── ExampleCard.tsx  # Repository analysis cards
@@ -195,4 +195,4 @@ For support and questions:
 
 ---
 
-Made with ❤️ by [Guy Chenya](https://www.linkedin.com/in/guychenya/) for training purposes.
+Made with ❤️ by [Guy Chenya](https://www.linkedin.com/in/guychenya/) - GitOn: Your AI-powered GitHub repository analyzer.
