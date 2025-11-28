@@ -1,0 +1,7 @@
+{
+  "name": "GitExplore AI",
+  "description": "A dynamic web application that uses the Gemini API to analyze any GitHub repository, generating interactive documentation and examples.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
