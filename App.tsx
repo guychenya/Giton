@@ -5,8 +5,8 @@ import ExampleCard from './components/ExampleCard';
 import ExampleDetailModal from './components/ExampleDetailModal';
 import ArchitectureModal from './components/ArchitectureModal';
 import PRDModal from './components/PRDModal';
-import RepoSearchModal from './components/RepoSearchModal';
-import UserSearchModal from './components/UserSearchModal';
+import UnifiedSearch from './components/UnifiedSearch';
+import UserDropdown from './components/UserDropdown';
 import SavedProjectsModal from './components/SavedProjectsModal';
 import ReportViewerModal from './components/ReportViewerModal';
 import Icon from './components/Icon';
@@ -541,60 +541,28 @@ const App: React.FC = () => {
                 >
                   <Icon icon="library" className="w-5 h-5" />
                 </button>
-                <button 
-                  onClick={() => setIsSettingsModalOpen(true)}
-                  className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-2 text-gray-300 hover:text-white transition-colors"
-                  title="Settings"
-                >
-                  <Icon icon="settings" className="w-5 h-5" />
-                </button>
+                
+                <UserDropdown
+                  user={{
+                    name: 'Demo User',
+                    email: 'demo@giton.ai',
+                    plan: 'free'
+                  }}
+                  onSettings={() => setIsSettingsModalOpen(true)}
+                  onBilling={() => setIsSettingsModalOpen(true)}
+                  onSignOut={() => console.log('Sign out')}
+                />
              </div>
              
-             <form onSubmit={handleAnalyzeRepo} className="flex-1 max-w-md ml-4 flex gap-2">
-                <input 
-                    type="text" 
-                    value={repoUrl}
-                    onChange={(e) => setRepoUrl(e.target.value)}
-                    placeholder="owner/repo (e.g. facebook/react)"
-                    className="flex-1 bg-black/30 border border-white/10 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-white placeholder-gray-500"
+             <div className="flex-1 max-w-2xl ml-4">
+                <UnifiedSearch 
+                  onSelectRepo={(repoPath) => {
+                    setRepoUrl(repoPath);
+                    loadRepo(repoPath);
+                  }}
+                  placeholder="Search repos, users, or paste GitHub URL..."
                 />
-                
-                <button 
-                    type="button"
-                    onClick={() => setIsRepoSearchModalOpen(true)}
-                    className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-gray-300 hover:text-white transition-colors"
-                    title="Search for a repository"
-                >
-                    <Icon icon="search" className="w-4 h-4" />
-                </button>
-                
-                <button 
-                    type="button"
-                    onClick={() => setIsUserSearchModalOpen(true)}
-                    className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-blue-300 hover:text-white transition-colors"
-                    title="Search by GitHub username"
-                >
-                    <Icon icon="user" className="w-4 h-4" />
-                </button>
-
-                <button 
-                    type="submit"
-                    disabled={isLoadingRepo}
-                    className="relative overflow-hidden bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-100 flex items-center gap-2 transition-all min-w-[100px] justify-center group"
-                >
-                    {isLoadingRepo && (
-                        <div 
-                            className="absolute inset-y-0 left-0 bg-purple-600/50 transition-all duration-500 ease-out"
-                            style={{ width: `${loadingProgress}%` }}
-                        />
-                    )}
-                    
-                    <span className="relative z-10 flex items-center gap-2">
-                        {isLoadingRepo ? <span className="animate-spin">⟳</span> : null}
-                        {isLoadingRepo ? 'Loading' : 'Load'}
-                    </span>
-                </button>
-             </form>
+             </div>
           </div>
 
           <header className="text-center mb-8">
@@ -628,7 +596,7 @@ const App: React.FC = () => {
           )}
 
           {examples.length > 0 && (
-            <div className="w-full max-w-xl mb-6">
+            <div className="w-full max-w-lg mb-6">
                 <div className="flex items-center gap-4">
                 <div className="relative flex-grow">
                     <input 
@@ -653,19 +621,19 @@ const App: React.FC = () => {
           )}
           
           {examples.length > 0 && categories.length > 1 && (
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 animate-fade-in">
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 animate-fade-in">
                   {categories.map(category => (
                     <button
                       key={category.name}
                       onClick={() => setActiveCategory(category.name)}
-                      className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-2
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-1.5
                         ${activeCategory === category.name
                           ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
                           : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10'
                         }`}
                     >
                       {category.name}
-                      <span className={`text-xs font-medium px-1.5 py-0.5 rounded-md transition-colors ${
+                      <span className={`text-xs font-medium px-1 py-0.5 rounded transition-colors ${
                           activeCategory === category.name 
                            ? 'bg-white/20 text-white' 
                            : 'bg-white/10 text-gray-400 group-hover:bg-white/20'
@@ -677,7 +645,7 @@ const App: React.FC = () => {
                   
                   <button 
                     onClick={handleOpenArchitecture}
-                    className="px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-2 bg-purple-900/40 hover:bg-purple-800/60 text-purple-200 border border-purple-500/30"
+                    className="px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-1.5 bg-purple-900/40 hover:bg-purple-800/60 text-purple-200 border border-purple-500/30"
                   >
                      <Icon icon="backend" className="w-4 h-4" />
                      System Design
@@ -685,7 +653,7 @@ const App: React.FC = () => {
 
                   <button 
                     onClick={handleOpenPRD}
-                    className="px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-2 bg-teal-900/40 hover:bg-teal-800/60 text-teal-200 border border-teal-500/30"
+                    className="px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-gray-900 flex items-center gap-1.5 bg-teal-900/40 hover:bg-teal-800/60 text-teal-200 border border-teal-500/30"
                   >
                      <Icon icon="document" className="w-4 h-4" />
                      PRD
@@ -700,7 +668,7 @@ const App: React.FC = () => {
                  <p className="text-sm text-gray-500">This might take a few seconds depending on the size</p>
              </div>
           ) : filteredExamples.length > 0 ? (
-            <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 pb-20">
+            <div className="w-full max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6 pb-20">
               {filteredExamples.map((example, index) => (
                 <div key={example.name + index} className="animate-card-in" style={{ animationDelay: `${index * 50}ms`}}>
                   <ExampleCard
@@ -713,26 +681,15 @@ const App: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col items-center text-center py-8 px-4 w-full max-w-4xl">
-              <div className="flex gap-4 mb-6">
-                <button 
-                  onClick={() => setIsRepoSearchModalOpen(true)}
-                  className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center border border-white/10 hover:bg-white/20 hover:scale-110 transition-all cursor-pointer group shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)]"
-                  aria-label="Search repositories"
-                >
-                   <Icon icon="search" className="w-10 h-10 text-purple-400 group-hover:text-purple-300 transition-colors" />
-                </button>
-                
-                <button 
-                  onClick={() => setIsUserSearchModalOpen(true)}
-                  className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center border border-white/10 hover:bg-white/20 hover:scale-110 transition-all cursor-pointer group shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)]"
-                  aria-label="Search by username"
-                >
-                   <Icon icon="user" className="w-10 h-10 text-blue-400 group-hover:text-blue-300 transition-colors" />
-                </button>
+              <div className="w-full max-w-2xl mb-6">
+                <UnifiedSearch 
+                  onSelectRepo={(repoPath) => loadRepo(repoPath)}
+                  placeholder="Search repositories, users, or paste GitHub URL..."
+                />
               </div>
               <h2 className="text-2xl font-bold text-gray-200 mb-2">Start Your Exploration</h2>
               <p className="text-gray-400 max-w-md mb-10">
-                Search by repository name or GitHub username. Enter a GitHub URL directly, or try these popular repositories:
+                Search by repository name, GitHub username, or paste a URL directly. Try these popular repositories:
               </p>
               
               {areSuggestionsLoading ? (
