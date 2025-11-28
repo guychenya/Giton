@@ -179,43 +179,29 @@ class GeminiService {
   }
 
   async *chat(messages: Message[], systemInstruction: string): AsyncGenerator<string, void, unknown> {
-      if (!this.googleAi) throw new Error("AI not initialized");
+      if (!this.googleAi) {
+          yield 'AI not initialized. Please check your API key in Settings.';
+          return;
+      }
       
       try {
-          const model = this.googleAi.models.get('gemini-2.5-flash');
+          // Use the simpler approach with just the latest message
+          const lastMessage = messages[messages.length - 1];
+          const prompt = `${systemInstruction}\n\nUser: ${lastMessage.text}\nAssistant:`;
           
-          // Build conversation history
-          const contents: Content[] = [];
+          const response = await this.callGoogleAPI('gemini-2.5-flash', prompt);
           
-          // Add system instruction as first message
-          if (systemInstruction) {
-              contents.push({
-                  role: 'user',
-                  parts: [{ text: systemInstruction }]
-              });
-              contents.push({
-                  role: 'model', 
-                  parts: [{ text: 'I understand. I\'ll help you with the repository analysis.' }]
-              });
-          }
+          const text = response.text || 'No response generated';
           
-          // Add conversation history
-          messages.forEach(msg => {
-              contents.push({
-                  role: msg.role === 'user' ? 'user' : 'model',
-                  parts: [{ text: msg.text }]
-              });
-          });
-          
-          const response = await model.generateContentStream({ contents });
-          
-          for await (const chunk of response) {
-              const text = chunk.text;
-              if (text) yield text;
+          // Simulate streaming by yielding chunks
+          const words = text.split(' ');
+          for (let i = 0; i < words.length; i += 3) {
+              yield words.slice(i, i + 3).join(' ') + ' ';
+              await new Promise(resolve => setTimeout(resolve, 50));
           }
       } catch (error) {
           console.error('Chat error:', error);
-          yield 'Sorry, I encountered an error. Please try again.';
+          yield 'Sorry, I encountered an error. Please check your API key and try again.';
       }
   }
 }
