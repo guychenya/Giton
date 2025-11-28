@@ -70,13 +70,19 @@ const ArchitectureModal: React.FC<ArchitectureModalProps> = ({ isOpen, onClose, 
       try {
         setRenderError(null);
         
-        // Decode HTML entities that might be in the diagram code
-        const cleanCode = diagramCode
+        // Create a temporary div to decode HTML entities
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = diagramCode;
+        let cleanCode = textarea.value;
+        
+        // Additional cleanup
+        cleanCode = cleanCode
           .replace(/&quot;/g, '"')
           .replace(/&amp;/g, '&')
           .replace(/&lt;/g, '<')
           .replace(/&gt;/g, '>')
-          .replace(/&#39;/g, "'");
+          .replace(/&#39;/g, "'")
+          .replace(/&nbsp;/g, ' ');
         
         const id = `mermaid-${Date.now()}`;
         const { svg } = await mermaid.render(id, cleanCode);

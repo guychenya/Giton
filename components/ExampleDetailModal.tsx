@@ -316,9 +316,28 @@ const ExampleDetailModal: React.FC<ExampleDetailModalProps> = ({ example, conten
         >
             <div className="prose-custom max-w-none">
                 {isLoading ? (
-                    <div className="flex flex-col items-center justify-center h-64">
-                        <LoadingSpinner />
-                        <p className="mt-4 text-gray-400 animate-pulse">Generating technical documentation...</p>
+                    <div className="flex flex-col items-center justify-center py-16 space-y-6">
+                        {/* Animated Icon */}
+                        <div className="relative w-24 h-24">
+                            <div className="absolute inset-0 border-4 border-purple-500/20 rounded-full"></div>
+                            <div className="absolute inset-0 border-4 border-transparent border-t-purple-500 rounded-full animate-spin"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <Icon icon={example.icon} className="w-12 h-12 text-purple-400" />
+                            </div>
+                        </div>
+                        
+                        {/* Progress Text */}
+                        <div className="text-center space-y-2">
+                            <p className="text-lg text-white font-medium">Generating Documentation</p>
+                            <p className="text-sm text-gray-400 animate-pulse">Analyzing {example.name}...</p>
+                        </div>
+                        
+                        {/* Progress Dots */}
+                        <div className="flex gap-2">
+                            <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                            <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        </div>
                     </div>
                 ) : (
                     <MarkdownRenderer content={content} />
