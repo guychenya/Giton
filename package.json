@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "description": "A dynamic web application that uses the Gemini API to analyze any GitHub repository.",
   "scripts": {
-    "start": "echo \"This is a client-side application. Serve index.html with a static file server.\"",
-    "build": "echo \"No build step needed for this setup.\"",
-    "lint": "echo \"Linting not configured.\""
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@google/genai": "^0.14.0",
@@ -17,6 +17,8 @@
   "devDependencies": {
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "typescript": "^5.5.3"
+    "@vitejs/plugin-react": "^4.0.0",
+    "typescript": "^5.5.3",
+    "vite": "^4.4.0"
   }
 }
