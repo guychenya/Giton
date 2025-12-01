@@ -583,7 +583,7 @@ const Assistant: React.FC<AssistantProps> = ({
                     </button>
                     
                     {isAttachMenuOpen && (
-                      <div className="absolute bottom-full right-0 mb-2 w-40 bg-gray-800 border border-white/10 rounded-lg shadow-xl overflow-hidden animate-fade-in-sm">
+                      <div className="absolute bottom-full right-0 mb-2 w-40 bg-gray-800 border border-white/10 rounded-lg shadow-xl overflow-hidden animate-fade-in-sm z-50">
                         <button
                           onClick={() => imageInputRef.current?.click()}
                           className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center gap-2"
