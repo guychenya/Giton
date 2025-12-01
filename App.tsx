@@ -473,6 +473,23 @@ const App: React.FC = () => {
     performGoogleSearch: async (query: string) => {
         return await geminiService.performWebSearch(query); 
     },
+    searchGitHub: async (query: string) => {
+        try {
+          const response = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=10`);
+          if (!response.ok) return 'GitHub search failed. Please try again.';
+          
+          const data = await response.json();
+          if (!data.items || data.items.length === 0) return `No repositories found for "${query}".`;
+          
+          const results = data.items.slice(0, 10).map((repo: any) => 
+            `**${repo.full_name}** (⭐ ${repo.stargazers_count.toLocaleString()})\n${repo.description || 'No description'}\nLanguage: ${repo.language || 'N/A'}`
+          ).join('\n\n');
+          
+          return `Found ${data.total_count.toLocaleString()} repositories for "${query}". Here are the top results:\n\n${results}`;
+        } catch (error) {
+          return 'Error searching GitHub. Please try again.';
+        }
+    },
   }), [handleCardClick, handleCloseModal]); // Dependencies for useMemo
 
   const {

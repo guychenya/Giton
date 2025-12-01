@@ -99,6 +99,11 @@ const functionDeclarations: FunctionDeclaration[] = [
         name: 'performGoogleSearch',
         parameters: { type: Type.OBJECT, properties: { query: { type: Type.STRING, description: 'The search query.' } }, required: ['query'] },
         description: 'Searches the internet for real-time information. Returns a summary.',
+    },
+    {
+        name: 'searchGitHub',
+        parameters: { type: Type.OBJECT, properties: { query: { type: Type.STRING, description: 'Search query for GitHub repositories, users, or topics.' } }, required: ['query'] },
+        description: 'Searches GitHub for repositories, users, or topics. Returns formatted results with repo names, descriptions, and stars.',
     }
 ];
 
