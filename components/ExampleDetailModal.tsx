@@ -206,11 +206,11 @@ const ExampleDetailModal: React.FC<ExampleDetailModalProps> = ({ example, conten
     >
       <div 
         ref={modalContainerRef}
-        className="relative bg-gray-800/50 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden transform animate-scale-in"
+        className={`relative backdrop-blur-xl border rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden transform animate-scale-in ${isDarkMode ? 'bg-gray-800/50 border-white/20' : 'bg-white border-gray-300'}`}
       >
-        <div className="flex items-start sm:items-center justify-between p-4 sm:p-5 border-b border-white/10 flex-shrink-0 gap-4">
+        <div className={`flex items-start sm:items-center justify-between p-4 sm:p-5 border-b flex-shrink-0 gap-4 ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center border border-white/20 flex-shrink-0">
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center border flex-shrink-0 ${isDarkMode ? 'bg-white/10 border-white/20' : 'bg-gray-100 border-gray-300'}`}>
               <Icon icon={example.icon} className="w-8 h-8 text-gray-100" />
             </div>
             <div className="flex-grow">
