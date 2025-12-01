@@ -43,6 +43,7 @@ const App: React.FC = () => {
   
   // Modals State
   const [isRepoSearchModalOpen, setIsRepoSearchModalOpen] = useState(false);
+  const [isCommandKOpen, setIsCommandKOpen] = useState(false);
   const [isUserSearchModalOpen, setIsUserSearchModalOpen] = useState(false);
   const [isSavedProjectsModalOpen, setIsSavedProjectsModalOpen] = useState(false);
   const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState(false);
@@ -123,6 +124,20 @@ const App: React.FC = () => {
         }
     };
     loadSuggestions();
+    
+    // Command+K shortcut
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCommandKOpen(true);
+      }
+      if (e.key === 'Escape') {
+        setIsCommandKOpen(false);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   // Categories logic with counts and hierarchy
@@ -872,6 +887,39 @@ const App: React.FC = () => {
             setIsSettingsModalOpen(false);
           }}
         />
+      )}
+      
+      {/* Command+K Search Modal */}
+      {isCommandKOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-start justify-center pt-32 px-4 animate-fade-in"
+          onClick={() => setIsCommandKOpen(false)}
+        >
+          <div 
+            className="w-full max-w-2xl bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white">Quick Search</h2>
+                <div className="flex items-center gap-2 text-xs text-gray-400">
+                  <kbd className="px-2 py-1 bg-white/10 rounded border border-white/20">⌘K</kbd>
+                  <span>to open</span>
+                  <kbd className="px-2 py-1 bg-white/10 rounded border border-white/20">ESC</kbd>
+                  <span>to close</span>
+                </div>
+              </div>
+              
+              <UnifiedSearch 
+                onSelectRepo={(repoPath) => {
+                  setIsCommandKOpen(false);
+                  loadRepo(repoPath);
+                }}
+                placeholder="Search by username, repo name, or paste URL..."
+              />
+            </div>
+          </div>
+        </div>
       )}
 
 
