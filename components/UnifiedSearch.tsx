@@ -15,12 +15,14 @@ interface UnifiedSearchProps {
   onSelectRepo: (repoUrl: string) => void;
   placeholder?: string;
   autoFocus?: boolean;
+  isDarkMode?: boolean;
 }
 
 const UnifiedSearch: React.FC<UnifiedSearchProps> = ({ 
   onSelectRepo, 
   placeholder = "Search users, repos, topics, or paste URL...",
-  autoFocus = false
+  autoFocus = false,
+  isDarkMode = true
 }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -221,9 +223,9 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => setShowResults(true)}
           placeholder={placeholder}
-          className="w-full bg-white/10 border border-white/20 rounded-full px-6 py-4 pl-14 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg shadow-lg"
+          className={`w-full border rounded-full px-6 py-4 pl-14 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-lg shadow-lg ${isDarkMode ? 'bg-white/10 border-white/20 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
         />
-        <Icon icon="search" className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
+        <Icon icon="search" className={`absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
         
         {isSearching && (
           <div className="absolute right-5 top-1/2 -translate-y-1/2">
@@ -234,23 +236,23 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
 
       {/* Search Results - Enlarged */}
       {showResults && (query.trim() || selectedUser) && (
-        <div className="absolute top-full left-0 right-0 mt-4 bg-gray-900/98 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl z-50 max-h-[600px] overflow-hidden animate-scale-in">
+        <div className={`absolute top-full left-0 right-0 mt-4 backdrop-blur-xl border rounded-2xl shadow-2xl z-50 max-h-[600px] overflow-hidden animate-scale-in ${isDarkMode ? 'bg-gray-900/98 border-white/20' : 'bg-white/98 border-gray-300'}`}>
           {selectedUser ? (
             // User's repositories - Enlarged
             <div>
-              <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-600/10 to-blue-600/10">
+              <div className={`p-6 border-b ${isDarkMode ? 'border-white/10 bg-gradient-to-r from-purple-600/10 to-blue-600/10' : 'border-gray-200 bg-gradient-to-r from-purple-100 to-blue-100'}`}>
                 <div className="flex items-center gap-4">
                   <img src={selectedUser.avatar_url} alt={selectedUser.login} className="w-12 h-12 rounded-full border-2 border-purple-500/30" />
                   <div className="flex-1">
-                    <div className="text-lg font-semibold text-white">{selectedUser.login}</div>
-                    <div className="text-sm text-gray-400">{userRepos.length} repositories</div>
+                    <div className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedUser.login}</div>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{userRepos.length} repositories</div>
                   </div>
                   <button
                     onClick={() => {
                       setSelectedUser(null);
                       setQuery('');
                     }}
-                    className="text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+                    className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}
                   >
                     <Icon icon="close" className="w-5 h-5" />
                   </button>
@@ -268,18 +270,18 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
                       <button
                         key={repo.full_name}
                         onClick={() => handleRepoSelect(repo)}
-                        className="w-full flex items-start gap-4 p-4 hover:bg-white/5 rounded-xl transition-all text-left border border-transparent hover:border-purple-500/30"
+                        className={`w-full flex items-start gap-4 p-4 rounded-xl transition-all text-left border border-transparent hover:border-purple-500/30 ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'}`}
                       >
                         <Icon icon="folder" className="w-5 h-5 text-purple-400 flex-shrink-0 mt-1" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-white truncate">{repo.name}</span>
+                            <span className={`font-semibold truncate ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repo.name}</span>
                             {repo.private && <Icon icon="lock" className="w-4 h-4 text-yellow-400" />}
                           </div>
                           {repo.description && (
-                            <div className="text-sm text-gray-400 line-clamp-2 mb-2">{repo.description}</div>
+                            <div className={`text-sm line-clamp-2 mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{repo.description}</div>
                           )}
-                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                          <div className={`flex items-center gap-4 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>
                             {repo.language && (
                               <span className="flex items-center gap-1">
                                 <span className="w-2 h-2 rounded-full bg-blue-400"></span>
@@ -303,7 +305,7 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
             // Search results - Enlarged
             <div className="max-h-[500px] overflow-y-auto p-2">
               {results.length === 0 && !isSearching && query.trim() && (
-                <div className="p-8 text-center text-gray-400">
+                <div className={`p-8 text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   <Icon icon="search" className="w-12 h-12 mx-auto mb-3 opacity-50" />
                   <p>No results found. Try a different search term.</p>
                 </div>
@@ -314,7 +316,7 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
                   <button
                     key={`${result.type}-${result.id}`}
                     onClick={() => handleResultClick(result)}
-                    className="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-all text-left border border-transparent hover:border-purple-500/30"
+                    className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all text-left border border-transparent hover:border-purple-500/30 ${isDarkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'}`}
                   >
                     {result.avatar ? (
                       <img src={result.avatar} alt={result.title} className="w-10 h-10 rounded-full" />
@@ -324,8 +326,8 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-white truncate mb-1">{result.title}</div>
-                      <div className="text-sm text-gray-400 truncate">{result.subtitle}</div>
+                      <div className={`font-semibold truncate mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{result.title}</div>
+                      <div className={`text-sm truncate ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{result.subtitle}</div>
                     </div>
                     <div className={`px-2 py-1 text-xs font-medium rounded capitalize ${
                       result.type === 'user' ? 'bg-blue-600/20 text-blue-300' :

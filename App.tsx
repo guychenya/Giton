@@ -649,6 +649,7 @@ const App: React.FC = () => {
                 <UnifiedSearch 
                   onSelectRepo={(repoPath) => loadRepo(repoPath)}
                   placeholder="Search by username, repo name, or paste URL..."
+                  isDarkMode={isDarkMode}
                 />
               </div>
             </div>
@@ -763,7 +764,7 @@ const App: React.FC = () => {
                       loadingProgress >= 10 ? 'bg-green-500' : 'bg-gray-600'
                     }`}></div>
                     <span className={`text-sm transition-colors ${
-                      loadingProgress >= 10 ? 'text-white' : 'text-gray-500'
+                      loadingProgress >= 10 ? (isDarkMode ? 'text-white' : 'text-gray-900') : 'text-gray-500'
                     }`}>Connecting to GitHub...</span>
                   </div>
                   
@@ -772,7 +773,7 @@ const App: React.FC = () => {
                       loadingProgress >= 45 ? 'bg-green-500' : loadingProgress >= 10 ? 'bg-yellow-500 animate-pulse' : 'bg-gray-600'
                     }`}></div>
                     <span className={`text-sm transition-colors ${
-                      loadingProgress >= 45 ? 'text-white' : loadingProgress >= 10 ? 'text-yellow-400' : 'text-gray-500'
+                      loadingProgress >= 45 ? (isDarkMode ? 'text-white' : 'text-gray-900') : loadingProgress >= 10 ? 'text-yellow-600' : 'text-gray-500'
                     }`}>Fetching repository data...</span>
                   </div>
                   
@@ -781,7 +782,7 @@ const App: React.FC = () => {
                       loadingProgress >= 75 ? 'bg-green-500' : loadingProgress >= 45 ? 'bg-yellow-500 animate-pulse' : 'bg-gray-600'
                     }`}></div>
                     <span className={`text-sm transition-colors ${
-                      loadingProgress >= 75 ? 'text-white' : loadingProgress >= 45 ? 'text-yellow-400' : 'text-gray-500'
+                      loadingProgress >= 75 ? (isDarkMode ? 'text-white' : 'text-gray-900') : loadingProgress >= 45 ? 'text-yellow-600' : 'text-gray-500'
                     }`}>Analyzing with AI...</span>
                   </div>
                   
@@ -790,7 +791,7 @@ const App: React.FC = () => {
                       loadingProgress >= 100 ? 'bg-green-500' : loadingProgress >= 75 ? 'bg-yellow-500 animate-pulse' : 'bg-gray-600'
                     }`}></div>
                     <span className={`text-sm transition-colors ${
-                      loadingProgress >= 100 ? 'text-white' : loadingProgress >= 75 ? 'text-yellow-400' : 'text-gray-500'
+                      loadingProgress >= 100 ? (isDarkMode ? 'text-white' : 'text-gray-900') : loadingProgress >= 75 ? 'text-yellow-600' : 'text-gray-500'
                     }`}>Generating insights...</span>
                   </div>
                 </div>
@@ -940,13 +941,13 @@ const App: React.FC = () => {
           onClick={() => setIsCommandKOpen(false)}
         >
           <div 
-            className="w-full max-w-2xl bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl animate-zoom-out"
+            className={`w-full max-w-2xl backdrop-blur-xl border rounded-2xl shadow-2xl animate-zoom-out ${isDarkMode ? 'bg-gray-900/95 border-white/20' : 'bg-white/95 border-gray-300'}`}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-white">Quick Search</h2>
-                <div className="flex items-center gap-2 text-xs text-gray-400">
+                <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Quick Search</h2>
+                <div className={`flex items-center gap-2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   <kbd className="px-2 py-1 bg-white/10 rounded border border-white/20">⌘K</kbd>
                   <span>to open</span>
                   <kbd className="px-2 py-1 bg-white/10 rounded border border-white/20">ESC</kbd>
@@ -961,6 +962,7 @@ const App: React.FC = () => {
                 }}
                 placeholder="Search by username, repo name, or paste URL..."
                 autoFocus={true}
+                isDarkMode={isDarkMode}
               />
             </div>
           </div>
