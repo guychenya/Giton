@@ -5,6 +5,7 @@ import { AppSettings } from './SettingsModal';
 interface SettingsPageProps {
   onClose: () => void;
   onSave: (settings: AppSettings) => void;
+  isDarkMode?: boolean;
 }
 
 const defaultSettings: AppSettings = {
@@ -21,7 +22,7 @@ const defaultSettings: AppSettings = {
   autoSave: true,
 };
 
-const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
+const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode: propIsDarkMode }) => {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [activeSection, setActiveSection] = useState('api-keys');
   const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({});
@@ -98,7 +99,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
     { id: 'billing', label: 'Billing', icon: 'credit-card' },
   ];
 
-  const isDarkMode = settings.theme === 'dark';
+  const isDarkMode = propIsDarkMode !== undefined ? propIsDarkMode : settings.theme === 'dark';
 
   return (
     <div className={`fixed inset-0 z-50 overflow-hidden ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>

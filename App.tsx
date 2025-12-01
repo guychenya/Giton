@@ -958,6 +958,7 @@ const App: React.FC = () => {
             geminiService.reinitialize();
             setIsSettingsModalOpen(false);
           }}
+          isDarkMode={isDarkMode}
         />
       )}
       
