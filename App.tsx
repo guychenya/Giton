@@ -44,6 +44,7 @@ const App: React.FC = () => {
   // Modals State
   const [isRepoSearchModalOpen, setIsRepoSearchModalOpen] = useState(false);
   const [isCommandKOpen, setIsCommandKOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [isUserSearchModalOpen, setIsUserSearchModalOpen] = useState(false);
   const [isSavedProjectsModalOpen, setIsSavedProjectsModalOpen] = useState(false);
   const [isArchitectureModalOpen, setIsArchitectureModalOpen] = useState(false);
@@ -896,7 +897,7 @@ const App: React.FC = () => {
           onClick={() => setIsCommandKOpen(false)}
         >
           <div 
-            className="w-full max-w-2xl bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden animate-scale-in"
+            className="w-full max-w-2xl bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden animate-zoom-out"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
@@ -916,6 +917,7 @@ const App: React.FC = () => {
                   loadRepo(repoPath);
                 }}
                 placeholder="Search by username, repo name, or paste URL..."
+                autoFocus={true}
               />
             </div>
           </div>
@@ -960,6 +962,19 @@ const App: React.FC = () => {
           }
           .animate-wave {
             animation: wave 2s linear infinite;
+          }
+          @keyframes zoom-out {
+            from {
+              opacity: 0;
+              transform: scale(0.3) translateY(-200px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
+          }
+          .animate-zoom-out {
+            animation: zoom-out 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
           }
         `}
        </style>

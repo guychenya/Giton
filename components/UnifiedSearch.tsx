@@ -14,11 +14,13 @@ interface SearchResult {
 interface UnifiedSearchProps {
   onSelectRepo: (repoUrl: string) => void;
   placeholder?: string;
+  autoFocus?: boolean;
 }
 
 const UnifiedSearch: React.FC<UnifiedSearchProps> = ({ 
   onSelectRepo, 
-  placeholder = "Search repos, users, or paste GitHub URL..." 
+  placeholder = "Search repos, users, or paste GitHub URL...",
+  autoFocus = false
 }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -29,7 +31,14 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
   const [isLoadingRepos, setIsLoadingRepos] = useState(false);
   
   const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [autoFocus]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -184,6 +193,7 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
     <div ref={searchRef} className="relative w-full">
       <div className="relative">
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => handleInputChange(e.target.value)}
@@ -308,13 +318,3 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
 };
 
 export default UnifiedSearch;
-
-      <style>{`
-        @keyframes scale-in {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .animate-scale-in {
-          animation: scale-in 0.2s ease-out;
-        }
-      `}</style>
