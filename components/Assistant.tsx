@@ -48,7 +48,10 @@ const Assistant: React.FC<AssistantProps> = ({
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
+  const attachMenuRef = useRef<HTMLDivElement>(null);
 
   const [selection, setSelection] = useState<{ text: string; x: number; y: number } | null>(null);
   const [copiedMessageIndex, setCopiedMessageIndex] = useState<number | null>(null);
@@ -68,6 +71,9 @@ const Assistant: React.FC<AssistantProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
+      }
+      if (attachMenuRef.current && !attachMenuRef.current.contains(event.target as Node)) {
+        setIsAttachMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -279,6 +285,17 @@ const Assistant: React.FC<AssistantProps> = ({
       setUserInput('Analyze this image and extract any GitHub repository information, URLs, or text you can find.');
     };
     reader.readAsDataURL(file);
+    setIsAttachMenuOpen(false);
+  };
+
+  const handleFileUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      setUserInput(`I've uploaded a file: ${file.name}\n\nPlease analyze this file content and extract any relevant information.\n\n${content.substring(0, 5000)}`);
+    };
+    reader.readAsText(file);
+    setIsAttachMenuOpen(false);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -301,10 +318,21 @@ const Assistant: React.FC<AssistantProps> = ({
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       handleImageUpload(file);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        handleImageUpload(file);
+      } else {
+        handleFileUpload(file);
+      }
     }
   };
 
@@ -527,23 +555,54 @@ const Assistant: React.FC<AssistantProps> = ({
                   )}
                   
                   <input
-                    ref={fileInputRef}
+                    ref={imageInputRef}
                     type="file"
                     accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".txt,.md,.json,.js,.ts,.tsx,.jsx,.py,.java,.cpp,.c,.h,.css,.html,.xml,.yaml,.yml"
                     onChange={handleFileSelect}
                     className="hidden"
                   />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    aria-label="Upload image"
-                    className="p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
-                    title="Upload image"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </button>
+                  
+                  <div className="relative" ref={attachMenuRef}>
+                    <button
+                      type="button"
+                      onClick={() => setIsAttachMenuOpen(!isAttachMenuOpen)}
+                      aria-label="Attach file"
+                      className="p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                      title="Attach file or image"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                      </svg>
+                    </button>
+                    
+                    {isAttachMenuOpen && (
+                      <div className="absolute bottom-full right-0 mb-2 w-40 bg-gray-800 border border-white/10 rounded-lg shadow-xl overflow-hidden animate-fade-in-sm">
+                        <button
+                          onClick={() => imageInputRef.current?.click()}
+                          className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center gap-2"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          Add Image
+                        </button>
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center gap-2 border-t border-white/5"
+                        >
+                          <Icon icon="file" className="w-4 h-4" />
+                          Add File
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   
                   <button
                     type="button"
