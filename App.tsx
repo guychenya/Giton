@@ -814,6 +814,7 @@ const App: React.FC = () => {
                       {...example}
                       onClick={() => handleCardClick(example)}
                       onVoiceChat={() => handleVoiceDiscussion(example)}
+                      isDarkMode={isDarkMode}
                     />
                   </div>
                 ))}
@@ -874,7 +875,8 @@ const App: React.FC = () => {
           contentRef={detailContentRef}
           onAskAssistant={handleAskAssistant}
           onSave={handleSaveToProject}
-          repoUrl={`https://github.com/${repoData?.owner}/${repoData?.repo}`} 
+          repoUrl={`https://github.com/${repoData?.owner}/${repoData?.repo}`}
+          isDarkMode={isDarkMode}
         />
       )}
 

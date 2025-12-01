@@ -68,7 +68,7 @@ const parseInlineMarkdown = (text: string): React.ReactNode[] => {
   });
 };
 
-const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
+const MarkdownRenderer: React.FC<{ content: string; isDarkMode?: boolean }> = ({ content, isDarkMode = true }) => {
     const lines = content.split('\n');
     const elements: React.ReactNode[] = [];
     let i = 0;
@@ -78,15 +78,15 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
 
         // Headings
         if (line.startsWith('# ')) {
-            elements.push(<h1 key={i} className="text-2xl font-bold mt-6 mb-2">{line.substring(2)}</h1>);
+            elements.push(<h1 key={i} className={`text-2xl font-bold mt-6 mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{line.substring(2)}</h1>);
             i++; continue;
         }
         if (line.startsWith('## ')) {
-            elements.push(<h2 key={i} className="text-xl font-semibold mt-5 mb-2 border-b border-white/10 pb-2">{line.substring(3)}</h2>);
+            elements.push(<h2 key={i} className={`text-xl font-semibold mt-5 mb-2 border-b pb-2 ${isDarkMode ? 'text-white border-white/10' : 'text-gray-900 border-gray-300'}`}>{line.substring(3)}</h2>);
             i++; continue;
         }
         if (line.startsWith('### ')) {
-            elements.push(<h3 key={i} className="text-lg font-semibold mt-4 mb-2">{line.substring(4)}</h3>);
+            elements.push(<h3 key={i} className={`text-lg font-semibold mt-4 mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{line.substring(4)}</h3>);
             i++; continue;
         }
 
@@ -111,7 +111,7 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
             }
             elements.push(
                 <ul key={`list-${i}`} className="list-disc pl-6 space-y-2 my-4">
-                    {listItems.map((item, index) => <li key={index} className="text-base leading-relaxed">{parseInlineMarkdown(item)}</li>)}
+                    {listItems.map((item, index) => <li key={index} className={`text-base leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{parseInlineMarkdown(item)}</li>)}
                 </ul>
             );
             continue;
@@ -138,17 +138,17 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
             }
             
             elements.push(
-              <div key={`table-${i}`} className="my-4 overflow-x-auto rounded-lg border border-white/10 bg-black/20 backdrop-blur-md">
+              <div key={`table-${i}`} className={`my-4 overflow-x-auto rounded-lg border ${isDarkMode ? 'border-white/10 bg-black/20' : 'border-gray-300 bg-gray-50'} backdrop-blur-md`}>
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-white/5">
-                      {headerCells.map((cell, idx) => <th key={idx} className="p-3 font-semibold text-base text-gray-100">{parseInlineMarkdown(cell.trim())}</th>)}
+                    <tr className={isDarkMode ? 'bg-white/5' : 'bg-gray-100'}>
+                      {headerCells.map((cell, idx) => <th key={idx} className={`p-3 font-semibold text-base ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{parseInlineMarkdown(cell.trim())}</th>)}
                     </tr>
                   </thead>
                   <tbody>
                     {bodyRows.map((row, rowIdx) => (
-                      <tr key={rowIdx} className="border-t border-white/10 hover:bg-white/5 transition-colors duration-200">
-                        {row.map((cell, cellIdx) => <td key={cellIdx} className="p-3 text-base text-gray-300">{parseInlineMarkdown(cell.trim())}</td>)}
+                      <tr key={rowIdx} className={`border-t transition-colors duration-200 ${isDarkMode ? 'border-white/10 hover:bg-white/5' : 'border-gray-200 hover:bg-gray-100'}`}>
+                        {row.map((cell, cellIdx) => <td key={cellIdx} className={`p-3 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{parseInlineMarkdown(cell.trim())}</td>)}
                       </tr>
                     ))}
                   </tbody>
@@ -166,13 +166,13 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
         
         // Paragraphs
         if (line.trim() !== '') {
-            elements.push(<p key={i} className="my-2 leading-relaxed text-base">{parseInlineMarkdown(line)}</p>);
+            elements.push(<p key={i} className={`my-2 leading-relaxed text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{parseInlineMarkdown(line)}</p>);
         }
 
         i++;
     }
 
-    return <div className="text-base leading-relaxed">{elements}</div>;
+    return <div className={`text-base leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{elements}</div>;
 };
 
 export default MarkdownRenderer;

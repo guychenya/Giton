@@ -6,9 +6,10 @@ import Icon from './Icon';
 interface ExampleCardProps extends Example {
   onClick: () => void;
   onVoiceChat: () => void;
+  isDarkMode?: boolean;
 }
 
-const ExampleCard: React.FC<ExampleCardProps> = ({ name, description, icon, onClick, onVoiceChat, whenToUse, popularSites }) => {
+const ExampleCard: React.FC<ExampleCardProps> = ({ name, description, icon, onClick, onVoiceChat, whenToUse, popularSites, isDarkMode = true }) => {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       onClick();
@@ -41,16 +42,16 @@ const ExampleCard: React.FC<ExampleCardProps> = ({ name, description, icon, onCl
       </button>
 
       <Icon icon={icon} className="w-14 h-14 mb-4" />
-      <h3 className="text-xl font-bold text-white mb-2">{name}</h3>
-      <p className="text-gray-300 text-sm flex-grow mb-4">{description}</p>
+      <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{name}</h3>
+      <p className={`text-sm flex-grow mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{description}</p>
 
       <div className="mt-auto pt-4 border-t border-white/10 w-full space-y-3">
         {/* When to Use */}
         <div className="flex items-start gap-2">
           <Icon icon="whenToUse" className="w-5 h-5 text-purple-300 flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-xs font-semibold text-gray-400 tracking-wider">USED FOR</h4>
-            <p className="text-sm text-gray-200">{whenToUse}</p>
+            <h4 className={`text-xs font-semibold tracking-wider ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>USED FOR</h4>
+            <p className={`text-sm ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>{whenToUse}</p>
           </div>
         </div>
 
@@ -58,10 +59,10 @@ const ExampleCard: React.FC<ExampleCardProps> = ({ name, description, icon, onCl
         <div className="flex items-start gap-2">
           <Icon icon="popularSites" className="w-5 h-5 text-purple-300 flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-xs font-semibold text-gray-400 tracking-wider">USED BY</h4>
+            <h4 className={`text-xs font-semibold tracking-wider ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>USED BY</h4>
             <div className="flex flex-wrap gap-1.5 mt-1">
               {popularSites.map(site => (
-                <span key={site} className="bg-white/10 text-gray-300 text-xs font-medium px-2 py-0.5 rounded-full">
+                <span key={site} className={`text-xs font-medium px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-white/10 text-gray-300' : 'bg-gray-200 text-gray-700'}`}>
                   {site}
                 </span>
               ))}
