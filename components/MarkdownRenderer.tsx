@@ -3,9 +3,10 @@ import Icon from './Icon';
 
 interface CodeBlockProps {
   codeContent: string;
+  isDarkMode?: boolean;
 }
 
-const CodeBlock: React.FC<CodeBlockProps> = ({ codeContent }) => {
+const CodeBlock: React.FC<CodeBlockProps> = ({ codeContent, isDarkMode = true }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -21,13 +22,13 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ codeContent }) => {
 
   return (
     <div className="relative group my-4">
-      <pre className="bg-gray-900/70 border border-white/10 p-4 rounded-lg overflow-x-auto pr-16">
-        <code className="font-mono text-sm text-pink-300">{codeContent}</code>
+      <pre className={`border p-4 rounded-lg overflow-x-auto pr-16 ${isDarkMode ? 'bg-gray-900/70 border-white/10' : 'bg-gray-100 border-gray-300'}`}>
+        <code className={`font-mono text-sm ${isDarkMode ? 'text-pink-300' : 'text-pink-600'}`}>{codeContent}</code>
       </pre>
       <button
         onClick={handleCopy}
         aria-label="Copy code to clipboard"
-        className="absolute top-3 right-3 bg-white/10 hover:bg-white/20 text-gray-300 font-sans text-xs font-bold py-1.5 px-3 rounded-md flex items-center gap-1.5 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100"
+        className={`absolute top-3 right-3 font-sans text-xs font-bold py-1.5 px-3 rounded-md flex items-center gap-1.5 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 ${isDarkMode ? 'bg-white/10 hover:bg-white/20 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'}`}
       >
         {copied ? (
           <>
@@ -57,7 +58,7 @@ const parseInlineMarkdown = (text: string): React.ReactNode[] => {
       return <em key={index}>{part.slice(1, -1)}</em>;
     }
     if (part.startsWith('`') && part.endsWith('`')) {
-      return <code key={index} className="bg-gray-900/80 text-pink-300 rounded px-1.5 py-1 font-mono text-xs">{part.slice(1, -1)}</code>;
+      return <code key={index} className="bg-gray-200 text-pink-600 rounded px-1.5 py-1 font-mono text-xs">{part.slice(1, -1)}</code>;
     }
     const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
     if (linkMatch) {
@@ -98,7 +99,7 @@ const MarkdownRenderer: React.FC<{ content: string; isDarkMode?: boolean }> = ({
                 codeBlockContent += lines[i] + '\n';
                 i++;
             }
-            elements.push(<CodeBlock key={`code-${i}`} codeContent={codeBlockContent.trim()} />);
+            elements.push(<CodeBlock key={`code-${i}`} codeContent={codeBlockContent.trim()} isDarkMode={isDarkMode} />);
             i++; continue;
         }
         

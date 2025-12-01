@@ -685,14 +685,14 @@ const App: React.FC = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={handleOpenArchitecture}
-                      className="px-4 py-2 text-sm font-medium bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 rounded-lg transition-colors flex items-center gap-2"
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-2 shadow-lg ${isDarkMode ? 'bg-purple-600 hover:bg-purple-500 text-white hover:shadow-purple-500/50' : 'bg-purple-600 hover:bg-purple-700 text-white hover:shadow-purple-600/50'}`}
                     >
                       <Icon icon="backend" className="w-4 h-4" />
                       Architecture
                     </button>
                     <button 
                       onClick={handleOpenPRD}
-                      className="px-4 py-2 text-sm font-medium bg-teal-600/20 hover:bg-teal-600/30 text-teal-300 border border-teal-500/30 rounded-lg transition-colors flex items-center gap-2"
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-2 shadow-lg ${isDarkMode ? 'bg-teal-600 hover:bg-teal-500 text-white hover:shadow-teal-500/50' : 'bg-teal-600 hover:bg-teal-700 text-white hover:shadow-teal-600/50'}`}
                     >
                       <Icon icon="document" className="w-4 h-4" />
                       PRD
