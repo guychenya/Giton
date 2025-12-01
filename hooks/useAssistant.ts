@@ -183,7 +183,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       setStreamingModelResponse({ role: 'model', text: '' });
 
       // Check if message is asking about GitHub repos/users/topics
-      const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show|all repos|machine learning|react|tensorflow)\b/i;
+      const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show|all repos|about|machine learning|react|tensorflow)\b/i;
       const githubUrlPattern = /github\.com\/([a-zA-Z0-9-]+)(?:\/|$)/i;
       
       if ((githubKeywords.test(message) || githubUrlPattern.test(message)) && !repoContext.includes('Repository:')) {
@@ -214,15 +214,22 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
           if (username) {
             query = `user:${username}`;
           } else {
-            // Clean up query
-            query = query.toLowerCase()
-              .replace(/^(who is|what is|find|search|show me|get|look for|show)\s+/i, '')
-              .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
-              .trim();
-            
-            // Single word might be username
-            if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
-              query = `user:${query}`;
+            // Extract topic/keyword from "about X" or "find X repos"
+            const topicMatch = message.match(/(?:about|find|search)\s+(?:all\s+)?(?:repos?\s+)?(?:about\s+)?([a-zA-Z0-9-]+)/i);
+            if (topicMatch) {
+              query = topicMatch[1];
+            } else {
+              // Clean up query
+              query = query.toLowerCase()
+                .replace(/^(who is|what is|find|search|show me|get|look for|show|all repos about)\s+/i, '')
+                .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
+                .trim();
+              
+              // Single word might be username
+              if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
+                // Don't assume it's a username, search as keyword
+                query = query;
+              }
             }
           }
         }
