@@ -129,20 +129,10 @@ export class GitHubAuthService {
         headers['Authorization'] = `Bearer ${this.accessToken}`;
       }
 
-      // If authenticated user is viewing their own repos, get all repos
-      const currentUser = await this.getCurrentUser();
-      const endpoint = currentUser?.login === username 
-        ? 'https://api.github.com/user/repos?per_page=100&sort=updated'
-        : `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`;
-
-      const response = await fetch(endpoint, { headers });
+      const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`, { headers });
 
       if (response.ok) {
-        const repos = await response.json();
-        return repos.filter((repo: GitHubRepo) => 
-          // Show private repos only if it's the authenticated user's own repos
-          !repo.private || (currentUser?.login === username)
-        );
+        return await response.json();
       }
       return [];
     } catch (error) {
