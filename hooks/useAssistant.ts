@@ -182,12 +182,32 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       let modelResponse = '';
       setStreamingModelResponse({ role: 'model', text: '' });
 
-      const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext), [{ functionDeclarations }]);
+      // Check if message is asking about GitHub repos/users/topics
+      const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show me|machine learning|react|tensorflow)\b/i;
       
-      for await (const chunk of stream) {
-        modelResponse += chunk;
-        setStreamingModelResponse({ role: 'model', text: modelResponse });
+      if (githubKeywords.test(message) && !repoContext.includes('Repository:')) {
+        // Extract search query
+        let query = message.toLowerCase()
+          .replace(/^(who is|what is|find|search|show me|get|look for)\s+/i, '')
+          .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
+          .trim();
+        
+        // Check if it's a username query
+        if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
+          query = `user:${query}`;
+        }
+        
+        const searchResult = await (actions as any).searchGitHub(query);
+        modelResponse = searchResult;
+      } else {
+        const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext));
+        
+        for await (const chunk of stream) {
+          modelResponse += chunk;
+          setStreamingModelResponse({ role: 'model', text: modelResponse });
+        }
       }
+      
       updateMessages(prev => [...prev, { role: 'model', text: modelResponse }]);
 
     } catch (e: any) {
