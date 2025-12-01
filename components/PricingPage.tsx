@@ -125,6 +125,13 @@ const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose })
                 </div>
 
                 <button
+                  onClick={() => {
+                    if (plan.name === 'Free') {
+                      onClose();
+                    } else {
+                      alert(`${plan.name} plan coming soon! Contact support@giton.com for early access.`);
+                    }
+                  }}
                   className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 mb-6 ${
                     plan.popular
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/50'
