@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import { Example } from './types';
 import ExampleCard from './components/ExampleCard';
 import ExampleDetailModal from './components/ExampleDetailModal';
@@ -636,9 +637,16 @@ const App: React.FC = () => {
                   <Icon icon="settings" className="w-5 h-5" />
                 </button>
                 
-                <button className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-medium text-sm">
-                  D
-                </button>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <button className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-medium transition-colors">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton afterSignOutUrl="/" />
+                </SignedIn>
               </div>
             </div>
           </div>
