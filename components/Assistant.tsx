@@ -354,7 +354,7 @@ const Assistant: React.FC<AssistantProps> = ({
               <button
                   onClick={handleSaveChat}
                   title="Save chat to project library"
-                  className="text-gray-400 hover:text-white transition-colors rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-400"
+                  className={`transition-colors rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-900' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'}`}
               >
                   {isChatSaved ? <Icon icon="check" className="w-5 h-5 text-green-400" /> : <Icon icon="save" className="w-5 h-5" />}
               </button>
@@ -362,7 +362,7 @@ const Assistant: React.FC<AssistantProps> = ({
                   <button
                       onClick={() => setMenuOpen(!isMenuOpen)}
                       aria-label="Chat options"
-                      className="text-gray-400 hover:text-white transition-colors rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-400"
+                      className={`transition-colors rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-900' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'}`}
                   >
                       <Icon icon="download" className="w-5 h-5" />
                   </button>
@@ -396,7 +396,7 @@ const Assistant: React.FC<AssistantProps> = ({
               <button
                 onClick={onToggle}
                 aria-label="Close assistant"
-                className="text-gray-400 hover:text-white transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-400"
+                className={`transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-900' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'}`}
               >
                 <Icon icon="chevron-left" className="w-6 h-6" />
               </button>
@@ -546,7 +546,7 @@ const Assistant: React.FC<AssistantProps> = ({
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     aria-label="Attach file"
-                    className="p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                    className={`p-1.5 rounded-full transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`}
                     title="Attach file or image"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -559,7 +559,7 @@ const Assistant: React.FC<AssistantProps> = ({
                     onClick={handleToggleVoice}
                     aria-label={voiceStatus === 'listening' ? 'Stop listening' : 'Start voice input'}
                     disabled={isTextLoading || voiceStatus === 'connecting'}
-                    className={`p-1.5 rounded-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-wait ${voiceStatus === 'listening' ? 'text-red-500 animate-pulse' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                    className={`p-1.5 rounded-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-wait ${voiceStatus === 'listening' ? 'text-red-500 animate-pulse' : isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`}
                   >
                     <Icon icon={voiceStatus === 'listening' ? 'stop' : 'microphone'} className="w-5 h-5" />
                   </button>
@@ -569,7 +569,7 @@ const Assistant: React.FC<AssistantProps> = ({
                       type="button"
                       onClick={() => setShowLiveTranscript(!showLiveTranscript)}
                       aria-label={showLiveTranscript ? "Hide transcript" : "Show transcript"}
-                      className="p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                      className={`p-1.5 rounded-full transition-all ${isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'}`}
                     >
                       <Icon icon={showLiveTranscript ? 'eye-slash' : 'eye'} className="w-5 h-5" />
                     </button>
