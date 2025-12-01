@@ -24,6 +24,10 @@ import { initializeLLMService, getLLMService } from './services/llmService';
 import { db, SavedReport } from './utils/db'; 
 
 const App: React.FC = () => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('giton-theme');
+    return saved !== 'light';
+  });
   const [examples, setExamples] = useState<Example[]>([]);
   const [selectedExample, setSelectedExample] = useState<Example | null>(null);
   const [selectedExampleContent, setSelectedExampleContent] = useState<string>('');
@@ -541,8 +545,16 @@ const App: React.FC = () => {
     }, 100);
   };
 
+  const toggleTheme = () => {
+    setIsDarkMode(prev => {
+      const newMode = !prev;
+      localStorage.setItem('giton-theme', newMode ? 'dark' : 'light');
+      return newMode;
+    });
+  };
+
   return (
-    <div className="relative h-screen w-full flex overflow-hidden bg-gray-900 text-white font-sans">
+    <div className={`relative h-screen w-full flex overflow-hidden font-sans ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob"></div>
       <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
       <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob animation-delay-4000"></div>
@@ -585,8 +597,16 @@ const App: React.FC = () => {
               
               <div className="flex items-center gap-4">
                 <button 
+                  onClick={toggleTheme}
+                  className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
+                  title="Toggle theme"
+                >
+                  {isDarkMode ? '☀️' : '🌙'}
+                </button>
+                
+                <button 
                   onClick={() => setIsSavedProjectsModalOpen(true)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
                   title="Projects"
                 >
                   <Icon icon="folder-open" className="w-5 h-5" />
@@ -594,7 +614,7 @@ const App: React.FC = () => {
                 
                 <button
                   onClick={() => setIsSettingsModalOpen(true)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
                   title="Settings"
                 >
                   <Icon icon="settings" className="w-5 h-5" />
