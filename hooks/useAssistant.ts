@@ -107,8 +107,8 @@ const functionDeclarations: FunctionDeclaration[] = [
     },
     {
         name: 'searchGitHub',
-        parameters: { type: Type.OBJECT, properties: { query: { type: Type.STRING, description: 'Search query for GitHub repositories, users, or topics.' } }, required: ['query'] },
-        description: 'Searches GitHub for repositories, users, or topics. Returns formatted results with repo names, descriptions, and stars.',
+        parameters: { type: Type.OBJECT, properties: { query: { type: Type.STRING, description: 'Search query. For users, use format: user:username (e.g., user:guychenya)' } }, required: ['query'] },
+        description: 'Searches GitHub for repositories, users, or topics. For user repos, use "user:username" format.',
     }
 ];
 
@@ -184,20 +184,40 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
 
       // Check if message is asking about GitHub repos/users/topics
       const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show|all repos|machine learning|react|tensorflow)\b/i;
-      const userPattern = /\b(repos?\s+(?:of|from|by)\s+|all\s+repos?\s+(?:of|from|by)?\s+|user\s+)([a-zA-Z0-9-]+)/i;
       
       if (githubKeywords.test(message) && !repoContext.includes('Repository:')) {
-        let query = message.toLowerCase()
-          .replace(/^(who is|what is|find|search|show me|get|look for|show)\s+/i, '')
-          .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
-          .trim();
+        let query = message;
         
-        // Check for username patterns
-        const userMatch = message.match(userPattern);
-        if (userMatch) {
-          query = `user:${userMatch[2]}`;
-        } else if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40 && !query.includes(' ')) {
-          query = `user:${query}`;
+        // Extract username from various patterns
+        const userPatterns = [
+          /(?:user|username)\s+([a-zA-Z0-9-]+)/i,
+          /(?:repos?|repositories)\s+(?:of|from|by|for)\s+(?:user\s+)?([a-zA-Z0-9-]+)/i,
+          /(?:show|find|get)\s+(?:me\s+)?(?:all\s+)?(?:repos?|repositories)\s+(?:of|from|by|for)\s+([a-zA-Z0-9-]+)/i,
+          /([a-zA-Z0-9-]+)'s\s+repositories/i,
+        ];
+        
+        let username = null;
+        for (const pattern of userPatterns) {
+          const match = query.match(pattern);
+          if (match) {
+            username = match[1];
+            break;
+          }
+        }
+        
+        if (username) {
+          query = `user:${username}`;
+        } else {
+          // Clean up query
+          query = query.toLowerCase()
+            .replace(/^(who is|what is|find|search|show me|get|look for|show)\s+/i, '')
+            .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
+            .trim();
+          
+          // Single word might be username
+          if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
+            query = `user:${query}`;
+          }
         }
         
         const searchResult = await (actions as any).searchGitHub(query);

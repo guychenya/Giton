@@ -5,6 +5,7 @@ interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (settings: AppSettings) => void;
+  isDarkMode?: boolean;
 }
 
 export interface AppSettings {
@@ -35,7 +36,7 @@ const defaultSettings: AppSettings = {
   autoSave: true,
 };
 
-const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }) => {
+const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, isDarkMode = true }) => {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [activeTab, setActiveTab] = useState<'api' | 'preferences' | 'billing'>('api');
   const [showApiKeys, setShowApiKeys] = useState(false);
@@ -67,20 +68,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-white/10 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <div className={`border rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden ${isDarkMode ? 'bg-gray-900 border-white/10' : 'bg-white border-gray-300'}`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <h2 className="text-2xl font-bold text-white">Settings</h2>
+        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
+          <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Settings</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className={`transition-colors ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
           >
             <Icon icon="close" className="w-6 h-6" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-white/10">
+        <div className={`flex border-b ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
           {[
             { id: 'api', label: 'API Keys', icon: 'key' },
             { id: 'preferences', label: 'Preferences', icon: 'settings' },
@@ -92,7 +93,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave }
               className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors ${
                 activeTab === tab.id
                   ? 'text-purple-400 border-b-2 border-purple-400'
-                  : 'text-gray-400 hover:text-white'
+                  : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <Icon icon={tab.icon} className="w-4 h-4" />
