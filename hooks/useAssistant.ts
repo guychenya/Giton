@@ -182,7 +182,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       let modelResponse = '';
       setStreamingModelResponse({ role: 'model', text: '' });
 
-      const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext));
+      const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext), [{ functionDeclarations }]);
       
       for await (const chunk of stream) {
         modelResponse += chunk;
@@ -471,7 +471,8 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
           
           const stream = geminiService.chat(
             [...messages, { role: 'user', text: transcript }], 
-            `You are a voice assistant for GitOn. Keep responses concise and conversational. ${repoContext}`
+            `You are a voice assistant for GitOn. Keep responses concise and conversational. ${repoContext}`,
+            [{ functionDeclarations }]
           );
           
           for await (const chunk of stream) {

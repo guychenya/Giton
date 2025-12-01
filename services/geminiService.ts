@@ -215,22 +215,20 @@ class GeminiService {
     return text;
   }
 
-  async *chat(messages: Message[], systemInstruction: string): AsyncGenerator<string, void, unknown> {
+  async *chat(messages: Message[], systemInstruction: string, tools?: any): AsyncGenerator<string, void, unknown> {
       if (!this.googleAi) {
           yield 'AI not initialized. Please check your API key in Settings.';
           return;
       }
       
       try {
-          // Use the simpler approach with just the latest message
           const lastMessage = messages[messages.length - 1];
           const prompt = `${systemInstruction}\n\nUser: ${lastMessage.text}\nAssistant:`;
           
-          const response = await this.callGoogleAPI('gemini-2.5-flash', prompt);
+          const response = await this.callGoogleAPI('gemini-2.5-flash', prompt, tools ? { tools } : undefined);
           
           const text = response.text || 'No response generated';
           
-          // Simulate streaming by yielding chunks
           const words = text.split(' ');
           for (let i = 0; i < words.length; i += 3) {
               yield words.slice(i, i + 3).join(' ') + ' ';
