@@ -147,6 +147,13 @@ const Icon: React.FC<IconProps> = ({ icon, className }) => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9v2m0 0v2m0-2h2m-2 0h-2m-8-2v2m0 0v2m0-2h2m-2 0H6m-2.5 8h19c.704 0 1.25-.972.9-1.63L18.735 9.176C18.271 8.324 17.382 7.75 16.376 7.75H8.624c-1.006 0-1.895.574-2.36 1.426L3.6 18.37C3.25 19.028 3.796 20 4.5 20z" />
             </svg>
         );
+    case 'tag':
+        return (
+            <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+            </svg>
+        );
 
     // --- Voice Assistant Icons ---
     case 'microphone':

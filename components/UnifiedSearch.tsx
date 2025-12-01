@@ -3,7 +3,7 @@ import Icon from './Icon';
 import { githubAuthService } from '../services/githubAuthService';
 
 interface SearchResult {
-  type: 'user' | 'repo' | 'url';
+  type: 'user' | 'repo' | 'url' | 'topic';
   id: string;
   title: string;
   subtitle: string;
@@ -19,7 +19,7 @@ interface UnifiedSearchProps {
 
 const UnifiedSearch: React.FC<UnifiedSearchProps> = ({ 
   onSelectRepo, 
-  placeholder = "Search repos, users, or paste GitHub URL...",
+  placeholder = "Search users, repos, topics, or paste URL...",
   autoFocus = false
 }) => {
   const [query, setQuery] = useState('');
@@ -100,7 +100,7 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
 
       // Search users
       const users = await githubAuthService.searchUsers(searchQuery);
-      users.slice(0, 5).forEach(user => {
+      users.slice(0, 3).forEach(user => {
         searchResults.push({
           type: 'user',
           id: user.login,
@@ -111,11 +111,11 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
         });
       });
 
-      // Search repositories
-      const repoResponse = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(searchQuery)}&per_page=10`);
+      // Search repositories by name/description
+      const repoResponse = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(searchQuery)}&sort=stars&per_page=15`);
       if (repoResponse.ok) {
         const repoData = await repoResponse.json();
-        repoData.items?.slice(0, 10).forEach((repo: any) => {
+        repoData.items?.slice(0, 15).forEach((repo: any) => {
           searchResults.push({
             type: 'repo',
             id: repo.full_name,
@@ -125,6 +125,27 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
             data: repo
           });
         });
+      }
+
+      // Search by topic if query looks like a topic (single word or hyphenated)
+      if (/^[a-z0-9-]+$/i.test(searchQuery)) {
+        const topicResponse = await fetch(`https://api.github.com/search/repositories?q=topic:${encodeURIComponent(searchQuery)}&sort=stars&per_page=10`);
+        if (topicResponse.ok) {
+          const topicData = await topicResponse.json();
+          topicData.items?.slice(0, 10).forEach((repo: any) => {
+            // Avoid duplicates
+            if (!searchResults.find(r => r.id === repo.full_name)) {
+              searchResults.push({
+                type: 'topic',
+                id: repo.full_name,
+                title: repo.name,
+                subtitle: `Topic: ${searchQuery} • ${repo.description?.substring(0, 50) || 'No description'}`,
+                avatar: repo.owner.avatar_url,
+                data: repo
+              });
+            }
+          });
+        }
       }
 
       setResults(searchResults);
@@ -150,7 +171,7 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
   };
 
   const handleResultClick = async (result: SearchResult) => {
-    if (result.type === 'url' || result.type === 'repo') {
+    if (result.type === 'url' || result.type === 'repo' || result.type === 'topic') {
       const repoPath = result.type === 'url' 
         ? result.id 
         : result.data.full_name;
@@ -184,6 +205,7 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
     switch (type) {
       case 'user': return 'user';
       case 'repo': return 'folder';
+      case 'topic': return 'tag';
       case 'url': return 'external-link';
       default: return 'search';
     }
@@ -305,7 +327,12 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
                       <div className="font-semibold text-white truncate mb-1">{result.title}</div>
                       <div className="text-sm text-gray-400 truncate">{result.subtitle}</div>
                     </div>
-                    <div className="px-2 py-1 bg-purple-600/20 text-purple-300 text-xs font-medium rounded capitalize">{result.type}</div>
+                    <div className={`px-2 py-1 text-xs font-medium rounded capitalize ${
+                      result.type === 'user' ? 'bg-blue-600/20 text-blue-300' :
+                      result.type === 'topic' ? 'bg-green-600/20 text-green-300' :
+                      result.type === 'url' ? 'bg-orange-600/20 text-orange-300' :
+                      'bg-purple-600/20 text-purple-300'
+                    }`}>{result.type}</div>
                   </button>
                 ))}
               </div>
