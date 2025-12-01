@@ -48,6 +48,7 @@ const Assistant: React.FC<AssistantProps> = ({
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
 
   const [selection, setSelection] = useState<{ text: string; x: number; y: number } | null>(null);
   const [copiedMessageIndex, setCopiedMessageIndex] = useState<number | null>(null);
@@ -257,7 +258,7 @@ const Assistant: React.FC<AssistantProps> = ({
     if (userInput.trim() || uploadedImage) {
       let message = userInput;
       if (uploadedImage) {
-        message = `[Image uploaded]\n${userInput || 'Please analyze this image and extract any repository information or text you can find.'}`;
+        message = `[IMAGE:${uploadedImage}]\n${userInput || 'Please analyze this image and extract any repository information or text you can find.'}`;
       }
       sendTextMessage(message);
       setUserInput('');
@@ -395,14 +396,29 @@ const Assistant: React.FC<AssistantProps> = ({
           </header>
 
           <main ref={mainContentRef} onMouseUp={handleSelectionChange} className="custom-scrollbar flex-1 p-4 overflow-y-auto space-y-4 relative">
-            {messages.map((message, index) => (
+            {messages.map((message, index) => {
+              const imageMatch = message.text.match(/\[IMAGE:(.+?)\]/);
+              const imageUrl = imageMatch ? imageMatch[1] : null;
+              const textWithoutImage = imageUrl ? message.text.replace(/\[IMAGE:.+?\]\n?/, '') : message.text;
+              
+              return (
               <div key={index} className={`flex items-start gap-3 group relative ${message.role === 'user' ? 'justify-end' : ''}`}>
                 {message.role === 'model' && <div className="w-8 h-8 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center"><Icon icon="bot" className="w-5 h-5 text-purple-300"/></div>}
                 
                 <div className={`max-w-full text-base ${message.role === 'user' ? 'bg-purple-600 rounded-2xl rounded-br-none px-5 py-3' : 'bg-transparent'}`}>
+                  {imageUrl && (
+                    <div className="mb-2">
+                      <img 
+                        src={imageUrl} 
+                        alt="Uploaded" 
+                        className="max-w-xs rounded-lg cursor-pointer hover:opacity-90 transition-opacity border border-white/20"
+                        onClick={() => setEnlargedImage(imageUrl)}
+                      />
+                    </div>
+                  )}
                   { message.role === 'user' 
-                      ? <div className="text-white"><MarkdownRenderer content={message.text} /></div>
-                      : <div className="text-gray-200"><MarkdownRenderer content={message.text} /></div>
+                      ? <div className="text-white"><MarkdownRenderer content={textWithoutImage} /></div>
+                      : <div className="text-gray-200"><MarkdownRenderer content={textWithoutImage} /></div>
                   }
                 </div>
                 
@@ -417,7 +433,7 @@ const Assistant: React.FC<AssistantProps> = ({
 
                  {message.role === 'user' && <div className="w-8 h-8 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center"><Icon icon="user" className="w-5 h-5 text-blue-300"/></div>}
               </div>
-            ))}
+            )})}
             {streamingModelResponse && (
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center"><Icon icon="bot" className="w-5 h-5 text-purple-300"/></div>
@@ -582,6 +598,27 @@ const Assistant: React.FC<AssistantProps> = ({
         >
            <Icon icon="chevron-right" className="w-6 h-6"/>
          </button>
+       )}
+       
+       {/* Image Enlargement Modal */}
+       {enlargedImage && (
+         <div 
+           className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+           onClick={() => setEnlargedImage(null)}
+         >
+           <button
+             onClick={() => setEnlargedImage(null)}
+             className="absolute top-4 right-4 text-white hover:text-gray-300 p-2 bg-black/50 rounded-full"
+           >
+             <Icon icon="close" className="w-6 h-6" />
+           </button>
+           <img 
+             src={enlargedImage} 
+             alt="Enlarged view" 
+             className="max-w-full max-h-full object-contain rounded-lg"
+             onClick={(e) => e.stopPropagation()}
+           />
+         </div>
        )}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
