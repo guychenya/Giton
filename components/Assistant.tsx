@@ -303,7 +303,7 @@ const Assistant: React.FC<AssistantProps> = ({
     
     const file = e.dataTransfer.files[0];
     if (file) {
-      handleImageUpload(file);
+      handleFileUpload(file);
     }
   };
 
