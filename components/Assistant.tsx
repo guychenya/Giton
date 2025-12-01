@@ -20,6 +20,7 @@ interface AssistantProps {
   stopVoiceInteraction: () => void;
   clearChat: () => void;
   onSaveChat: (messages: Message[]) => void;
+  isDarkMode?: boolean;
 }
 
 const Assistant: React.FC<AssistantProps> = ({
@@ -38,6 +39,7 @@ const Assistant: React.FC<AssistantProps> = ({
   stopVoiceInteraction,
   clearChat,
   onSaveChat,
+  isDarkMode = true,
 }) => {
   const [showLiveTranscript, setShowLiveTranscript] = useState(true);
   const mainContentRef = useRef<HTMLElement>(null);
@@ -325,21 +327,21 @@ const Assistant: React.FC<AssistantProps> = ({
   return (
     <>
       <aside
-        className={`relative z-20 flex flex-col h-full bg-gray-900/40 backdrop-blur-2xl border-r border-white/10 transition-all duration-300 ease-in-out`}
+        className={`relative z-20 flex flex-col h-full backdrop-blur-2xl border-r transition-all duration-300 ease-in-out ${isDarkMode ? 'bg-gray-900/40 border-white/10' : 'bg-white border-gray-300'}`}
         style={{ width: isOpen ? `${width}px` : '0px' }}
         aria-hidden={!isOpen}
       >
         <div className={`flex-1 flex flex-col min-h-0 overflow-hidden transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-          <header className="flex items-center justify-between p-4 border-b border-white/10 flex-shrink-0">
+          <header className={`flex items-center justify-between p-4 border-b flex-shrink-0 ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
             <div className="flex items-center gap-3 flex-1">
               <Icon icon="audio_spark" className="w-6 h-6 text-purple-400" />
-              <h2 id="assistant-title" className="text-lg font-bold text-white">
+              <h2 id="assistant-title" className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 Assistant
               </h2>
               
               {/* Model Selector */}
               <select
-                className="ml-auto mr-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 hover:bg-white/10 transition-colors"
+                className={`ml-auto mr-2 border rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${isDarkMode ? 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10' : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'}`}
                 title="Select AI Model"
               >
                 <option value="gemini">Gemini 2.5</option>
@@ -423,8 +425,8 @@ const Assistant: React.FC<AssistantProps> = ({
                     </div>
                   )}
                   { message.role === 'user' 
-                      ? <div className="text-white"><MarkdownRenderer content={textWithoutImage} /></div>
-                      : <div className="text-gray-200"><MarkdownRenderer content={textWithoutImage} /></div>
+                      ? <div className="text-white"><MarkdownRenderer content={textWithoutImage} isDarkMode={isDarkMode} /></div>
+                      : <div className={isDarkMode ? 'text-gray-200' : 'text-gray-700'}><MarkdownRenderer content={textWithoutImage} isDarkMode={isDarkMode} /></div>
                   }
                 </div>
                 
@@ -443,8 +445,8 @@ const Assistant: React.FC<AssistantProps> = ({
             {streamingModelResponse && (
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center"><Icon icon="bot" className="w-5 h-5 text-purple-300"/></div>
-                <div className="max-w-full text-base bg-transparent text-gray-200">
-                  <MarkdownRenderer content={streamingModelResponse.text} />
+                <div className={`max-w-full text-base bg-transparent ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                  <MarkdownRenderer content={streamingModelResponse.text} isDarkMode={isDarkMode} />
                 </div>
               </div>
             )}
@@ -480,7 +482,7 @@ const Assistant: React.FC<AssistantProps> = ({
           </main>
           
           <footer 
-            className="p-4 border-t border-white/10 flex-shrink-0"
+            className={`p-4 border-t flex-shrink-0 ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -511,7 +513,7 @@ const Assistant: React.FC<AssistantProps> = ({
                   aria-label="Chat message input"
                   rows={1}
                   disabled={voiceStatus !== 'idle'}
-                  className="custom-scrollbar w-full bg-transparent py-3 px-4 pr-32 text-white placeholder-gray-400 focus:outline-none resize-none max-h-32 disabled:bg-gray-800/50"
+                  className={`custom-scrollbar w-full bg-transparent py-3 px-4 pr-32 focus:outline-none resize-none max-h-32 ${isDarkMode ? 'text-white placeholder-gray-400 disabled:bg-gray-800/50' : 'text-gray-900 placeholder-gray-500 disabled:bg-gray-100'}`}
                 />
                 
                 {voiceStatus === 'listening' && showLiveTranscript && (

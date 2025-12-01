@@ -575,6 +575,7 @@ const App: React.FC = () => {
         stopVoiceInteraction={stopVoiceInteraction}
         clearChat={clearChat}
         onSaveChat={handleSaveChatToProject}
+        isDarkMode={isDarkMode}
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
