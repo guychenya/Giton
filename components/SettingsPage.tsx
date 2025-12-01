@@ -98,16 +98,18 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
     { id: 'billing', label: 'Billing', icon: 'credit-card' },
   ];
 
+  const isDarkMode = settings.theme === 'dark';
+
   return (
-    <div className="fixed inset-0 bg-gray-900 z-50 overflow-hidden">
+    <div className={`fixed inset-0 z-50 overflow-hidden ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* GitHub-style Header */}
-      <header className="border-b border-white/10 bg-gray-900">
+      <header className={`border-b ${isDarkMode ? 'border-white/10 bg-gray-900' : 'border-gray-200 bg-white'}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button onClick={onClose} className="text-gray-400 hover:text-white">
               <Icon icon="arrow-left" className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-semibold text-white">Settings</h1>
+            <h1 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Settings</h1>
           </div>
           <button
             onClick={handleSave}
@@ -124,7 +126,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
 
       <div className="flex h-[calc(100vh-73px)]">
         {/* Sidebar Navigation */}
-        <nav className="w-64 border-r border-white/10 bg-gray-900/50 p-4">
+        <nav className={`w-64 border-r p-4 ${isDarkMode ? 'border-white/10 bg-gray-900/50' : 'border-gray-200 bg-white'}`}>
           <div className="space-y-1">
             {sections.map((section) => (
               <button
@@ -132,8 +134,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave }) => {
                 onClick={() => setActiveSection(section.id)}
                 className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg text-left transition-colors ${
                   activeSection === section.id
-                    ? 'bg-purple-600/20 text-purple-300 font-medium'
-                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                    ? 'bg-purple-600/20 text-purple-600 font-medium'
+                    : isDarkMode ? 'text-gray-400 hover:bg-white/5 hover:text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
                 <Icon icon={section.icon} className="w-4 h-4" />

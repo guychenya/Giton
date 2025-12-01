@@ -579,15 +579,15 @@ const App: React.FC = () => {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Clean Navbar */}
-        <nav className="relative z-20 border-b border-white/10 bg-gray-900/80 backdrop-blur-xl">
+        <nav className={`relative z-20 border-b backdrop-blur-xl ${isDarkMode ? 'border-white/10 bg-gray-900/80' : 'border-gray-200 bg-white/80'}`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center gap-6">
                 <Logo onClick={handleGoHome} />
                 {repoData && (
                   <div className="hidden md:flex items-center gap-3 text-sm">
-                    <span className="text-gray-400">Analyzing:</span>
-                    <span className="font-semibold text-white">{repoData.owner}/{repoData.repo}</span>
+                    <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Analyzing:</span>
+                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repoData.owner}/{repoData.repo}</span>
                     <span className="flex items-center gap-1 text-yellow-400">
                       <Icon icon="star" className="w-3 h-3" /> {formatStars(repoData.stars)}
                     </span>
@@ -601,7 +601,13 @@ const App: React.FC = () => {
                   className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
                   title="Toggle theme"
                 >
-                  {isDarkMode ? '☀️' : '🌙'}
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    {isDarkMode ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    )}
+                  </svg>
                 </button>
                 
                 <button 
@@ -632,10 +638,10 @@ const App: React.FC = () => {
           {/* Hero Section */}
           {!repoData && examples.length === 0 && (
             <div className="w-full max-w-4xl mx-auto px-4 pt-20 pb-12 text-center">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-blue-400 mb-6">
+              <h1 className={`text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r ${isDarkMode ? 'from-purple-400 via-pink-500 to-blue-400' : 'from-purple-600 via-pink-600 to-blue-600'} mb-6`}>
                 GitOn
               </h1>
-              <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+              <p className={`text-xl mb-12 max-w-2xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 AI-powered GitHub repository analysis. Get instant documentation, examples, and insights.
               </p>
               
@@ -650,12 +656,12 @@ const App: React.FC = () => {
 
           {/* Active Repo Header */}
           {repoData && examples.length > 0 && (
-            <div className="w-full border-b border-white/10 bg-gray-800/30 backdrop-blur-sm">
+            <div className={`w-full border-b backdrop-blur-sm ${isDarkMode ? 'border-white/10 bg-gray-800/30' : 'border-gray-200 bg-white/50'}`}>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-1">{repoData.owner}/{repoData.repo}</h2>
-                    <p className="text-gray-400 text-sm">{repoData.description}</p>
+                    <h2 className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repoData.owner}/{repoData.repo}</h2>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{repoData.description}</p>
                   </div>
                   <div className="flex gap-2">
                     <button 
@@ -688,7 +694,7 @@ const App: React.FC = () => {
           
           {/* Category Filters */}
           {examples.length > 0 && categories.length > 1 && (
-            <div className="w-full border-b border-white/10 bg-gray-900/50">
+            <div className={`w-full border-b ${isDarkMode ? 'border-white/10 bg-gray-900/50' : 'border-gray-200 bg-white/50'}`}>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                 <div className="flex flex-wrap gap-2">
                   {categories.map(category => (
@@ -698,7 +704,7 @@ const App: React.FC = () => {
                       className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-2
                         ${activeCategory === category.name
                           ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30'
-                          : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10'
+                          : isDarkMode ? 'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10' : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300'
                         }`}
                     >
                       {category.name}
@@ -813,7 +819,7 @@ const App: React.FC = () => {
               </div>
             ) : !repoData ? (
               <div className="text-center py-12">
-                <h3 className="text-xl font-semibold text-gray-300 mb-8">Popular Repositories</h3>
+                <h3 className={`text-xl font-semibold mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Popular Repositories</h3>
                 {areSuggestionsLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
                     {[1, 2, 3].map(i => (
@@ -824,18 +830,18 @@ const App: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {suggestions.map((group) => (
                       <div key={group.category} className="flex flex-col gap-3">
-                        <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">{group.category}</h4>
+                        <h4 className={`text-sm font-semibold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>{group.category}</h4>
                         {group.items.map(repo => (
                           <button 
                             key={repo.repo}
                             onClick={() => loadRepo(`${repo.owner}/${repo.repo}`)}
-                            className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 rounded-lg transition-all text-left group"
+                            className={`flex items-center justify-between p-4 border rounded-lg transition-all text-left group ${isDarkMode ? 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-purple-500/50' : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-purple-500/50'}`}
                           >
                             <div className="flex flex-col overflow-hidden mr-2">
-                              <span className="text-sm font-medium text-gray-200 group-hover:text-purple-300 transition-colors truncate">
-                                {repo.owner}/<span className="text-white font-bold">{repo.repo}</span>
+                              <span className={`text-sm font-medium group-hover:text-purple-600 transition-colors truncate ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                                {repo.owner}/<span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repo.repo}</span>
                               </span>
-                              <span className="text-xs text-gray-500 truncate">{repo.description?.substring(0, 50)}...</span>
+                              <span className={`text-xs truncate ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>{repo.description?.substring(0, 50)}...</span>
                             </div>
                             <span className="text-xs text-yellow-400 flex-shrink-0 flex items-center gap-1">
                               <Icon icon="star" className="w-3 h-3" /> {formatStars(repo.stars)}
@@ -850,8 +856,8 @@ const App: React.FC = () => {
             ) : null}
           </div>
 
-          <footer className="mt-auto pt-8 text-center text-gray-500 text-sm max-w-4xl mx-auto space-y-2 pb-4">
-            <p className="text-xs mt-4 text-gray-400">
+          <footer className={`mt-auto pt-8 text-center text-sm max-w-4xl mx-auto space-y-2 pb-4 ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>
+            <p className={`text-xs mt-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                Made with ❤️ by <a href="https://www.linkedin.com/in/guychenya/" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors">Guy Chenya</a> for Training purposes.
             </p>
           </footer>
