@@ -184,39 +184,46 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
 
       // Check if message is asking about GitHub repos/users/topics
       const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show|all repos|machine learning|react|tensorflow)\b/i;
+      const githubUrlPattern = /github\.com\/([a-zA-Z0-9-]+)(?:\/|$)/i;
       
-      if (githubKeywords.test(message) && !repoContext.includes('Repository:')) {
+      if ((githubKeywords.test(message) || githubUrlPattern.test(message)) && !repoContext.includes('Repository:')) {
         let query = message;
         
-        // Extract username from various patterns
-        const userPatterns = [
-          /(?:user|username)\s+([a-zA-Z0-9-]+)/i,
-          /(?:repos?|repositories)\s+(?:of|from|by|for)\s+(?:user\s+)?([a-zA-Z0-9-]+)/i,
-          /(?:show|find|get)\s+(?:me\s+)?(?:all\s+)?(?:repos?|repositories)\s+(?:of|from|by|for)\s+([a-zA-Z0-9-]+)/i,
-          /([a-zA-Z0-9-]+)'s\s+repositories/i,
-        ];
-        
-        let username = null;
-        for (const pattern of userPatterns) {
-          const match = query.match(pattern);
-          if (match) {
-            username = match[1];
-            break;
-          }
-        }
-        
-        if (username) {
-          query = `user:${username}`;
+        // Check for GitHub URL first
+        const urlMatch = message.match(githubUrlPattern);
+        if (urlMatch) {
+          query = `user:${urlMatch[1]}`;
         } else {
-          // Clean up query
-          query = query.toLowerCase()
-            .replace(/^(who is|what is|find|search|show me|get|look for|show)\s+/i, '')
-            .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
-            .trim();
+          // Extract username from various patterns
+          const userPatterns = [
+            /(?:user|username)\s+([a-zA-Z0-9-]+)/i,
+            /(?:repos?|repositories)\s+(?:of|from|by|for)\s+(?:user\s+)?([a-zA-Z0-9-]+)/i,
+            /(?:show|find|get)\s+(?:me\s+)?(?:all\s+)?(?:repos?|repositories)\s+(?:of|from|by|for)\s+([a-zA-Z0-9-]+)/i,
+            /([a-zA-Z0-9-]+)'s\s+repositories/i,
+          ];
           
-          // Single word might be username
-          if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
-            query = `user:${query}`;
+          let username = null;
+          for (const pattern of userPatterns) {
+            const match = query.match(pattern);
+            if (match) {
+              username = match[1];
+              break;
+            }
+          }
+          
+          if (username) {
+            query = `user:${username}`;
+          } else {
+            // Clean up query
+            query = query.toLowerCase()
+              .replace(/^(who is|what is|find|search|show me|get|look for|show)\s+/i, '')
+              .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
+              .trim();
+            
+            // Single word might be username
+            if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
+              query = `user:${query}`;
+            }
           }
         }
         
