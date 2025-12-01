@@ -3,6 +3,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Example } from './types';
 import ExampleCard from './components/ExampleCard';
 import ExampleDetailModal from './components/ExampleDetailModal';
+import PricingPage from './components/PricingPage';
 import ArchitectureModal from './components/ArchitectureModal';
 import PRDModal from './components/PRDModal';
 import UnifiedSearch from './components/UnifiedSearch';
@@ -55,6 +56,7 @@ const App: React.FC = () => {
   const [isPRDModalOpen, setIsPRDModalOpen] = useState(false);
   const [isReportViewerModalOpen, setIsReportViewerModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
   
   // Settings State
   const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
@@ -611,6 +613,13 @@ const App: React.FC = () => {
                   </svg>
                 </button>
                 
+                <button
+                  onClick={() => setIsPricingModalOpen(true)}
+                  className={`text-sm font-medium px-4 py-2 rounded-lg transition-colors ${isDarkMode ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}
+                >
+                  Pricing
+                </button>
+                
                 <button 
                   onClick={() => setIsSavedProjectsModalOpen(true)}
                   className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}
@@ -925,6 +934,13 @@ const App: React.FC = () => {
         onSave={(title, content, type) => handleSaveToProject(title, content, type as 'guide' | 'chat')}
       />
       
+      {isPricingModalOpen && (
+        <PricingPage
+          isDarkMode={isDarkMode}
+          onClose={() => setIsPricingModalOpen(false)}
+        />
+      )}
+
       {isSettingsModalOpen && (
         <SettingsPage
           onClose={() => setIsSettingsModalOpen(false)}
