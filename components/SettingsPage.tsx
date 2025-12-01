@@ -107,7 +107,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
       <header className={`border-b ${isDarkMode ? 'border-white/10 bg-gray-900' : 'border-gray-200 bg-white'}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button onClick={onClose} className="text-gray-400 hover:text-white">
+            <button onClick={onClose} className={isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}>
               <Icon icon="arrow-left" className="w-5 h-5" />
             </button>
             <h1 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Settings</h1>
@@ -152,8 +152,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
             {activeSection === 'api-keys' && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">API Keys</h2>
-                  <p className="text-gray-400">Manage your API keys for AI services</p>
+                  <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? "text-white" : "text-gray-900"}`}>API Keys</h2>
+                  <p className={isDarkMode ? "text-gray-400" : "text-gray-600"}>Manage your API keys for AI services</p>
                 </div>
 
                 {/* API Keys Table */}
@@ -161,10 +161,10 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                   <table className="w-full">
                     <thead className="bg-white/5 border-b border-white/10">
                       <tr>
-                        <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Service</th>
-                        <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">API Key</th>
-                        <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                        <th className="text-right px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+                        <th className={`text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Service</th>
+                        <th className={`text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>API Key</th>
+                        <th className={`text-left px-6 py-3 text-xs font-semibold uppercase tracking-wider ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Status</th>
+                        <th className={`text-right px-6 py-3 text-xs font-semibold uppercase tracking-wider ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/10">
@@ -176,8 +176,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                               <span className="text-purple-400 font-bold text-sm">G</span>
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-white">Google Gemini</div>
-                              <div className="text-xs text-gray-400">Recommended</div>
+                              <div className={`text-sm font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>Google Gemini</div>
+                              <div className={`text-xs ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Recommended</div>
                             </div>
                           </div>
                         </td>
@@ -188,11 +188,11 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                               value={settings.geminiApiKey}
                               onChange={(e) => updateSetting('geminiApiKey', e.target.value)}
                               placeholder="sk-..." 
-                              className="flex-1 bg-black/30 border border-white/20 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className={`flex-1 border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${isDarkMode ? "bg-black/30 border-white/20 text-white placeholder-gray-500" : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400"}`}
                             />
                             <button
                               onClick={() => toggleShowKey('geminiApiKey')}
-                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                              className={`p-2 transition-colors ${isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}
                               title={showApiKeys['geminiApiKey'] ? 'Hide' : 'Show'}
                             >
                               <Icon icon={showApiKeys['geminiApiKey'] ? 'eye-off' : 'eye'} className="w-4 h-4" />
@@ -228,7 +228,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                             <a
                               href="https://aistudio.google.com/app/apikey"
                               target="_blank"
-                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                              className={`p-2 transition-colors ${isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}
                               title="Get API Key"
                             >
                               <Icon icon="external-link" className="w-4 h-4" />
@@ -245,8 +245,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                               <span className="text-blue-400 font-bold text-sm">OR</span>
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-white">OpenRouter</div>
-                              <div className="text-xs text-gray-400">Multiple models</div>
+                              <div className={`text-sm font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>OpenRouter</div>
+                              <div className={`text-xs ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Multiple models</div>
                             </div>
                           </div>
                         </td>
@@ -257,11 +257,11 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                               value={settings.openRouterApiKey}
                               onChange={(e) => updateSetting('openRouterApiKey', e.target.value)}
                               placeholder="sk-or-..."
-                              className="flex-1 bg-black/30 border border-white/20 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className={`flex-1 border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${isDarkMode ? "bg-black/30 border-white/20 text-white placeholder-gray-500" : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400"}`}
                             />
                             <button
                               onClick={() => toggleShowKey('openRouterApiKey')}
-                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                              className={`p-2 transition-colors ${isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}
                             >
                               <Icon icon={showApiKeys['openRouterApiKey'] ? 'eye-off' : 'eye'} className="w-4 h-4" />
                             </button>
@@ -295,7 +295,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                             <a
                               href="https://openrouter.ai/keys"
                               target="_blank"
-                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                              className={`p-2 transition-colors ${isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}
                             >
                               <Icon icon="external-link" className="w-4 h-4" />
                             </a>
@@ -311,8 +311,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                               <span className="text-green-400 font-bold text-sm">AI</span>
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-white">OpenAI</div>
-                              <div className="text-xs text-gray-400">GPT models</div>
+                              <div className={`text-sm font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>OpenAI</div>
+                              <div className={`text-xs ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>GPT models</div>
                             </div>
                           </div>
                         </td>
@@ -323,11 +323,11 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                               value={settings.openaiApiKey}
                               onChange={(e) => updateSetting('openaiApiKey', e.target.value)}
                               placeholder="sk-..."
-                              className="flex-1 bg-black/30 border border-white/20 rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              className={`flex-1 border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${isDarkMode ? "bg-black/30 border-white/20 text-white placeholder-gray-500" : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400"}`}
                             />
                             <button
                               onClick={() => toggleShowKey('openaiApiKey')}
-                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                              className={`p-2 transition-colors ${isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}
                             >
                               <Icon icon={showApiKeys['openaiApiKey'] ? 'eye-off' : 'eye'} className="w-4 h-4" />
                             </button>
@@ -361,7 +361,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                             <a
                               href="https://platform.openai.com/api-keys"
                               target="_blank"
-                              className="p-2 text-gray-400 hover:text-white transition-colors"
+                              className={`p-2 transition-colors ${isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-gray-900"}`}
                             >
                               <Icon icon="external-link" className="w-4 h-4" />
                             </a>
@@ -379,15 +379,15 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
             {activeSection === 'preferences' && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">Preferences</h2>
-                  <p className="text-gray-400">Customize your GitOn experience</p>
+                  <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Preferences</h2>
+                  <p className={isDarkMode ? "text-gray-400" : "text-gray-600"}>Customize your GitOn experience</p>
                 </div>
 
                 <div className="bg-white/5 border border-white/10 rounded-lg divide-y divide-white/10">
                   <div className="p-6 flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-medium text-white mb-1">Auto Save Projects</h3>
-                      <p className="text-sm text-gray-400">Automatically save analyzed repositories</p>
+                      <h3 className={`text-base font-medium mb-1 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Auto Save Projects</h3>
+                      <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Automatically save analyzed repositories</p>
                     </div>
                     <button
                       onClick={() => updateSetting('autoSave', !settings.autoSave)}
@@ -405,8 +405,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
 
                   <div className="p-6 flex items-center justify-between">
                     <div>
-                      <h3 className="text-base font-medium text-white mb-1">Theme</h3>
-                      <p className="text-sm text-gray-400">Choose your preferred theme</p>
+                      <h3 className={`text-base font-medium mb-1 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Theme</h3>
+                      <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Choose your preferred theme</p>
                     </div>
                     <select
                       value={settings.theme}
@@ -424,8 +424,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
             {activeSection === 'billing' && (
               <div className="space-y-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-2">Billing</h2>
-                  <p className="text-gray-400">Manage your subscription and billing</p>
+                  <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Billing</h2>
+                  <p className={isDarkMode ? "text-gray-400" : "text-gray-600"}>Manage your subscription and billing</p>
                 </div>
 
                 <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-lg p-8">
@@ -439,7 +439,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                   
                   <div className="my-6">
                     <span className="text-4xl font-bold text-white">$19.99</span>
-                    <span className="text-gray-400">/month</span>
+                    <span className={isDarkMode ? "text-gray-400" : "text-gray-600"}>/month</span>
                   </div>
 
                   <ul className="space-y-3 mb-6">

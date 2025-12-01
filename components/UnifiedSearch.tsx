@@ -65,14 +65,16 @@ const UnifiedSearch: React.FC<UnifiedSearchProps> = ({
     try {
       // Check if it's a GitHub URL
       if (searchQuery.includes('github.com/')) {
-        const urlMatch = searchQuery.match(/github\.com\/([^\/]+)\/([^\/\s]+)/);
+        const urlMatch = searchQuery.match(/github\.com\/([^\/\s]+)\/([^\/\s?#]+)/);
         if (urlMatch) {
+          const owner = urlMatch[1];
+          const repo = urlMatch[2];
           searchResults.push({
             type: 'url',
-            id: `${urlMatch[1]}/${urlMatch[2]}`,
-            title: `${urlMatch[1]}/${urlMatch[2]}`,
+            id: `${owner}/${repo}`,
+            title: `${owner}/${repo}`,
             subtitle: 'GitHub Repository URL',
-            data: { url: searchQuery }
+            data: { url: searchQuery, full_name: `${owner}/${repo}` }
           });
         }
       }
