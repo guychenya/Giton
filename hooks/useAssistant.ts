@@ -183,17 +183,20 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       setStreamingModelResponse({ role: 'model', text: '' });
 
       // Check if message is asking about GitHub repos/users/topics
-      const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show me|machine learning|react|tensorflow)\b/i;
+      const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show|all repos|machine learning|react|tensorflow)\b/i;
+      const userPattern = /\b(repos?\s+(?:of|from|by)\s+|all\s+repos?\s+(?:of|from|by)?\s+|user\s+)([a-zA-Z0-9-]+)/i;
       
       if (githubKeywords.test(message) && !repoContext.includes('Repository:')) {
-        // Extract search query
         let query = message.toLowerCase()
-          .replace(/^(who is|what is|find|search|show me|get|look for)\s+/i, '')
+          .replace(/^(who is|what is|find|search|show me|get|look for|show)\s+/i, '')
           .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
           .trim();
         
-        // Check if it's a username query
-        if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
+        // Check for username patterns
+        const userMatch = message.match(userPattern);
+        if (userMatch) {
+          query = `user:${userMatch[2]}`;
+        } else if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40 && !query.includes(' ')) {
           query = `user:${query}`;
         }
         
