@@ -185,8 +185,9 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       // Check if message is asking about GitHub repos/users/topics
       const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show|all repos|about|machine learning|react|tensorflow)\b/i;
       const githubUrlPattern = /github\.com\/([a-zA-Z0-9-]+)(?:\/|$)/i;
+      const isFollowUpQuestion = /^(regarding|about|can you|what|why|how|explain|tell me more|elaborate)/i.test(message.trim());
       
-      if ((githubKeywords.test(message) || githubUrlPattern.test(message)) && !repoContext.includes('Repository:')) {
+      if ((githubKeywords.test(message) || githubUrlPattern.test(message)) && !repoContext.includes('Repository:') && !isFollowUpQuestion) {
         let query = message;
         
         // Check for GitHub URL first
