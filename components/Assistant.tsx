@@ -45,6 +45,9 @@ const Assistant: React.FC<AssistantProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const [isChatSaved, setIsChatSaved] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [selection, setSelection] = useState<{ text: string; x: number; y: number } | null>(null);
   const [copiedMessageIndex, setCopiedMessageIndex] = useState<number | null>(null);
@@ -251,9 +254,56 @@ const Assistant: React.FC<AssistantProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (userInput.trim()) {
-      sendTextMessage(userInput);
+    if (userInput.trim() || uploadedImage) {
+      let message = userInput;
+      if (uploadedImage) {
+        message = `[Image uploaded]\n${userInput || 'Please analyze this image and extract any repository information or text you can find.'}`;
+      }
+      sendTextMessage(message);
       setUserInput('');
+      setUploadedImage(null);
+    }
+  };
+
+  const handleImageUpload = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string;
+      setUploadedImage(base64);
+      setUserInput('Analyze this image and extract any GitHub repository information, URLs, or text you can find.');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
     }
   };
 
@@ -407,9 +457,30 @@ const Assistant: React.FC<AssistantProps> = ({
             )}
           </main>
           
-          <footer className="p-4 border-t border-white/10 flex-shrink-0">
+          <footer 
+            className="p-4 border-t border-white/10 flex-shrink-0"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            {uploadedImage && (
+              <div className="mb-3 relative inline-block">
+                <img src={uploadedImage} alt="Upload preview" className="h-20 rounded-lg border border-white/20" />
+                <button
+                  onClick={() => setUploadedImage(null)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                >
+                  <Icon icon="close" className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="relative">
-              <div className={`relative w-full border border-white/20 rounded-lg overflow-hidden transition-all duration-300 ${voiceStatus === 'listening' ? 'bg-purple-900/20 ring-2 ring-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.5)]' : 'bg-white/5'}`}>
+              <div className={`relative w-full border rounded-lg overflow-hidden transition-all duration-300 ${
+                isDragging ? 'border-purple-500 bg-purple-900/20 ring-2 ring-purple-500' :
+                voiceStatus === 'listening' ? 'bg-purple-900/20 ring-2 ring-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.5)] border-white/20' : 
+                'bg-white/5 border-white/20'
+              }`}>
                 <textarea
                   value={voiceStatus === 'listening' && !showLiveTranscript ? liveTranscript : userInput}
                   onChange={(e) => setUserInput(e.target.value)}
@@ -430,7 +501,7 @@ const Assistant: React.FC<AssistantProps> = ({
                   </div>
                 )}
                 
-                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   <button
                     type="button"
                     onClick={handleToggleVoice}
@@ -440,9 +511,33 @@ const Assistant: React.FC<AssistantProps> = ({
                   >
                     <Icon icon={voiceStatus === 'listening' ? 'stop' : 'microphone'} className="w-6 h-6" />
                   </button>
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    aria-label="Upload image"
+                    className="p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                    title="Upload image to analyze"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </button>
                 </div>
                 
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  {isDragging && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-purple-900/50 backdrop-blur-sm rounded-lg pointer-events-none">
+                      <p className="text-white font-medium">Drop image to analyze</p>
+                    </div>
+                  )}
                   {voiceStatus === 'listening' && (
                     <button
                       type="button"
