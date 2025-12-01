@@ -897,7 +897,7 @@ const App: React.FC = () => {
           onClick={() => setIsCommandKOpen(false)}
         >
           <div 
-            className="w-full max-w-2xl bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden animate-zoom-out"
+            className="w-full max-w-2xl bg-gray-900/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl animate-zoom-out"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
