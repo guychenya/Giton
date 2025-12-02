@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from './Icon';
+import { loadStripe } from '@stripe/stripe-js';
+import { useUser } from '@clerk/clerk-react';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 interface PricingPageProps {
   isDarkMode?: boolean;
@@ -7,6 +11,41 @@ interface PricingPageProps {
 }
 
 const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose }) => {
+  const { user } = useUser();
+  const [isUpgrading, setIsUpgrading] = useState(false);
+
+  const handleUpgrade = async () => {
+    if (!user) {
+      alert('Please sign in to upgrade');
+      return;
+    }
+
+    setIsUpgrading(true);
+    try {
+      const response = await fetch('/.netlify/functions/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      const stripe = await stripePromise;
+      
+      if (stripe && data.sessionId) {
+        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      alert(error.message || 'Failed to start checkout. Please try again.');
+    } finally {
+      setIsUpgrading(false);
+    }
+  };
   const plans = [
     {
       name: 'Free',
@@ -14,7 +53,7 @@ const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose })
       period: 'forever',
       description: 'Perfect for trying out GitOn',
       features: [
-        '5 repository analyses per month',
+        '10 repository analyses',
         'Basic AI documentation',
         'Community support',
         'Export to Markdown',
@@ -128,19 +167,29 @@ const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose })
                   onClick={() => {
                     if (plan.name === 'Free') {
                       onClose();
+                    } else if (plan.name === 'Pro') {
+                      handleUpgrade();
                     } else {
-                      alert(`${plan.name} plan coming soon! Contact support@giton.com for early access.`);
+                      window.location.href = 'mailto:info@reliatrrack.org?subject=GitOn Team Plan Inquiry';
                     }
                   }}
-                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 mb-6 ${
+                  disabled={isUpgrading && plan.name === 'Pro'}
+                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 mb-6 flex items-center justify-center gap-2 ${
                     plan.popular
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/50'
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50'
                       : isDarkMode
                       ? 'bg-white/10 text-white hover:bg-white/20'
                       : 'bg-gray-900 text-white hover:bg-gray-800'
                   }`}
                 >
-                  {plan.cta}
+                  {isUpgrading && plan.name === 'Pro' ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    plan.cta
+                  )}
                 </button>
 
                 <ul className="space-y-3">

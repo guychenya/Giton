@@ -10,7 +10,7 @@ export interface PlanLimits {
 export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
   free: {
     maxGenerations: 10,
-    maxProjects: 5,
+    maxProjects: 10,
     prioritySupport: false,
     advancedFeatures: false,
   },
