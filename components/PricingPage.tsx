@@ -1,11 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Icon from './Icon';
-import { loadStripe } from '@stripe/stripe-js';
-import { useUser } from '@clerk/clerk-react';
-
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY 
-  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
-  : null;
 
 interface PricingPageProps {
   isDarkMode?: boolean;
@@ -13,47 +7,6 @@ interface PricingPageProps {
 }
 
 const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose }) => {
-  const { user } = useUser();
-  const [isUpgrading, setIsUpgrading] = useState(false);
-
-  const handleUpgrade = async () => {
-    if (!user) {
-      alert('Please sign in to upgrade');
-      return;
-    }
-
-    setIsUpgrading(true);
-    try {
-      const response = await fetch('/.netlify/functions/create-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id }),
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
-
-      if (!stripePromise) {
-        throw new Error('Stripe is not configured. Please contact support.');
-      }
-      
-      const stripe = await stripePromise;
-      
-      if (stripe && data.sessionId) {
-        await stripe.redirectToCheckout({ sessionId: data.sessionId });
-      } else {
-        throw new Error('Failed to initialize Stripe');
-      }
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      alert(error.message || 'Failed to start checkout. Please try again.');
-    } finally {
-      setIsUpgrading(false);
-    }
-  };
   const plans = [
     {
       name: 'Free',
@@ -177,29 +130,19 @@ const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose })
                   onClick={() => {
                     if (plan.name === 'Free') {
                       onClose();
-                    } else if (plan.name === 'Pro') {
-                      handleUpgrade();
                     } else {
-                      window.location.href = 'mailto:info@reliatrrack.org?subject=GitOn Team Plan Inquiry';
+                      window.location.href = `mailto:info@reliatrrack.org?subject=GitOn ${plan.name} Plan Inquiry`;
                     }
                   }}
-                  disabled={isUpgrading && plan.name === 'Pro'}
-                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 mb-6 flex items-center justify-center gap-2 ${
+                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 mb-6 ${
                     plan.popular
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50'
+                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg hover:shadow-purple-500/50'
                       : isDarkMode
                       ? 'bg-white/10 text-white hover:bg-white/20'
                       : 'bg-gray-900 text-white hover:bg-gray-800'
                   }`}
                 >
-                  {isUpgrading && plan.name === 'Pro' ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    plan.cta
-                  )}
+                  {plan.cta}
                 </button>
 
                 <ul className="space-y-3">
