@@ -86,6 +86,57 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
 
   const formatDate = (ts: number) => new Date(ts).toLocaleDateString();
 
+  const handleExport = async () => {
+    try {
+      const allProjects = await db.getProjects();
+      const allReports = await db.getAllReports();
+      const exportData = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        projects: allProjects,
+        reports: allReports
+      };
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `giton-backup-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('Export failed: ' + e);
+    }
+  };
+
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!data.projects || !data.reports) throw new Error('Invalid backup file');
+        
+        // Import projects and reports
+        for (const proj of data.projects) {
+          await db.saveProject(proj);
+        }
+        for (const report of data.reports) {
+          await db.saveReport(report);
+        }
+        
+        alert(`Imported ${data.projects.length} projects and ${data.reports.length} reports`);
+        await loadProjects();
+      } catch (e) {
+        alert('Import failed: ' + e);
+      }
+    };
+    input.click();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -106,9 +157,19 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
               <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Your local serverless database of reports</p>
             </div>
           </div>
-          <button onClick={onClose} className={`p-2 rounded-full transition-colors ${isDarkMode ? "text-gray-400 hover:text-white hover:bg-white/10" : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"}`}>
-            <Icon icon="close" className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={handleExport} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${isDarkMode ? "bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-500/30" : "bg-green-100 text-green-700 hover:bg-green-200 border border-green-300"}`} title="Export all data">
+              <Icon icon="download" className="w-4 h-4" />
+              Export
+            </button>
+            <button onClick={handleImport} className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${isDarkMode ? "bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 border border-blue-500/30" : "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-300"}`} title="Import backup file">
+              <Icon icon="upload" className="w-4 h-4" />
+              Import
+            </button>
+            <button onClick={onClose} className={`p-2 rounded-full transition-colors ${isDarkMode ? "text-gray-400 hover:text-white hover:bg-white/10" : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"}`}>
+              <Icon icon="close" className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -132,7 +193,11 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
                                 <div 
                                     key={proj.id} 
                                     onClick={() => handleSelectProject(proj)}
-                                    className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 rounded-xl p-4 cursor-pointer transition-all group relative flex flex-col justify-between"
+                                    className={`hover:bg-white/10 border hover:border-purple-500/50 rounded-xl p-4 cursor-pointer transition-all group relative flex flex-col justify-between ${
+                                      isDarkMode 
+                                        ? 'bg-white/5 border-white/10' 
+                                        : 'bg-white border-gray-300 hover:bg-gray-50'
+                                    }`}
                                 >
                                     <div>
                                         <h3 className={`text-lg font-bold group-hover:text-purple-500 truncate mb-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>
@@ -199,7 +264,11 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
                                     <div 
                                         key={report.id}
                                         onClick={() => { onOpenReport(report); onClose(); }}
-                                        className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg cursor-pointer group"
+                                        className={`flex items-center justify-between p-4 hover:bg-white/10 border rounded-lg cursor-pointer group ${
+                                          isDarkMode 
+                                            ? 'bg-white/5 border-white/10' 
+                                            : 'bg-white border-gray-300 hover:bg-gray-50'
+                                        }`}
                                     >
                                         <div className="flex items-center gap-4">
                                             <div className={`w-10 h-10 rounded-lg flex items-center justify-center border ${colorMap[report.type]}`}>

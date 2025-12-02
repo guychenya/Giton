@@ -32,7 +32,7 @@ const ExampleCard: React.FC<ExampleCardProps> = ({ name, description, icon, onCl
       className={`relative backdrop-blur-lg rounded-2xl border shadow-lg p-6 flex flex-col items-start h-full transform hover:-translate-y-2 transition-transform duration-300 ease-in-out cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-400 group overflow-hidden ${
         isDarkMode 
           ? 'bg-white/10 border-white/20' 
-          : 'bg-white border-gray-200'
+          : 'bg-white border-gray-300 hover:border-purple-400'
       }`}
     >
       {/* Voice Chat Action */}

@@ -178,6 +178,17 @@ class DB {
       });
   }
 
+  async getAllReports(): Promise<SavedReport[]> {
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_REPORTS, 'readonly');
+      const store = tx.objectStore(STORE_REPORTS);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
   // --- Custom LLM Models Methods (NEW) ---
 
   async saveCustomLLMModel(provider: LLMProvider): Promise<void> {
@@ -218,3 +229,15 @@ class DB {
 }
 
 export const db = new DB();
+
+// Export/Import helpers
+export const exportData = async () => {
+  const projects = await db.getProjects();
+  const reports = await db.getAllReports();
+  return { version: '1.0', exportDate: new Date().toISOString(), projects, reports };
+};
+
+export const importData = async (data: { projects: SavedProject[], reports: SavedReport[] }) => {
+  for (const proj of data.projects) await db.saveProject(proj);
+  for (const report of data.reports) await db.saveReport(report);
+};
