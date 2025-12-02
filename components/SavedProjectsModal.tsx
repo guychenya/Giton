@@ -93,7 +93,7 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[80] p-4 animate-fade-in"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className={`border rounded-2xl ${isDarkMode ? "bg-gray-900 border-white/20" : "bg-white border-gray-300"}`} shadow-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden relative">
+      <div className={`border rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden relative ${isDarkMode ? 'bg-gray-900 border-white/20' : 'bg-white border-gray-300'}`}>
         
         {/* Header */}
         <div className={`flex items-center justify-between p-5 border-b z-10 ${isDarkMode ? "border-white/10 bg-gray-800/50" : "border-gray-200 bg-gray-50"}`}>
