@@ -161,19 +161,18 @@ const LandingPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Stats */}
-          <div className="mt-20 grid grid-cols-3 gap-8 max-w-3xl mx-auto animate-slide-up animation-delay-800">
-            <div>
-              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">10K+</div>
-              <div className="text-sm text-gray-500 mt-1">Repositories Analyzed</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400">50K+</div>
-              <div className="text-sm text-gray-500 mt-1">Diagrams Generated</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">99%</div>
-              <div className="text-sm text-gray-500 mt-1">Accuracy Rate</div>
+          {/* Demo Video */}
+          <div className="mt-20 max-w-5xl mx-auto animate-slide-up animation-delay-800">
+            <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+              <video 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+                className="w-full h-auto"
+              >
+                <source src="/demo.mp4" type="video/mp4" />
+              </video>
             </div>
           </div>
           
