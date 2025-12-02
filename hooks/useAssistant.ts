@@ -197,6 +197,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
           modelResponse = await (actions as any).searchGitHub(query);
         }
       } else {
+        console.log('Using model:', selectedModel);
         // Use selected model
         if (selectedModel === 'gemini') {
           const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext));
@@ -206,15 +207,18 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
           }
         } else {
           // Use LLM service for other models
-          const llmService = (await import('../services/llmService')).getLLMService();
+          const { getLLMService } = await import('../services/llmService');
+          const llmService = getLLMService();
           if (llmService) {
+            console.log('LLM service found, using provider:', selectedModel);
             const stream = llmService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext), selectedModel);
             for await (const chunk of stream) {
               modelResponse += chunk;
               setStreamingModelResponse({ role: 'model', text: modelResponse });
             }
           } else {
-            modelResponse = 'LLM service not initialized. Please check your API keys in Settings.';
+            console.error('LLM service not initialized');
+            modelResponse = 'LLM service not initialized. Please save your API keys in Settings and refresh the page.';
           }
         }
       }

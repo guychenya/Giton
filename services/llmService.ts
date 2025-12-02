@@ -124,7 +124,10 @@ class OpenAIProvider implements LLMProvider {
 
     const formattedMessages = [
       { role: 'system', content: systemPrompt },
-      ...messages.map(msg => ({ role: msg.role, content: msg.text }))
+      ...messages.map(msg => ({ 
+        role: msg.role === 'model' ? 'assistant' : msg.role, 
+        content: msg.text 
+      }))
     ];
 
     try {

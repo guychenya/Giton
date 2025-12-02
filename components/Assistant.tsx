@@ -64,9 +64,17 @@ const Assistant: React.FC<AssistantProps> = ({
   const isResizingRef = useRef(false);
   const assistantRef = useRef<HTMLElement>(null);
   
-  // Model selection state
-  const [activeModel, setActiveModel] = useState<string>('gemini');
+  // Model selection state - persist in localStorage
+  const [activeModel, setActiveModel] = useState<string>(() => {
+    return localStorage.getItem('giton-active-model') || 'gemini';
+  });
   const [availableModels, setAvailableModels] = useState<{id: string, name: string, available: boolean}[]>([]);
+  
+  // Save active model to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('giton-active-model', activeModel);
+    console.log('Active model set to:', activeModel);
+  }, [activeModel]);
   
   // Check available API keys on mount
   useEffect(() => {
@@ -79,12 +87,6 @@ const Assistant: React.FC<AssistantProps> = ({
           { id: 'openrouter', name: 'Claude (OpenRouter)', available: !!settings.openRouterApiKey },
         ];
         setAvailableModels(models);
-        
-        // Set active model to first available
-        const firstAvailable = models.find(m => m.available);
-        if (firstAvailable) {
-          setActiveModel(firstAvailable.id);
-        }
       } catch (e) {
         console.error('Error checking models:', e);
       }
