@@ -154,7 +154,7 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
             </div>
             <div>
               <h2 className={`text-xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>Saved Library</h2>
-              <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Your local serverless database of reports</p>
+              <p className={`text-sm ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>Stored locally in your browser • Export to backup • Import to restore</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
