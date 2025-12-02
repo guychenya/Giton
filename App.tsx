@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
 import UserBadge from './components/UserBadge';
-import { getUserPlan, incrementGenerations, canGenerate, getRemainingGenerations } from './lib/usage';
+import { getUserPlan, incrementGenerations, getRemainingGenerations } from './lib/usage';
 import LandingPage from './components/LandingPage';
 import { Example } from './types';
 import ExampleCard from './components/ExampleCard';
@@ -338,9 +338,9 @@ const App: React.FC = () => {
 
     // Check usage limits
     const userPlan = getUserPlan();
-    if (!canGenerate(userPlan, 0)) {
-      const remaining = getRemainingGenerations(userPlan);
-      setRepoError(`You've reached your generation limit (${remaining} remaining). Upgrade to Pro for unlimited access.`);
+    const remaining = getRemainingGenerations(userPlan);
+    if (userPlan === 'free' && remaining <= 0) {
+      setRepoError(`You've reached your generation limit. Upgrade to Pro for unlimited access.`);
       setIsPricingModalOpen(true);
       return;
     }
