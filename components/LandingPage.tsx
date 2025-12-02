@@ -80,8 +80,10 @@ const DemoVideo: React.FC = () => {
 const DemoSearch: React.FC = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
+  const [userRepos, setUserRepos] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [searchType, setSearchType] = useState<'repos' | 'user'>('repos');
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,17 +99,34 @@ const DemoSearch: React.FC = () => {
   useEffect(() => {
     if (!query.trim() || query.length < 2) {
       setResults([]);
+      setUserRepos([]);
       return;
     }
 
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
+        // Check if it's a username (no slash) or repo search
+        if (!query.includes('/') && !query.includes('github.com')) {
+          // Try to fetch user's repos
+          const userResponse = await fetch(`https://api.github.com/users/${query}/repos?sort=stars&per_page=10`);
+          if (userResponse.ok) {
+            const repos = await userResponse.json();
+            setUserRepos(repos);
+            setSearchType('user');
+            setShowResults(true);
+            setLoading(false);
+            return;
+          }
+        }
+        
+        // Otherwise search repos
         const response = await fetch(
           `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=5`
         );
         const data = await response.json();
         setResults(data.items || []);
+        setSearchType('repos');
         setShowResults(true);
       } catch (error) {
         console.error('Search error:', error);
@@ -143,9 +162,14 @@ const DemoSearch: React.FC = () => {
         </SignInButton>
 
         {/* Results Dropdown */}
-        {showResults && results.length > 0 && (
-          <div className="absolute top-full mt-2 w-full bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 animate-fade-in">
-            {results.map((repo) => (
+        {showResults && (searchType === 'user' ? userRepos.length > 0 : results.length > 0) && (
+          <div className="absolute top-full mt-2 w-full bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 animate-fade-in max-h-96 overflow-y-auto">
+            {searchType === 'user' && (
+              <div className="px-6 py-3 bg-purple-600/20 border-b border-white/10">
+                <p className="text-white font-semibold">@{query}'s repositories ({userRepos.length})</p>
+              </div>
+            )}
+            {(searchType === 'user' ? userRepos : results).map((repo) => (
               <SignInButton key={repo.id} mode="modal">
                 <button className="w-full text-left px-6 py-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
                   <div className="flex items-center justify-between">
@@ -156,7 +180,7 @@ const DemoSearch: React.FC = () => {
                     <div className="flex items-center gap-3 ml-4 flex-shrink-0">
                       <span className="text-yellow-400 text-sm flex items-center gap-1">
                         <Icon icon="star" className="w-4 h-4" />
-                        {(repo.stargazers_count / 1000).toFixed(1)}k
+                        {repo.stargazers_count >= 1000 ? `${(repo.stargazers_count / 1000).toFixed(1)}k` : repo.stargazers_count}
                       </span>
                     </div>
                   </div>
@@ -249,13 +273,26 @@ const LandingPage: React.FC = () => {
       {/* Demo Video Section */}
       <div id="demo-video" className="relative z-10 py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">See GitOn In Action</h2>
-            <p className="text-xl text-gray-400">Everything you need to understand any codebase</p>
+            <p className="text-xl text-gray-400 mb-6">Everything you need to understand any codebase</p>
+            <SignInButton mode="modal">
+              <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-lg font-bold px-10 py-4 rounded-xl shadow-2xl hover:shadow-purple-500/50 transition-all">
+                Get Started Free
+              </button>
+            </SignInButton>
           </div>
           
-          <div className="animate-slide-up">
+          <div className="animate-slide-up mb-8">
             <DemoVideo />
+          </div>
+
+          <div className="text-center">
+            <SignInButton mode="modal">
+              <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-lg font-bold px-10 py-4 rounded-xl shadow-2xl hover:shadow-purple-500/50 transition-all">
+                Get Started Free
+              </button>
+            </SignInButton>
           </div>
         </div>
       </div>
