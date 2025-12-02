@@ -312,11 +312,19 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
     
     // Try Gemini Live API first (best experience)
     const ai = geminiService.getGoogleGenAIInstance();
-    if (ai && ai.live) {
-        console.log('Using Gemini Live API for premium voice experience');
-        // Continue with existing Gemini Live implementation
+    if (ai) {
+        try {
+            console.log('Attempting Gemini Live API for premium voice experience');
+            // Continue with existing Gemini Live implementation
+        } catch (liveError) {
+            console.warn('Gemini Live API not available, falling back to Web Speech:', liveError);
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                startEnhancedVoiceRecognition();
+                return;
+            }
+        }
     } else if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        console.log('Fallback to enhanced Web Speech API');
+        console.log('No Gemini API key, using Web Speech API');
         startEnhancedVoiceRecognition();
         return;
     } else {
@@ -343,7 +351,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       let currentModelResponse = '';
       let groundingMetadata: GroundingMetadata | undefined;
 
-      sessionPromiseRef.current = ai.live.connect({
+      sessionPromiseRef.current = (ai as any).live.connect({
         model: 'gemini-2.0-flash-exp',
         config: {
           responseModalities: [Modality.AUDIO],
