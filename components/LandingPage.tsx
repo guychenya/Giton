@@ -1,6 +1,100 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton } from '@clerk/clerk-react';
 import Icon from './Icon';
+
+const DemoSearch: React.FC = () => {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (!query.trim() || query.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=5`
+        );
+        const data = await response.json();
+        setResults(data.items || []);
+        setShowResults(true);
+      } catch (error) {
+        console.error('Search error:', error);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  return (
+    <div className="mt-16 max-w-2xl mx-auto animate-slide-up animation-delay-1000" ref={searchRef}>
+      <p className="text-gray-400 text-sm mb-4">Try it now - Search any GitHub repository</p>
+      <div className="relative">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => results.length > 0 && setShowResults(true)}
+          placeholder="Enter username/repo or paste GitHub URL..."
+          className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
+        />
+        {loading && (
+          <div className="absolute right-20 top-1/2 -translate-y-1/2">
+            <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+        <SignInButton mode="modal">
+          <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-6 py-2 rounded-lg transition-all">
+            Analyze
+          </button>
+        </SignInButton>
+
+        {/* Results Dropdown */}
+        {showResults && results.length > 0 && (
+          <div className="absolute top-full mt-2 w-full bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 animate-fade-in">
+            {results.map((repo) => (
+              <SignInButton key={repo.id} mode="modal">
+                <button className="w-full text-left px-6 py-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white font-semibold truncate">{repo.full_name}</div>
+                      <div className="text-gray-400 text-sm truncate mt-1">{repo.description || 'No description'}</div>
+                    </div>
+                    <div className="flex items-center gap-3 ml-4 flex-shrink-0">
+                      <span className="text-yellow-400 text-sm flex items-center gap-1">
+                        <Icon icon="star" className="w-4 h-4" />
+                        {(repo.stargazers_count / 1000).toFixed(1)}k
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              </SignInButton>
+            ))}
+          </div>
+        )}
+      </div>
+      <p className="text-xs text-gray-500 mt-2">Sign in to start analyzing repositories for free</p>
+    </div>
+  );
+};
 
 const LandingPage: React.FC = () => {
   return (
@@ -84,27 +178,7 @@ const LandingPage: React.FC = () => {
           </div>
           
           {/* Demo Search */}
-          <div className="mt-16 max-w-2xl mx-auto animate-slide-up animation-delay-1000">
-            <p className="text-gray-400 text-sm mb-4">Try it now - Search any GitHub repository</p>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Enter username/repo or paste GitHub URL..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    document.querySelector<HTMLButtonElement>('.demo-analyze-btn')?.click();
-                  }
-                }}
-              />
-              <SignInButton mode="modal">
-                <button className="demo-analyze-btn absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-6 py-2 rounded-lg transition-all">
-                  Analyze
-                </button>
-              </SignInButton>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">Sign in to start analyzing repositories for free</p>
-          </div>
+          <DemoSearch />
         </div>
       </div>
 
