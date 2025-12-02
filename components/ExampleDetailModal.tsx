@@ -236,7 +236,11 @@ const ExampleDetailModal: React.FC<ExampleDetailModalProps> = ({ example, conten
               {onSave && !isLoading && (
                   <button
                       onClick={handleSave}
-                      className="flex items-center gap-2 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 rounded-lg text-sm text-blue-300 transition-colors"
+                      className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm transition-colors ${
+                        isDarkMode
+                          ? 'bg-blue-600/20 hover:bg-blue-600/40 border-blue-500/30 text-blue-300'
+                          : 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700'
+                      }`}
                       title="Save to Project Library"
                   >
                       {isSaved ? <Icon icon="check" className="w-4 h-4 text-green-400" /> : <Icon icon="save" className="w-4 h-4" />}
@@ -249,19 +253,29 @@ const ExampleDetailModal: React.FC<ExampleDetailModalProps> = ({ example, conten
                   <div className="relative" ref={cloneMenuRef}>
                       <button
                           onClick={() => setIsCloneMenuOpen(!isCloneMenuOpen)}
-                          className="flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm text-gray-300 transition-colors"
+                          className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm transition-colors ${
+                            isDarkMode
+                              ? 'bg-white/5 hover:bg-white/10 border-white/10 text-gray-300'
+                              : 'bg-gray-50 hover:bg-gray-100 border-gray-300 text-gray-700'
+                          }`}
                           title="Clone repository"
                       >
                           <Icon icon="git" className="w-4 h-4" />
                           <span className="hidden sm:inline">Clone</span>
                       </button>
                       {isCloneMenuOpen && (
-                          <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-white/10 rounded-lg shadow-xl z-50 animate-fade-in-sm overflow-hidden">
-                              <button onClick={handleCopyCloneUrl} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2">
+                          <div className={`absolute right-0 mt-2 w-48 border rounded-lg shadow-xl z-50 animate-fade-in-sm overflow-hidden ${
+                            isDarkMode ? 'bg-gray-800 border-white/10' : 'bg-white border-gray-300'
+                          }`}>
+                              <button onClick={handleCopyCloneUrl} className={`w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2 ${
+                                isDarkMode ? 'text-gray-300 hover:bg-white/10 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                              }`}>
                                   {copiedCloneUrl ? <Icon icon="check" className="w-4 h-4 text-green-400" /> : <Icon icon="copy" className="w-4 h-4" />}
                                   Copy Git URL
                               </button>
-                              <button onClick={handleOpenInGithubDesktop} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2 border-t border-white/5">
+                              <button onClick={handleOpenInGithubDesktop} className={`w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2 border-t ${
+                                isDarkMode ? 'text-gray-300 hover:bg-white/10 hover:text-white border-white/5' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 border-gray-200'
+                              }`}>
                                   <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4">
                                       <title>GitHub Desktop</title>
                                       <path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.334-1.756-1.334-1.756-1.09-.744.08-.729.08-.729 1.205.084 1.838 1.238 1.838 1.238 1.07 1.835 2.809 1.305 3.493.996.108-.775.419-1.305.762-1.605-2.665-.3-5.466-1.33-5.466-5.93 0-1.31.465-2.382 1.235-3.22-.12-.3-.535-1.524.117-3.176 0 0 1-.322 3.298 1.23.957-.266 1.983-.4 3.003-.404 1.02.004 2.046.138 3.003.404 2.296-1.552 3.297-1.23 3.297-1.23.653 1.652.238 2.877.118 3.176.77.838 1.233 1.91 1.233 3.22 0 4.61-2.806 5.62-5.485 5.92.43.37.81 1.096.81 2.22 0 1.605-.015 2.89-.015 3.285 0 .322.218.696.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.372-12-12-12z"/>
@@ -277,7 +291,11 @@ const ExampleDetailModal: React.FC<ExampleDetailModalProps> = ({ example, conten
               <div className="relative" ref={exportMenuRef}>
                   <button
                       onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-                      className="flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm text-gray-300 transition-colors"
+                      className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm transition-colors ${
+                        isDarkMode
+                          ? 'bg-white/5 hover:bg-white/10 border-white/10 text-gray-300'
+                          : 'bg-gray-50 hover:bg-gray-100 border-gray-300 text-gray-700'
+                      }`}
                       disabled={isLoading}
                   >
                       <Icon icon="download" className="w-4 h-4" />
@@ -285,12 +303,18 @@ const ExampleDetailModal: React.FC<ExampleDetailModalProps> = ({ example, conten
                   </button>
                   
                   {isExportMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-white/10 rounded-lg shadow-xl z-50 animate-fade-in-sm overflow-hidden">
-                          <button onClick={handleExportMD} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2">
+                      <div className={`absolute right-0 mt-2 w-48 border rounded-lg shadow-xl z-50 animate-fade-in-sm overflow-hidden ${
+                        isDarkMode ? 'bg-gray-800 border-white/10' : 'bg-white border-gray-300'
+                      }`}>
+                          <button onClick={handleExportMD} className={`w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2 ${
+                            isDarkMode ? 'text-gray-300 hover:bg-white/10 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                          }`}>
                               <span className="uppercase text-xs font-bold text-purple-400 w-8">MD</span>
                               Markdown File
                           </button>
-                          <button onClick={handleExportPDF} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2 border-t border-white/5">
+                          <button onClick={handleExportPDF} className={`w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2 border-t ${
+                            isDarkMode ? 'text-gray-300 hover:bg-white/10 hover:text-white border-white/5' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 border-gray-200'
+                          }`}>
                               <span className="uppercase text-xs font-bold text-pink-400 w-8">PDF</span>
                               Print / Save PDF
                           </button>
@@ -301,7 +325,9 @@ const ExampleDetailModal: React.FC<ExampleDetailModalProps> = ({ example, conten
               <button
                 onClick={onClose}
                 aria-label="Close modal"
-                className="text-gray-400 hover:text-white transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-purple-400"
+                className={`transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${
+                  isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-800' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'
+                }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -357,7 +383,9 @@ const ExampleDetailModal: React.FC<ExampleDetailModalProps> = ({ example, conten
           >
             <button 
               onClick={handleAskAboutThis} 
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-white hover:bg-white/10 rounded-md transition-colors"
+              className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors ${
+              isDarkMode ? 'text-white hover:bg-white/10' : 'text-gray-900 hover:bg-gray-100'
+            }`}
             >
               <Icon icon="bot" className="w-4 h-4 text-purple-300" />
               <span>Ask about this...</span>
