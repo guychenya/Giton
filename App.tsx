@@ -882,7 +882,7 @@ const App: React.FC = () => {
                 
                 {/* Trending AI Repos */}
                 <div className="mt-16">
-                  <h3 className={`text-xl font-semibold mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>🔥 Trending AI Repos</h3>
+                  <h3 className={`text-xl font-semibold mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Trending AI Repos</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
                       { owner: 'openai', repo: 'openai-cookbook', stars: 60000, description: 'Examples and guides for using the OpenAI API' },
