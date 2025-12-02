@@ -6,7 +6,8 @@ import PrivacyPolicy from './PrivacyPolicy';
 import CookieConsent from './CookieConsent';
 
 const DemoVideo: React.FC = () => {
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Start muted
+  const [audioReady, setAudioReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -14,20 +15,23 @@ const DemoVideo: React.FC = () => {
     if (videoRef.current) {
       videoRef.current.playbackRate = 2.5;
     }
-    // Start audio after a brief delay to allow autoplay
-    if (audioRef.current) {
-      audioRef.current.play().catch(err => {
-        console.log('Audio autoplay prevented:', err);
-        setIsMuted(true); // Show as muted if autoplay fails
-      });
-    }
   }, []);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : 1;
+  const toggleMute = () => {
+    if (audioRef.current && !audioReady) {
+      audioRef.current.play().then(() => {
+        setAudioReady(true);
+        setIsMuted(false);
+      }).catch(err => {
+        console.log('Audio play failed:', err);
+      });
+    } else {
+      setIsMuted(!isMuted);
+      if (audioRef.current) {
+        audioRef.current.volume = !isMuted ? 0 : 1;
+      }
     }
-  }, [isMuted]);
+  };
 
   return (
     <div>
@@ -50,9 +54,9 @@ const DemoVideo: React.FC = () => {
           <source src="/demo-audio.mp4" type="audio/mp4" />
         </audio>
         <button
-          onClick={() => setIsMuted(!isMuted)}
-          className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100"
-          title={isMuted ? 'Unmute' : 'Mute'}
+          onClick={toggleMute}
+          className="absolute bottom-4 right-4 bg-black/70 hover:bg-black/90 backdrop-blur-sm text-white p-3 rounded-full transition-all shadow-lg"
+          title={isMuted ? 'Click to enable sound' : 'Mute'}
         >
           {isMuted ? (
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
