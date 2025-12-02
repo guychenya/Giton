@@ -432,19 +432,19 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                   <div className="flex items-center gap-3 mb-4">
                     <Icon icon="crown" className="w-8 h-8 text-yellow-400" />
                     <div>
-                      <h3 className="text-2xl font-bold text-white">GitOn Pro</h3>
-                      <p className="text-gray-300">Unlock unlimited analysis</p>
+                      <h3 className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>GitOn Pro</h3>
+                      <p className={isDarkMode ? "text-gray-300" : "text-gray-700"}>Unlock unlimited analysis</p>
                     </div>
                   </div>
                   
                   <div className="my-6">
-                    <span className="text-4xl font-bold text-white">$19.99</span>
-                    <span className={isDarkMode ? "text-gray-400" : "text-gray-600"}>/month</span>
+                    <span className={`text-4xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>$19.99</span>
+                    <span className={isDarkMode ? "text-gray-300" : "text-gray-600"}>/month</span>
                   </div>
 
                   <ul className="space-y-3 mb-6">
                     {['Unlimited repositories', 'Priority AI processing', 'Advanced features', 'Priority support'].map((feature) => (
-                      <li key={feature} className="flex items-center gap-2 text-gray-300">
+                      <li key={feature} className={`flex items-center gap-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
                         <Icon icon="check" className="w-5 h-5 text-green-400" />
                         {feature}
                       </li>
