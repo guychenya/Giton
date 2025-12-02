@@ -28,10 +28,10 @@ const TrendingReposHero: React.FC<TrendingReposHeroProps> = ({ isDarkMode, onSel
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            🔥 Trending AI Repositories
+            ✨ New AI Repositories
           </h2>
           <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Most popular AI/ML projects on GitHub • Updated daily
+            Fresh AI/ML projects from the last 2 weeks • Updated daily
           </p>
         </div>
         <button
