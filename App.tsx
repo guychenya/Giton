@@ -693,7 +693,7 @@ const App: React.FC = () => {
 
           {/* Active Repo Header */}
           {repoData && examples.length > 0 && (
-            <div className={`w-full border-b backdrop-blur-sm ${isDarkMode ? 'border-white/10 bg-gray-800/30' : 'border-gray-200 bg-white/50'}`}>
+            <div className={`w-full border-b backdrop-blur-sm relative z-30 ${isDarkMode ? 'border-white/10 bg-gray-800/30' : 'border-gray-200 bg-white/50'}`}>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-start gap-3 flex-1">
@@ -716,7 +716,7 @@ const App: React.FC = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </button>
-                      <div className={`absolute left-0 top-full mt-2 w-80 p-4 rounded-lg border shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] ${isDarkMode ? 'bg-gray-800 border-white/20' : 'bg-white border-gray-300'}`}>
+                      <div className={`absolute left-0 top-full mt-2 w-96 p-5 rounded-lg border shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[9999] ${isDarkMode ? 'bg-gray-800/95 backdrop-blur-xl border-white/20' : 'bg-white/95 backdrop-blur-xl border-gray-300'}`}>
                         <h3 className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Repository Overview</h3>
                         <div className="space-y-2 text-sm">
                           <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{repoData.description}</p>
