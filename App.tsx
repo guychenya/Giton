@@ -19,6 +19,7 @@ import Logo from './components/Logo';
 import Assistant from './components/Assistant';
 import VoiceAssistant from './components/VoiceAssistant';
 import SettingsPage from './components/SettingsPage';
+import TrendingReposHero from './components/TrendingReposHero';
 import { AppSettings } from './components/SettingsModal';
 import { useAssistant, AssistantActions, Message } from './hooks/useAssistant';
 import { fetchRepoData, RepoData, fetchSuggestedRepos, RepoGroup } from './utils/githubUtils';
@@ -847,65 +848,46 @@ const App: React.FC = () => {
             ) : !repoData ? (
               <div className="text-center py-12">
                 <h3 className={`text-xl font-semibold mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Popular Repositories</h3>
+                <TrendingReposHero 
+                  isDarkMode={isDarkMode}
+                  onSelectRepo={(owner, repo) => loadRepo(`${owner}/${repo}`)}
+                />
+                
                 {areSuggestionsLoading ? (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse mt-8">
                     {[1, 2, 3].map(i => (
                       <div key={i} className="h-40 bg-white/5 rounded-lg border border-white/10"></div>
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {suggestions.map((group) => (
-                      <div key={group.category} className="flex flex-col gap-3">
-                        <h4 className={`text-sm font-semibold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>{group.category}</h4>
-                        {group.items.map(repo => (
-                          <button 
-                            key={repo.repo}
-                            onClick={() => loadRepo(`${repo.owner}/${repo.repo}`)}
-                            className={`flex items-center justify-between p-4 border rounded-lg transition-all text-left group ${isDarkMode ? 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-purple-500/50' : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-purple-500/50'}`}
-                          >
-                            <div className="flex flex-col overflow-hidden mr-2">
-                              <span className={`text-sm font-medium group-hover:text-purple-600 transition-colors truncate ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
-                                {repo.owner}/<span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repo.repo}</span>
+                  <div className="mt-8">
+                    <h3 className={`text-xl font-semibold mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Popular Repositories</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {suggestions.map((group) => (
+                        <div key={group.category} className="flex flex-col gap-3">
+                          <h4 className={`text-sm font-semibold uppercase tracking-wider ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>{group.category}</h4>
+                          {group.items.map(repo => (
+                            <button 
+                              key={repo.repo}
+                              onClick={() => loadRepo(`${repo.owner}/${repo.repo}`)}
+                              className={`flex items-center justify-between p-4 border rounded-lg transition-all text-left group ${isDarkMode ? 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-purple-500/50' : 'bg-white hover:bg-gray-50 border-gray-200 hover:border-purple-500/50'}`}
+                            >
+                              <div className="flex flex-col overflow-hidden mr-2">
+                                <span className={`text-sm font-medium group-hover:text-purple-600 transition-colors truncate ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+                                  {repo.owner}/<span className={`font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repo.repo}</span>
+                                </span>
+                                <span className={`text-xs truncate ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>{repo.description?.substring(0, 50)}...</span>
+                              </div>
+                              <span className="text-xs text-yellow-400 flex-shrink-0 flex items-center gap-1">
+                                <Icon icon="star" className="w-3 h-3" /> {formatStars(repo.stars)}
                               </span>
-                              <span className={`text-xs truncate ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>{repo.description?.substring(0, 50)}...</span>
-                            </div>
-                            <span className="text-xs text-yellow-400 flex-shrink-0 flex items-center gap-1">
-                              <Icon icon="star" className="w-3 h-3" /> {formatStars(repo.stars)}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                
-                {/* Trending AI Repos */}
-                <div className="mt-16">
-                  <h3 className={`text-xl font-semibold mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Trending AI Repos</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {[
-                      { owner: 'openai', repo: 'openai-cookbook', stars: 60000, description: 'Examples and guides for using the OpenAI API' },
-                      { owner: 'langchain-ai', repo: 'langchain', stars: 95000, description: 'Building applications with LLMs through composability' },
-                      { owner: 'microsoft', repo: 'autogen', stars: 35000, description: 'Enable Next-Gen Large Language Model Applications' }
-                    ].map(repo => (
-                      <button 
-                        key={repo.repo}
-                        onClick={() => loadRepo(`${repo.owner}/${repo.repo}`)}
-                        className={`flex flex-col p-6 border rounded-xl transition-all text-left group hover:scale-105 ${isDarkMode ? 'bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/30 hover:border-purple-500/50' : 'bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200 hover:border-purple-400'}`}
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <span className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repo.repo}</span>
-                          <span className="text-yellow-400 flex items-center gap-1 text-sm font-semibold">
-                            <Icon icon="star" className="w-4 h-4" /> {formatStars(repo.stars)}
-                          </span>
+                            </button>
+                          ))}
                         </div>
-                        <span className={`text-xs mb-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>{repo.owner}</span>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>{repo.description}</p>
-                      </button>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )
               </div>
             ) : null}
           </div>
