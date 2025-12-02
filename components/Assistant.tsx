@@ -155,34 +155,24 @@ const Assistant: React.FC<AssistantProps> = ({
     };
   }, [handleMouseMove, handleMouseUp]);
   
-  // Hover behavior when unpinned
+  // Auto-close on mouse leave when unpinned and open
   useEffect(() => {
-    if (isPinned) return;
-    
-    const handleMouseEnter = () => {
-      if (!isPinned && !isOpen) {
-        onToggle();
-      }
-    };
+    if (isPinned || !isOpen) return;
     
     const handleMouseLeave = (e: MouseEvent) => {
-      if (!isPinned && isOpen) {
-        const rect = assistantRef.current?.getBoundingClientRect();
-        if (rect && e.clientX > rect.right) {
-          onToggle();
-        }
+      const rect = assistantRef.current?.getBoundingClientRect();
+      if (rect && e.clientX > rect.right) {
+        onToggle();
       }
     };
     
     const sidebar = assistantRef.current;
     if (sidebar) {
-      sidebar.addEventListener('mouseenter', handleMouseEnter);
       sidebar.addEventListener('mouseleave', handleMouseLeave);
     }
     
     return () => {
       if (sidebar) {
-        sidebar.removeEventListener('mouseenter', handleMouseEnter);
         sidebar.removeEventListener('mouseleave', handleMouseLeave);
       }
     };
@@ -399,15 +389,6 @@ const Assistant: React.FC<AssistantProps> = ({
 
   return (
     <>
-      {/* Hover trigger area when closed and unpinned */}
-      {!isOpen && !isPinned && (
-        <div 
-          onMouseEnter={() => onToggle()}
-          className="fixed left-0 top-0 w-2 h-full z-20"
-          style={{ cursor: 'pointer' }}
-        />
-      )}
-      
       <aside
         ref={assistantRef}
         className={`relative z-20 flex flex-col h-full backdrop-blur-2xl transition-all duration-300 ease-in-out ${isDarkMode ? 'bg-gray-900/40' : 'bg-white'}`}
