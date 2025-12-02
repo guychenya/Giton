@@ -229,58 +229,16 @@ const LandingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Demo Video & Features Section */}
+      {/* Demo Video Section */}
       <div id="demo-video" className="relative z-10 py-32 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">See GitOn In Action</h2>
             <p className="text-xl text-gray-400">Everything you need to understand any codebase</p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Demo Video */}
-            <div className="animate-slide-up">
-              <DemoVideo />
-            </div>
-            
-            {/* Features */}
-            <div className="space-y-6 animate-slide-up animation-delay-200">
-              <div className="group bg-gradient-to-br from-purple-900/20 to-purple-600/5 backdrop-blur-lg border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <Icon icon="backend" className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Smart Analysis</h3>
-                    <p className="text-gray-400 leading-relaxed">AI-powered documentation and deep code insights that understand your repository structure</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="group bg-gradient-to-br from-pink-900/20 to-pink-600/5 backdrop-blur-lg border border-pink-500/20 rounded-2xl p-6 hover:border-pink-500/50 transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <Icon icon="document" className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Auto Diagrams</h3>
-                    <p className="text-gray-400 leading-relaxed">Generate beautiful architecture diagrams and visualizations instantly with Mermaid</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="group bg-gradient-to-br from-blue-900/20 to-blue-600/5 backdrop-blur-lg border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <Icon icon="audio_spark" className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">AI Assistant</h3>
-                    <p className="text-gray-400 leading-relaxed">Chat with AI about your codebase and get instant answers to your questions</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="animate-slide-up">
+            <DemoVideo />
           </div>
         </div>
       </div>
