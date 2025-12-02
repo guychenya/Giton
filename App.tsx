@@ -259,12 +259,24 @@ const App: React.FC = () => {
       setSelectedExampleContent(generatedContentCache.current[example.name]);
       setIsGeneratingContent(false);
     } else {
+      // Check usage limits before generating
+      const userPlan = getUserPlan();
+      const remaining = getRemainingGenerations(userPlan);
+      if (userPlan === 'free' && remaining <= 0) {
+        setRepoError(`You've reached your generation limit. Upgrade to Pro for unlimited access.`);
+        setIsPricingModalOpen(true);
+        return;
+      }
+      
       setIsGeneratingContent(true);
       setSelectedExampleContent('');
       try {
         const content = await geminiService.generateDetail(example.name, repoContext); 
         generatedContentCache.current[example.name] = content;
         setSelectedExampleContent(content);
+        
+        // Increment usage counter after successful generation
+        incrementGenerations();
       } catch (e) {
         setSelectedExampleContent('# Error\nFailed to generate content. Please try again.');
       } finally {
@@ -395,9 +407,6 @@ const App: React.FC = () => {
         setLoadingProgress(100);
         setExamples(newExamples);
         setActiveCategory('All');
-        
-        // Increment usage counter
-        incrementGenerations();
     } catch (err: any) {
         console.error("Error during loadRepo process:", err);
         setRepoError(err.message || "An unknown error occurred.");

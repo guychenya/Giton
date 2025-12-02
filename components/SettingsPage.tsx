@@ -490,7 +490,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                           {userPlan === 'pro' ? 'GitOn Pro' : 'Free Plan'}
                         </h3>
                         <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {userPlan === 'pro' ? 'Unlimited access to all features' : 'Limited to 10 generations'}
+                          {userPlan === 'pro' ? 'Unlimited access to all features' : 'Limited to 10 card detail generations'}
                         </p>
                       </div>
                     </div>
@@ -542,7 +542,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                     </div>
 
                     <ul className="space-y-3 mb-6">
-                      {['Unlimited repository analysis', 'Priority AI processing', 'Advanced architecture diagrams', 'Priority support'].map((feature) => (
+                      {['Unlimited card generations', 'Unlimited repo browsing', 'Priority AI processing', 'Priority support'].map((feature) => (
                         <li key={feature} className={`flex items-center gap-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
                           <Icon icon="check" className="w-5 h-5 text-green-400" />
                           {feature}

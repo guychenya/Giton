@@ -3,7 +3,9 @@ import Icon from './Icon';
 import { loadStripe } from '@stripe/stripe-js';
 import { useUser } from '@clerk/clerk-react';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY 
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 interface PricingPageProps {
   isDarkMode?: boolean;
@@ -34,10 +36,16 @@ const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose })
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
+      if (!stripePromise) {
+        throw new Error('Stripe is not configured. Please contact support.');
+      }
+      
       const stripe = await stripePromise;
       
       if (stripe && data.sessionId) {
         await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      } else {
+        throw new Error('Failed to initialize Stripe');
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
@@ -53,7 +61,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose })
       period: 'forever',
       description: 'Perfect for trying out GitOn',
       features: [
-        '10 repository analyses',
+        '10 card detail generations',
+        'Unlimited repo browsing',
         'Basic AI documentation',
         'Community support',
         'Export to Markdown',
@@ -67,7 +76,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose })
       period: 'per month',
       description: 'For professional developers',
       features: [
-        'Unlimited repository analyses',
+        'Unlimited card generations',
+        'Unlimited repo browsing',
         'Advanced AI with GPT-4 & Claude',
         'Priority support',
         'Architecture diagrams',
