@@ -167,13 +167,13 @@ const MarkdownRenderer: React.FC<{ content: string; isDarkMode?: boolean }> = ({
         
         // Paragraphs
         if (line.trim() !== '') {
-            elements.push(<p key={i} className={`my-2 leading-relaxed text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{parseInlineMarkdown(line)}</p>);
+            elements.push(<p key={i} className={`my-2 leading-relaxed text-base break-words ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{parseInlineMarkdown(line)}</p>);
         }
 
         i++;
     }
 
-    return <div className={`text-base leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{elements}</div>;
+    return <div className={`text-base leading-relaxed break-words ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{elements}</div>;
 };
 
 export default MarkdownRenderer;
