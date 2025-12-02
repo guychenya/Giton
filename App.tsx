@@ -1,6 +1,8 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
+import UserBadge from './components/UserBadge';
+import { getUserPlan, incrementGenerations, canGenerate, getRemainingGenerations } from './lib/usage';
 import LandingPage from './components/LandingPage';
 import { Example } from './types';
 import ExampleCard from './components/ExampleCard';
@@ -334,6 +336,15 @@ const App: React.FC = () => {
       return;
     }
 
+    // Check usage limits
+    const userPlan = getUserPlan();
+    if (!canGenerate(userPlan, 0)) {
+      const remaining = getRemainingGenerations(userPlan);
+      setRepoError(`You've reached your generation limit (${remaining} remaining). Upgrade to Pro for unlimited access.`);
+      setIsPricingModalOpen(true);
+      return;
+    }
+
     setRepoUrl(url);
     setIsLoadingRepo(true);
     setLoadingProgress(0);
@@ -380,6 +391,9 @@ const App: React.FC = () => {
         setLoadingProgress(100);
         setExamples(newExamples);
         setActiveCategory('All');
+        
+        // Increment usage counter
+        incrementGenerations();
     } catch (err: any) {
         console.error("Error during loadRepo process:", err);
         setRepoError(err.message || "An unknown error occurred.");
@@ -653,7 +667,7 @@ const App: React.FC = () => {
                   </SignInButton>
                 </SignedOut>
                 <SignedIn>
-                  <UserButton afterSignOutUrl="/" />
+                  <UserBadge />
                 </SignedIn>
               </div>
             </div>

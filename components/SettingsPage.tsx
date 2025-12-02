@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Icon from './Icon';
 import { AppSettings } from './SettingsModal';
+import { getUserPlan, getUsageData, getRemainingGenerations } from '../lib/usage';
+import { PlanTier } from '../lib/plan';
 
 interface SettingsPageProps {
   onClose: () => void;
@@ -29,6 +31,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
   const [saved, setSaved] = useState(false);
   const [validating, setValidating] = useState<Record<string, boolean>>({});
   const [validated, setValidated] = useState<Record<string, boolean | null>>({});
+  const [userPlan, setUserPlan] = useState<PlanTier>('free');
+  const [usageData, setUsageData] = useState({ generations: 0, remaining: 10 });
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('giton-settings');
@@ -39,6 +43,13 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
         console.error('Failed to load settings:', e);
       }
     }
+    
+    // Load plan and usage
+    const plan = getUserPlan();
+    setUserPlan(plan);
+    const usage = getUsageData();
+    const remaining = getRemainingGenerations(plan);
+    setUsageData({ generations: usage.generations, remaining });
   }, []);
 
   const handleSave = () => {
@@ -424,37 +435,105 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
             {activeSection === 'billing' && (
               <div className="space-y-8">
                 <div>
-                  <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Billing</h2>
-                  <p className={isDarkMode ? "text-gray-400" : "text-gray-600"}>Manage your subscription and billing</p>
+                  <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Billing & Usage</h2>
+                  <p className={isDarkMode ? "text-gray-400" : "text-gray-600"}>Manage your subscription and track usage</p>
                 </div>
 
-                <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-lg p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Icon icon="crown" className="w-8 h-8 text-yellow-400" />
-                    <div>
-                      <h3 className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>GitOn Pro</h3>
-                      <p className={isDarkMode ? "text-gray-300" : "text-gray-700"}>Unlock unlimited analysis</p>
+                {/* Current Plan Status */}
+                <div className={`border rounded-lg p-6 ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${userPlan === 'pro' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : 'bg-gray-600'}`}>
+                        <Icon icon={userPlan === 'pro' ? 'crown' : 'user'} className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {userPlan === 'pro' ? 'GitOn Pro' : 'Free Plan'}
+                        </h3>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {userPlan === 'pro' ? 'Unlimited access to all features' : 'Limited to 10 generations'}
+                        </p>
+                      </div>
+                    </div>
+                    {userPlan === 'pro' && (
+                      <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium">
+                        Active
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Usage Stats */}
+                  <div className={`border-t pt-4 mt-4 ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Generations Used</span>
+                      <span className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {userPlan === 'pro' ? `${usageData.generations} (Unlimited)` : `${usageData.generations} / 10`}
+                      </span>
+                    </div>
+                    {userPlan === 'free' && (
+                      <>
+                        <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                          <div 
+                            className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all"
+                            style={{ width: `${(usageData.generations / 10) * 100}%` }}
+                          />
+                        </div>
+                        <p className={`text-xs ${usageData.remaining <= 2 ? 'text-red-400' : isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {usageData.remaining} generations remaining
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Upgrade Card */}
+                {userPlan === 'free' && (
+                  <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-lg p-8">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Icon icon="crown" className="w-8 h-8 text-yellow-400" />
+                      <div>
+                        <h3 className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>GitOn Pro</h3>
+                        <p className={isDarkMode ? "text-gray-300" : "text-gray-700"}>Unlock unlimited analysis</p>
+                      </div>
+                    </div>
+                    
+                    <div className="my-6">
+                      <span className={`text-4xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>$19.99</span>
+                      <span className={isDarkMode ? "text-gray-300" : "text-gray-600"}>/month</span>
+                    </div>
+
+                    <ul className="space-y-3 mb-6">
+                      {['Unlimited repository analysis', 'Priority AI processing', 'Advanced architecture diagrams', 'Priority support'].map((feature) => (
+                        <li key={feature} className={`flex items-center gap-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
+                          <Icon icon="check" className="w-5 h-5 text-green-400" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                      Upgrade to Pro
+                    </button>
+                  </div>
+                )}
+
+                {/* Pro Plan Management */}
+                {userPlan === 'pro' && (
+                  <div className={`border rounded-lg p-6 ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'}`}>
+                    <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Manage Subscription</h3>
+                    <div className="space-y-3">
+                      <button className={`w-full px-4 py-3 rounded-lg font-medium transition-colors ${isDarkMode ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'}`}>
+                        Update Payment Method
+                      </button>
+                      <button className={`w-full px-4 py-3 rounded-lg font-medium transition-colors ${isDarkMode ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'}`}>
+                        View Billing History
+                      </button>
+                      <button className="w-full px-4 py-3 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg font-medium transition-colors">
+                        Cancel Subscription
+                      </button>
                     </div>
                   </div>
-                  
-                  <div className="my-6">
-                    <span className={`text-4xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>$19.99</span>
-                    <span className={isDarkMode ? "text-gray-300" : "text-gray-600"}>/month</span>
-                  </div>
-
-                  <ul className="space-y-3 mb-6">
-                    {['Unlimited repositories', 'Priority AI processing', 'Advanced features', 'Priority support'].map((feature) => (
-                      <li key={feature} className={`flex items-center gap-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
-                        <Icon icon="check" className="w-5 h-5 text-green-400" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors">
-                    Upgrade to Pro
-                  </button>
-                </div>
+                )}
               </div>
             )}
           </div>
