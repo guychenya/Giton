@@ -271,8 +271,22 @@ const App: React.FC = () => {
       setIsGeneratingContent(true);
       setSelectedExampleContent('');
       try {
-        geminiService.reinitialize();
-        const content = await geminiService.generateDetail(example.name, repoContext); 
+        // Get active model from localStorage
+        const activeModel = localStorage.getItem('giton-active-model') || 'gemini';
+        let content = '';
+        
+        if (activeModel === 'gemini') {
+          geminiService.reinitialize();
+          content = await geminiService.generateDetail(example.name, repoContext);
+        } else {
+          // Use LLM service for other models
+          const { initializeLLMService } = await import('./services/llmService');
+          const settings = JSON.parse(localStorage.getItem('giton-settings') || '{}');
+          const llmService = initializeLLMService(settings);
+          const prompt = `Write a detailed documentation page (in Markdown) for "${example.name}" based on the repository context. Include: Title, Overview, Code Context, Usage/Explanation, Pros/Cons.`;
+          content = await llmService.generateContent(prompt, repoContext, activeModel);
+        }
+        
         generatedContentCache.current[example.name] = content;
         setSelectedExampleContent(content);
         
@@ -401,11 +415,30 @@ const App: React.FC = () => {
         diagramCache.current = {};
         prdCache.current = {};
         
-        // Step 2: Analyze with Gemini
-        console.log("Analyzing repository with Gemini...");
+        // Step 2: Analyze with selected model
+        const activeModel = localStorage.getItem('giton-active-model') || 'gemini';
+        console.log(`Analyzing repository with ${activeModel}...`);
         setLoadingProgress(75);
-        geminiService.reinitialize();
-        const newExamples = await geminiService.analyzeRepository(context);
+        
+        let newExamples = [];
+        if (activeModel === 'gemini') {
+          geminiService.reinitialize();
+          newExamples = await geminiService.analyzeRepository(context);
+        } else {
+          // Use LLM service for other models
+          const { initializeLLMService } = await import('./services/llmService');
+          const settings = JSON.parse(localStorage.getItem('giton-settings') || '{}');
+          const llmService = initializeLLMService(settings);
+          const prompt = `Analyze this GitHub repository and create 8-12 items as JSON array. Each item: {"name": "Title", "description": "Brief explanation", "icon": "backend/frontend/database/config/security/docs/terminal", "category": "Backend/Frontend/Database/Config/Documentation/Core/Infrastructure/Tools", "repoUrl": "GitHub URL", "websiteUrl": "Website", "whenToUse": "Usage tip", "popularSites": ["Site1", "Site2"]}`;
+          const result = await llmService.generateContent(prompt, context, activeModel);
+          try {
+            const jsonMatch = result.match(/\[.*\]/s);
+            newExamples = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+          } catch (e) {
+            console.error('Failed to parse analysis:', e);
+            newExamples = [];
+          }
+        }
         
         setLoadingProgress(100);
         setExamples(newExamples);
