@@ -333,20 +333,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, 
 
           {activeTab === 'billing' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-white">Billing & Subscription</h3>
+              <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Billing & Subscription</h3>
               
               <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Icon icon="crown" className="w-6 h-6 text-yellow-400" />
-                  <h4 className="text-lg font-semibold text-white">GitOn Pro</h4>
+                  <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>GitOn Pro</h4>
                 </div>
-                <p className="text-gray-300 mb-4">
+                <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Unlock unlimited repository analysis, priority support, and advanced AI features.
                 </p>
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-2xl font-bold text-white">$19.99</span>
-                    <span className="text-gray-400">/month</span>
+                    <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>$19.99</span>
+                    <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>/month</span>
                   </div>
                   <button 
                     onClick={() => window.open('https://buy.stripe.com/test_placeholder', '_blank')}
@@ -358,8 +358,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, 
               </div>
 
               <div className="space-y-3">
-                <h5 className="font-medium text-white">Pro Features:</h5>
-                <ul className="space-y-2 text-sm text-gray-300">
+                <h5 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Pro Features:</h5>
+                <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   <li className="flex items-center gap-2">
                     <Icon icon="check" className="w-4 h-4 text-green-400" />
                     Unlimited repository analysis

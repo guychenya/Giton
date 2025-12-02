@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+import LandingPage from './components/LandingPage';
 import { Example } from './types';
 import ExampleCard from './components/ExampleCard';
 import ExampleDetailModal from './components/ExampleDetailModal';
@@ -557,6 +558,12 @@ const App: React.FC = () => {
   };
 
   return (
+    <>
+      <SignedOut>
+        <LandingPage />
+      </SignedOut>
+      
+      <SignedIn>
     <div className={`relative h-screen w-full flex overflow-hidden font-sans ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob"></div>
       <div className="absolute top-0 -right-4 w-72 h-72 bg-blue-500 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
@@ -931,6 +938,7 @@ const App: React.FC = () => {
           onClose={() => setIsSavedProjectsModalOpen(false)}
           onOpenReport={handleOpenReportFromLibrary}
           onLoadProject={loadRepo}
+          isDarkMode={isDarkMode}
       />
       
       <ReportViewerModal 
@@ -1052,6 +1060,8 @@ const App: React.FC = () => {
         `}
        </style>
     </div>
+      </SignedIn>
+    </>
   );
 };
 
