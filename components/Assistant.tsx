@@ -397,7 +397,7 @@ const Assistant: React.FC<AssistantProps> = ({
                 aria-label="Close assistant"
                 className={`transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-900' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'}`}
               >
-                <Icon icon="chevron-left" className="w-6 h-6" />
+                <Icon icon="close" className="w-6 h-6" />
               </button>
             </div>
           </header>
@@ -598,15 +598,7 @@ const Assistant: React.FC<AssistantProps> = ({
           />
         )}
       </aside>
-       {!isOpen && (
-         <button 
-            onClick={onToggle} 
-            aria-label="Open assistant"
-            className="absolute top-1/2 left-0 z-30 text-white bg-gray-900/50 backdrop-blur-xl border-y border-r border-white/10 p-3 rounded-r-lg hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400 transform -translate-y-1/2"
-        >
-           <Icon icon="chevron-right" className="w-6 h-6"/>
-         </button>
-       )}
+
        
        {/* Image Enlargement Modal */}
        {enlargedImage && (
