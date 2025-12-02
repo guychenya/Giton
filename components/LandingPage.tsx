@@ -11,6 +11,13 @@ const DemoVideo: React.FC = () => {
     if (videoRef.current) {
       videoRef.current.playbackRate = 2.5;
     }
+    // Start audio after a brief delay to allow autoplay
+    if (audioRef.current) {
+      audioRef.current.play().catch(err => {
+        console.log('Audio autoplay prevented:', err);
+        setIsMuted(true); // Show as muted if autoplay fails
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -230,7 +237,7 @@ const LandingPage: React.FC = () => {
       </div>
 
       {/* Demo Video Section */}
-      <div id="demo-video" className="relative z-10 py-32 px-4">
+      <div id="demo-video" className="relative z-10 py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">See GitOn In Action</h2>
