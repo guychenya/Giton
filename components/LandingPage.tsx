@@ -163,7 +163,7 @@ const DemoSearch: React.FC = () => {
 
         {/* Results Dropdown */}
         {showResults && (searchType === 'user' ? userRepos.length > 0 : results.length > 0) && (
-          <div className="absolute top-full mt-2 w-full bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 animate-fade-in max-h-96 overflow-y-auto">
+          <div className="absolute top-full mt-2 w-full bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[100] animate-fade-in max-h-96 overflow-y-auto">
             {searchType === 'user' && (
               <div className="px-6 py-3 bg-purple-600/20 border-b border-white/10">
                 <p className="text-white font-semibold">@{query}'s repositories ({userRepos.length})</p>
