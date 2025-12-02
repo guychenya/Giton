@@ -200,25 +200,23 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
         console.log('Using model:', selectedModel);
         // Use selected model
         if (selectedModel === 'gemini') {
+          geminiService.reinitialize();
           const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext));
           for await (const chunk of stream) {
             modelResponse += chunk;
             setStreamingModelResponse({ role: 'model', text: modelResponse });
           }
         } else {
-          // Use LLM service for other models
-          const { getLLMService } = await import('../services/llmService');
-          const llmService = getLLMService();
-          if (llmService) {
-            console.log('LLM service found, using provider:', selectedModel);
-            const stream = llmService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext), selectedModel);
-            for await (const chunk of stream) {
-              modelResponse += chunk;
-              setStreamingModelResponse({ role: 'model', text: modelResponse });
-            }
-          } else {
-            console.error('LLM service not initialized');
-            modelResponse = 'LLM service not initialized. Please save your API keys in Settings and refresh the page.';
+          // Initialize LLM service with current settings
+          const { initializeLLMService } = await import('../services/llmService');
+          const settings = JSON.parse(localStorage.getItem('giton-settings') || '{}');
+          const llmService = initializeLLMService(settings);
+          
+          console.log('LLM service initialized, using provider:', selectedModel);
+          const stream = llmService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext), selectedModel);
+          for await (const chunk of stream) {
+            modelResponse += chunk;
+            setStreamingModelResponse({ role: 'model', text: modelResponse });
           }
         }
       }
