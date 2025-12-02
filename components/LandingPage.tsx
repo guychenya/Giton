@@ -174,6 +174,9 @@ const LandingPage: React.FC = () => {
                 <source src="/demo.mp4" type="video/mp4" />
               </video>
             </div>
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              Music: Heaven and Hell by Jeremy Blake (YouTube Audio Library)
+            </p>
           </div>
           
           {/* Demo Search */}
