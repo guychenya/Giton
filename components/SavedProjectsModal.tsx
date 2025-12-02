@@ -206,7 +206,7 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
                                                 <Icon icon={iconMap[report.type]} className={`w-5 h-5`} />
                                             </div>
                                             <div>
-                                                <h4 className={`font-medium group-hover:text-purple-500 ${isDarkMode ? "text-white" : "text-gray-900"}`} transition-colors transition-colors">{report.title}</h4>
+                                                <h4 className={`font-medium group-hover:text-purple-500 transition-colors ${isDarkMode ? "text-white" : "text-gray-900"}`}>{report.title}</h4>
                                                 <p className="text-xs text-gray-500">
                                                     {report.type.toUpperCase()} • Created {formatDate(report.createdAt)}
                                                 </p>
