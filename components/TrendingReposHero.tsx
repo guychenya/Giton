@@ -51,11 +51,12 @@ const TrendingReposHero: React.FC<TrendingReposHeroProps> = ({ isDarkMode, onSel
           <div
             key={`${repo.owner}-${repo.repo}`}
             onClick={() => onSelectRepo(repo.owner, repo.repo)}
-            className={`p-4 rounded-xl border cursor-pointer transition-all group ${
+            className={`p-4 rounded-xl border cursor-pointer transition-all group animate-float-card ${
               isDarkMode
-                ? 'bg-gray-800/50 border-white/10 hover:border-purple-500/50 hover:bg-gray-800'
-                : 'bg-white border-gray-200 hover:border-purple-400 hover:shadow-lg'
+                ? 'bg-gray-800/50 border-white/10 hover:border-purple-500/50 hover:bg-gray-800 hover:scale-105'
+                : 'bg-white border-gray-200 hover:border-purple-400 hover:shadow-lg hover:scale-105'
             }`}
+            style={{animationDelay: `${idx * 0.1}s`}}
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
@@ -86,3 +87,23 @@ const TrendingReposHero: React.FC<TrendingReposHeroProps> = ({ isDarkMode, onSel
 };
 
 export default TrendingReposHero;
+
+// Add styles for floating animation
+const styles = `
+  @keyframes float-card {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+  .animate-float-card {
+    animation: float-card 3s ease-in-out infinite;
+  }
+  .animate-float-card:hover {
+    animation-play-state: paused;
+  }
+`;
+
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = styles;
+  document.head.appendChild(styleSheet);
+}
