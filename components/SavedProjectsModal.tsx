@@ -232,11 +232,11 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
             ) : (
                 // Report List for Selected Project
                 <div className="w-full flex flex-col h-full">
-                    <div className="p-4 border-b border-white/10 flex items-center gap-2 bg-white/5">
-                        <button onClick={handleBack} className="text-gray-400 hover:text-white flex items-center gap-1 text-sm font-medium">
+                    <div className={`p-4 border-b flex items-center gap-2 ${isDarkMode ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-gray-50'}`}>
+                        <button onClick={handleBack} className={`flex items-center gap-1 text-sm font-medium ${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>
                             <Icon icon="chevron-left" className="w-4 h-4" /> Back to Projects
                         </button>
-                        <span className="text-gray-600">|</span>
+                        <span className={isDarkMode ? 'text-gray-600' : 'text-gray-400'}>|</span>
                         <h3 className={`font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>{selectedProject.owner}/{selectedProject.repo}</h3>
                     </div>
                     
