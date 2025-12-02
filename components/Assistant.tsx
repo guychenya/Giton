@@ -60,7 +60,7 @@ const Assistant: React.FC<AssistantProps> = ({
   const [copiedMessageIndex, setCopiedMessageIndex] = useState<number | null>(null);
 
   // State and ref for resizing functionality
-  const [width, setWidth] = useState(420);
+  const [width, setWidth] = useState(480);
   const isResizingRef = useRef(false);
   const assistantRef = useRef<HTMLElement>(null);
   
