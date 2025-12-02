@@ -43,6 +43,7 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [isAssistantOpen, setAssistantOpen] = useState(false);
+  const [isAssistantPinned, setIsAssistantPinned] = useState(false);
   
   // Repo Management State - Default empty
   const [repoUrl, setRepoUrl] = useState('');
@@ -604,6 +605,8 @@ const App: React.FC = () => {
         clearChat={clearChat}
         onSaveChat={handleSaveChatToProject}
         isDarkMode={isDarkMode}
+        isPinned={isAssistantPinned}
+        onTogglePin={() => setIsAssistantPinned(!isAssistantPinned)}
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -614,11 +617,11 @@ const App: React.FC = () => {
               <div className="flex items-center gap-6">
                 <button
                   onClick={() => setAssistantOpen(!isAssistantOpen)}
-                  className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'}`}
-                  title="Toggle AI Assistant"
+                  className={`p-2 rounded-lg transition-colors ${isAssistantOpen ? 'bg-purple-600 text-white' : isDarkMode ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'}`}
+                  title="AI Assistant"
                 >
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                   </svg>
                 </button>
                 <Logo onClick={handleGoHome} />

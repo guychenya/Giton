@@ -21,6 +21,8 @@ interface AssistantProps {
   clearChat: () => void;
   onSaveChat: (messages: Message[]) => void;
   isDarkMode?: boolean;
+  isPinned: boolean;
+  onTogglePin: () => void;
 }
 
 const Assistant: React.FC<AssistantProps> = ({
@@ -40,6 +42,8 @@ const Assistant: React.FC<AssistantProps> = ({
   clearChat,
   onSaveChat,
   isDarkMode = true,
+  isPinned,
+  onTogglePin,
 }) => {
   const [showLiveTranscript, setShowLiveTranscript] = useState(true);
   const mainContentRef = useRef<HTMLElement>(null);
@@ -58,6 +62,7 @@ const Assistant: React.FC<AssistantProps> = ({
   // State and ref for resizing functionality
   const [width, setWidth] = useState(420);
   const isResizingRef = useRef(false);
+  const assistantRef = useRef<HTMLElement>(null);
 
   useLayoutEffect(() => {
     if (mainContentRef.current) {
@@ -114,6 +119,25 @@ const Assistant: React.FC<AssistantProps> = ({
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [handleMouseMove, handleMouseUp]);
+  
+  // Auto-close when clicking outside if not pinned
+  useEffect(() => {
+    if (!isOpen || isPinned) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      if (assistantRef.current && !assistantRef.current.contains(event.target as Node)) {
+        onToggle();
+      }
+    };
+    
+    setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, isPinned, onToggle]);
   
   const handleSelectionChange = (event: React.MouseEvent) => {
     if (popoverRef.current && popoverRef.current.contains(event.target as Node)) {
@@ -327,6 +351,7 @@ const Assistant: React.FC<AssistantProps> = ({
   return (
     <>
       <aside
+        ref={assistantRef}
         className={`relative z-20 flex flex-col h-full backdrop-blur-2xl border-r transition-all duration-300 ease-in-out ${isDarkMode ? 'bg-gray-900/40 border-white/10' : 'bg-white border-gray-300'}`}
         style={{ width: isOpen ? `${width}px` : '0px' }}
         aria-hidden={!isOpen}
@@ -393,11 +418,18 @@ const Assistant: React.FC<AssistantProps> = ({
               </div>
 
               <button
-                onClick={onToggle}
-                aria-label="Close assistant"
-                className={`transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-900' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'}`}
+                onClick={onTogglePin}
+                aria-label={isPinned ? "Unpin assistant" : "Pin assistant"}
+                title={isPinned ? "Unpin (auto-close when clicking outside)" : "Pin (keep open)"}
+                className={`transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isPinned ? 'text-purple-400' : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} ${isDarkMode ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'}`}
               >
-                <Icon icon="close" className="w-6 h-6" />
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {isPinned ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  )}
+                </svg>
               </button>
             </div>
           </header>
