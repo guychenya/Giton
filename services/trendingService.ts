@@ -74,4 +74,3 @@ function getFallbackRepos(): TrendingRepo[] {
     { owner: 'gpt4all', repo: 'gpt4all', description: 'Run open-source LLMs anywhere', stars: 70000, language: 'C++' }
   ];
 }
-}
