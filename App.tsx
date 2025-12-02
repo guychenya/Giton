@@ -887,8 +887,7 @@ const App: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                )
-              </div>
+                )}
             ) : null}
           </div>
 
