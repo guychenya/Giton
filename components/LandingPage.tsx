@@ -13,7 +13,7 @@ const DemoVideo: React.FC = () => {
   }, []);
 
   return (
-    <div className="mt-20 max-w-5xl mx-auto animate-slide-up animation-delay-800">
+    <div>
       <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
         <video 
           ref={videoRef}
@@ -200,53 +200,72 @@ const LandingPage: React.FC = () => {
             </SignInButton>
             
             <button 
-              onClick={() => document.getElementById('demo-search')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+              onClick={() => document.getElementById('demo-video')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
               className="text-gray-300 hover:text-white text-lg font-semibold px-10 py-5 rounded-xl border-2 border-gray-700 hover:border-purple-500 transition-all duration-300 flex items-center gap-2"
             >
               <Icon icon="play" className="w-5 h-5" />
-              Watch Demo
+              See It In Action
             </button>
           </div>
 
-          {/* Demo Video */}
-          <DemoVideo />
+
           
           {/* Demo Search */}
           <DemoSearch />
         </div>
       </div>
 
-      {/* Features Section */}
-      <div id="features" className="relative z-10 py-32 px-4">
+      {/* Demo Video & Features Section */}
+      <div id="demo-video" className="relative z-10 py-32 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Powerful Features</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">See GitOn In Action</h2>
             <p className="text-xl text-gray-400">Everything you need to understand any codebase</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="group bg-gradient-to-br from-purple-900/20 to-purple-600/5 backdrop-blur-lg border border-purple-500/20 rounded-2xl p-8 hover:border-purple-500/50 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Icon icon="backend" className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Smart Analysis</h3>
-              <p className="text-gray-400 leading-relaxed">AI-powered documentation and deep code insights that understand your repository structure</p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Demo Video */}
+            <div className="animate-slide-up">
+              <DemoVideo />
             </div>
             
-            <div className="group bg-gradient-to-br from-pink-900/20 to-pink-600/5 backdrop-blur-lg border border-pink-500/20 rounded-2xl p-8 hover:border-pink-500/50 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-pink-500/20">
-              <div className="w-20 h-20 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Icon icon="document" className="w-10 h-10 text-white" />
+            {/* Features */}
+            <div className="space-y-6 animate-slide-up animation-delay-200">
+              <div className="group bg-gradient-to-br from-purple-900/20 to-purple-600/5 backdrop-blur-lg border border-purple-500/20 rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Icon icon="backend" className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-2">Smart Analysis</h3>
+                    <p className="text-gray-400 leading-relaxed">AI-powered documentation and deep code insights that understand your repository structure</p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Auto Diagrams</h3>
-              <p className="text-gray-400 leading-relaxed">Generate beautiful architecture diagrams and visualizations instantly with Mermaid</p>
-            </div>
-            
-            <div className="group bg-gradient-to-br from-blue-900/20 to-blue-600/5 backdrop-blur-lg border border-blue-500/20 rounded-2xl p-8 hover:border-blue-500/50 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Icon icon="audio_spark" className="w-10 h-10 text-white" />
+              
+              <div className="group bg-gradient-to-br from-pink-900/20 to-pink-600/5 backdrop-blur-lg border border-pink-500/20 rounded-2xl p-6 hover:border-pink-500/50 transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Icon icon="document" className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-2">Auto Diagrams</h3>
+                    <p className="text-gray-400 leading-relaxed">Generate beautiful architecture diagrams and visualizations instantly with Mermaid</p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">AI Assistant</h3>
-              <p className="text-gray-400 leading-relaxed">Chat with AI about your codebase and get instant answers to your questions</p>
+              
+              <div className="group bg-gradient-to-br from-blue-900/20 to-blue-600/5 backdrop-blur-lg border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Icon icon="audio_spark" className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-2">AI Assistant</h3>
+                    <p className="text-gray-400 leading-relaxed">Chat with AI about your codebase and get instant answers to your questions</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
