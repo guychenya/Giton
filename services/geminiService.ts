@@ -11,21 +11,16 @@ class GeminiService {
   }
 
   private initializeGoogleAI() {
-    // Prioritize user's API key from settings
+    // ONLY use user's API key from settings
     let apiKey = '';
     try {
       const settings = localStorage.getItem('giton-settings');
       if (settings) {
         const parsed = JSON.parse(settings);
-        apiKey = parsed.geminiApiKey;
+        apiKey = parsed.geminiApiKey || '';
       }
     } catch (e) {
       console.warn('Could not load API key from settings');
-    }
-    
-    // Fallback to environment variable only if no user key
-    if (!apiKey) {
-      apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY;
     }
     
     console.log('Gemini API Key status:', apiKey ? `Found (${apiKey.substring(0, 10)}...)` : 'Not found');
