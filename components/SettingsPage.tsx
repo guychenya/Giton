@@ -85,19 +85,28 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
         isValid = response.ok;
       } else if (keyName === 'openaiApiKey') {
-        const response = await fetch('https://api.openai.com/v1/models', {
-          method: 'GET',
-          headers: { 
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        isValid = response.ok && response.status === 200;
+        try {
+          const response = await fetch('https://api.openai.com/v1/models', {
+            method: 'GET',
+            headers: { 
+              'Authorization': `Bearer ${apiKey}`
+            }
+          });
+          isValid = response.ok;
+        } catch (err) {
+          console.error('OpenAI validation error:', err);
+          isValid = false;
+        }
       } else if (keyName === 'openRouterApiKey') {
-        const response = await fetch('https://openrouter.ai/api/v1/models', {
-          headers: { 'Authorization': `Bearer ${apiKey}` }
-        });
-        isValid = response.ok;
+        try {
+          const response = await fetch('https://openrouter.ai/api/v1/models', {
+            headers: { 'Authorization': `Bearer ${apiKey}` }
+          });
+          isValid = response.ok;
+        } catch (err) {
+          console.error('OpenRouter validation error:', err);
+          isValid = false;
+        }
       } else {
         isValid = true; // Skip validation for other keys
       }

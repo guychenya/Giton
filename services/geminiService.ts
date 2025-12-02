@@ -11,20 +11,21 @@ class GeminiService {
   }
 
   private initializeGoogleAI() {
-    // Try environment variable first (Netlify build-time injection)
-    let apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY;
-    
-    // Try to get from settings if available
-    if (!apiKey || apiKey === 'YOUR_API_KEY' || apiKey === 'undefined') {
-      try {
-        const settings = localStorage.getItem('giton-settings');
-        if (settings) {
-          const parsed = JSON.parse(settings);
-          apiKey = parsed.geminiApiKey;
-        }
-      } catch (e) {
-        console.warn('Could not load API key from settings');
+    // Prioritize user's API key from settings
+    let apiKey = '';
+    try {
+      const settings = localStorage.getItem('giton-settings');
+      if (settings) {
+        const parsed = JSON.parse(settings);
+        apiKey = parsed.geminiApiKey;
       }
+    } catch (e) {
+      console.warn('Could not load API key from settings');
+    }
+    
+    // Fallback to environment variable only if no user key
+    if (!apiKey) {
+      apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY;
     }
     
     console.log('API Key status:', apiKey ? 'Found' : 'Not found');
