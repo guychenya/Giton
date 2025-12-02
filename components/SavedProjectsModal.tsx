@@ -135,7 +135,7 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
                                     className="bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 rounded-xl p-4 cursor-pointer transition-all group relative flex flex-col justify-between"
                                 >
                                     <div>
-                                        <h3 className={`text-lg font-bold group-hover:text-purple-500 ${isDarkMode ? "text-gray-200" : "text-gray-900"}`} truncate truncate mb-1">
+                                        <h3 className={`text-lg font-bold group-hover:text-purple-500 truncate mb-1 ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>
                                             {proj.repo}
                                         </h3>
                                         <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{proj.owner}</p>
