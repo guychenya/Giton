@@ -182,61 +182,24 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       let modelResponse = '';
       setStreamingModelResponse({ role: 'model', text: '' });
 
-      // Check if message is asking about GitHub repos/users/topics
-      const githubKeywords = /\b(repo|repository|repositories|user|username|topic|github|search|find|show|all repos|about|machine learning|react|tensorflow)\b/i;
-      const githubUrlPattern = /github\.com\/([a-zA-Z0-9-]+)(?:\/|$)/i;
-      const isFollowUpQuestion = /^(regarding|about|can you|what|why|how|explain|tell me more|elaborate)/i.test(message.trim());
+      // Check if message is asking about GitHub repos/users
+      const isGitHubQuery = /\b(guychenya|notara|user:|repo:|github\.com\/)/i.test(message) || 
+                           /^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$/.test(message.trim());
       
-      if ((githubKeywords.test(message) || githubUrlPattern.test(message)) && !repoContext.includes('Repository:') && !isFollowUpQuestion) {
-        let query = message;
+      if (isGitHubQuery && (actions as any).searchGitHub) {
+        let query = message.trim();
         
-        // Check for GitHub URL first
-        const urlMatch = message.match(githubUrlPattern);
-        if (urlMatch) {
-          query = `user:${urlMatch[1]}`;
+        // Handle username/repo format
+        if (/^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$/.test(query)) {
+          // Direct repo format: username/repo
+          modelResponse = await (actions as any).searchGitHub(query);
+        } else if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
+          // Single word - treat as username
+          modelResponse = await (actions as any).searchGitHub(`user:${query}`);
         } else {
-          // Extract username from various patterns
-          const userPatterns = [
-            /(?:user|username)\s+([a-zA-Z0-9-]+)/i,
-            /(?:repos?|repositories)\s+(?:of|from|by|for)\s+(?:user\s+)?([a-zA-Z0-9-]+)/i,
-            /(?:show|find|get)\s+(?:me\s+)?(?:all\s+)?(?:repos?|repositories)\s+(?:of|from|by|for)\s+([a-zA-Z0-9-]+)/i,
-            /([a-zA-Z0-9-]+)'s\s+repositories/i,
-          ];
-          
-          let username = null;
-          for (const pattern of userPatterns) {
-            const match = query.match(pattern);
-            if (match) {
-              username = match[1];
-              break;
-            }
-          }
-          
-          if (username) {
-            query = `user:${username}`;
-          } else {
-            // Extract topic/keyword from "about X" or "find X repos"
-            const topicMatch = message.match(/(?:about|find|search)\s+(?:all\s+)?(?:repos?\s+)?(?:about\s+)?([a-zA-Z0-9-]+)/i);
-            if (topicMatch) {
-              query = topicMatch[1];
-            } else {
-              // Clean up query
-              query = query.toLowerCase()
-                .replace(/^(who is|what is|find|search|show me|get|look for|show|all repos about)\s+/i, '')
-                .replace(/\s+(repo|repository|repositories|on github)\s*$/i, '')
-                .trim();
-              
-              // Single word might be username
-              if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
-                // Don't assume it's a username, search as keyword
-                query = query;
-              }
-            }
-          }
+          // Pass as-is to searchGitHub
+          modelResponse = await (actions as any).searchGitHub(query);
         }
-        
-        const searchResult = await (actions as any).searchGitHub(query);
-        modelResponse = searchResult;
       } else {
         const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext));
         

@@ -511,19 +511,29 @@ const App: React.FC = () => {
     },
     searchGitHub: async (query: string) => {
         try {
+          console.log('Searching GitHub for:', query);
           const response = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=10`);
-          if (!response.ok) return 'GitHub search failed. Please try again.';
+          
+          if (!response.ok) {
+            console.error('GitHub API error:', response.status, response.statusText);
+            return `GitHub search failed (${response.status}). Please try again.`;
+          }
           
           const data = await response.json();
-          if (!data.items || data.items.length === 0) return `No repositories found for "${query}".`;
+          console.log('GitHub search results:', data.total_count, 'repos found');
+          
+          if (!data.items || data.items.length === 0) {
+            return `No repositories found for "${query}". Try a different search term.`;
+          }
           
           const results = data.items.slice(0, 10).map((repo: any) => 
-            `**${repo.full_name}** (⭐ ${repo.stargazers_count.toLocaleString()})\n${repo.description || 'No description'}\nLanguage: ${repo.language || 'N/A'}`
+            `**${repo.full_name}** (⭐ ${repo.stargazers_count.toLocaleString()})\n${repo.description || 'No description'}\nLanguage: ${repo.language || 'N/A'}\n🔗 https://github.com/${repo.full_name}`
           ).join('\n\n');
           
           return `Found ${data.total_count.toLocaleString()} repositories for "${query}". Here are the top results:\n\n${results}`;
-        } catch (error) {
-          return 'Error searching GitHub. Please try again.';
+        } catch (error: any) {
+          console.error('GitHub search error:', error);
+          return `Error searching GitHub: ${error.message || 'Unknown error'}. Please try again.`;
         }
     },
   }), [handleCardClick, handleCloseModal]); // Dependencies for useMemo

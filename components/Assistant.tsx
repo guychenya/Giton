@@ -365,21 +365,13 @@ const Assistant: React.FC<AssistantProps> = ({
                     <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
                   </svg>
                 </div>
-                <h2 id="assistant-title" className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  GitOn
-                </h2>
+                <div>
+                  <h2 id="assistant-title" className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    GitOn
+                  </h2>
+                  <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Using Gemini AI</p>
+                </div>
               </div>
-              
-              {/* Model Selector */}
-              <select
-                className={`ml-auto mr-2 border rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${isDarkMode ? 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10' : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'}`}
-                title="Select AI Model"
-              >
-                <option value="gemini">Gemini 2.5</option>
-                <option value="gpt-4">GPT-4</option>
-                <option value="claude">Claude 3.5</option>
-                <option value="gpt-4-mini">GPT-4 Mini</option>
-              </select>
             </div>
             <div className="flex items-center gap-1">
               <button
@@ -387,7 +379,7 @@ const Assistant: React.FC<AssistantProps> = ({
                   title="New Chat"
                   className={`transition-colors rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-900' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'}`}
               >
-                  <Icon icon="plus" className="w-5 h-5" />
+                  <Icon icon="plus" className="w-4 h-4" />
               </button>
               
               <div className="relative" ref={menuRef}>

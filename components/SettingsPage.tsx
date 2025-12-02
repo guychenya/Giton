@@ -86,9 +86,13 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
         isValid = response.ok;
       } else if (keyName === 'openaiApiKey') {
         const response = await fetch('https://api.openai.com/v1/models', {
-          headers: { 'Authorization': `Bearer ${apiKey}` }
+          method: 'GET',
+          headers: { 
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
         });
-        isValid = response.ok;
+        isValid = response.ok && response.status === 200;
       } else if (keyName === 'openRouterApiKey') {
         const response = await fetch('https://openrouter.ai/api/v1/models', {
           headers: { 'Authorization': `Bearer ${apiKey}` }
@@ -132,8 +136,17 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
 
       const stripe = await stripePromise;
       
-      if (stripe && data.sessionId) {
-        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      if (!stripe) {
+        throw new Error('Stripe failed to load. Please refresh and try again.');
+      }
+      
+      if (data.sessionId) {
+        const result = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+        if (result.error) {
+          throw new Error(result.error.message);
+        }
+      } else {
+        throw new Error('No session ID received');
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
