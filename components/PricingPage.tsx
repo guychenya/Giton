@@ -31,22 +31,8 @@ const PricingPage: React.FC<PricingPageProps> = ({ isDarkMode = true, onClose })
         throw new Error(error.error || 'Failed to create checkout');
       }
 
-      const data = await response.json();
-      
-      const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-      if (!stripeKey) {
-        throw new Error('Stripe not configured. Contact info@reliatrrack.org');
-      }
-      
-      const stripe = await loadStripe(stripeKey);
-      if (!stripe) {
-        throw new Error('Failed to load Stripe');
-      }
-      
-      const result = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-      if (result.error) {
-        throw new Error(result.error.message);
-      }
+      const { url } = await response.json();
+      window.location.href = url;
     } catch (error: any) {
       console.error('Checkout error:', error);
       alert(error.message || 'Checkout failed. Contact info@reliatrrack.org');

@@ -45,7 +45,7 @@ const DemoSearch: React.FC = () => {
   }, [query]);
 
   return (
-    <div className="mt-16 max-w-2xl mx-auto animate-slide-up animation-delay-1000" ref={searchRef}>
+    <div id="demo-search" className="mt-16 max-w-2xl mx-auto animate-slide-up animation-delay-1000" ref={searchRef}>
       <p className="text-gray-400 text-sm mb-4">Try it now - Search any GitHub repository</p>
       <div className="relative">
         <input
@@ -153,7 +153,7 @@ const LandingPage: React.FC = () => {
             </SignInButton>
             
             <button 
-              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('demo-search')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
               className="text-gray-300 hover:text-white text-lg font-semibold px-10 py-5 rounded-xl border-2 border-gray-700 hover:border-purple-500 transition-all duration-300 flex items-center gap-2"
             >
               <Icon icon="play" className="w-5 h-5" />
