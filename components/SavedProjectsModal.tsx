@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Icon from './Icon';
 import { db, SavedProject, SavedReport } from '../utils/db';
 import LoadingSpinner from './LoadingSpinner';
+import { useUser } from '@clerk/clerk-react';
 
 interface SavedProjectsModalProps {
   isDarkMode?: boolean;
@@ -15,6 +16,7 @@ interface SavedProjectsModalProps {
 type ProjectWithCount = SavedProject & { reportCount: number };
 
 const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose, onOpenReport, onLoadProject, isDarkMode = true }) => {
+  const { user } = useUser();
   const [projects, setProjects] = useState<ProjectWithCount[]>([]);
   const [selectedProject, setSelectedProject] = useState<SavedProject | null>(null);
   const [reports, setReports] = useState<SavedReport[]>([]);
@@ -29,9 +31,10 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
   }, [isOpen]);
 
   const loadProjects = async () => {
+    if (!user) return;
     setIsLoading(true);
     try {
-      const data = await db.getProjects();
+      const data = await db.getProjects(user.id);
       const projectsWithCounts = await Promise.all(
           data.map(async (p) => ({
               ...p,
@@ -87,9 +90,10 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
   const formatDate = (ts: number) => new Date(ts).toLocaleDateString();
 
   const handleExport = async () => {
+    if (!user) return;
     try {
-      const allProjects = await db.getProjects();
-      const allReports = await db.getAllReports();
+      const allProjects = await db.getProjects(user.id);
+      const allReports = await db.getAllReports(user.id);
       const exportData = {
         version: '1.0',
         exportDate: new Date().toISOString(),

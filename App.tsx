@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/clerk-react';
 import UserBadge from './components/UserBadge';
 import { getUserPlan, incrementGenerations, getRemainingGenerations } from './lib/usage';
 import LandingPage from './components/LandingPage';
@@ -30,6 +30,7 @@ import { initializeLLMService, getLLMService } from './services/llmService';
 import { db, SavedReport } from './utils/db'; 
 
 const App: React.FC = () => {
+  const { user } = useUser();
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('giton-theme');
     return saved !== 'light';
@@ -190,11 +191,11 @@ const App: React.FC = () => {
 
   // --- SAVE / PERSISTENCE LOGIC ---
   const handleSaveToProject = async (title: string, content: string, type: 'guide' | 'diagram' | 'prd' | 'chat') => {
-      if (!repoData) {
-          alert("No active repository loaded to save to.");
+      if (!repoData || !user) {
+          alert("No active repository loaded or user not signed in.");
           return;
       }
-      const projectId = `${repoData.owner}/${repoData.repo}`;
+      const projectId = `${user.id}-${repoData.owner}/${repoData.repo}`;
       const now = Date.now();
       
       const existingProject = await db.getProject(projectId);
@@ -207,6 +208,7 @@ const App: React.FC = () => {
           description: repoData.description,
           stars: repoData.stars,
           language: repoData.language,
+          userId: user.id,
           createdAt: existingProject ? existingProject.createdAt : now,
           updatedAt: now
       });
@@ -214,6 +216,7 @@ const App: React.FC = () => {
       await db.saveReport({
           id: `${projectId}-${type}-${now}`,
           projectId: projectId,
+          userId: user.id,
           title: title,
           type: type,
           content: content,

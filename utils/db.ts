@@ -10,6 +10,7 @@ export interface SavedProject {
   description: string;
   stars: number;
   language: string;
+  userId: string; // Clerk user ID
   createdAt: number;
   updatedAt: number;
 }
@@ -17,6 +18,7 @@ export interface SavedProject {
 export interface SavedReport {
   id: string;
   projectId: string; // links to SavedProject.id
+  userId: string; // Clerk user ID
   title: string;
   type: 'guide' | 'diagram' | 'prd' | 'chat';
   content: string; // MD content or Mermaid code
@@ -24,7 +26,7 @@ export interface SavedReport {
 }
 
 const DB_NAME = 'GitOnDB';
-const DB_VERSION = 2; // Increment version for new store
+const DB_VERSION = 3; // Increment version for userId index
 const STORE_PROJECTS = 'projects';
 const STORE_REPORTS = 'reports';
 const STORE_CUSTOM_LLM_MODELS = 'customLLMModels'; // New store
@@ -41,13 +43,27 @@ class DB {
         
         // Projects Store
         if (!db.objectStoreNames.contains(STORE_PROJECTS)) {
-          db.createObjectStore(STORE_PROJECTS, { keyPath: 'id' });
+          const projectStore = db.createObjectStore(STORE_PROJECTS, { keyPath: 'id' });
+          projectStore.createIndex('userId', 'userId', { unique: false });
+        } else {
+          const tx = (event.target as IDBOpenDBRequest).transaction!;
+          const projectStore = tx.objectStore(STORE_PROJECTS);
+          if (!projectStore.indexNames.contains('userId')) {
+            projectStore.createIndex('userId', 'userId', { unique: false });
+          }
         }
 
         // Reports Store
         if (!db.objectStoreNames.contains(STORE_REPORTS)) {
           const reportStore = db.createObjectStore(STORE_REPORTS, { keyPath: 'id' });
           reportStore.createIndex('projectId', 'projectId', { unique: false });
+          reportStore.createIndex('userId', 'userId', { unique: false });
+        } else {
+          const tx = (event.target as IDBOpenDBRequest).transaction!;
+          const reportStore = tx.objectStore(STORE_REPORTS);
+          if (!reportStore.indexNames.contains('userId')) {
+            reportStore.createIndex('userId', 'userId', { unique: false });
+          }
         }
 
         // Custom LLM Models Store (NEW)
@@ -93,15 +109,22 @@ class DB {
   }
 
 
-  async getProjects(): Promise<SavedProject[]> {
+  async getProjects(userId?: string): Promise<SavedProject[]> {
     const db = await this.dbPromise;
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_PROJECTS, 'readonly');
       const store = tx.objectStore(STORE_PROJECTS);
-      const request = store.getAll();
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
+      
+      if (userId) {
+        const index = store.index('userId');
+        const request = index.getAll(userId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      } else {
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      }
     });
   }
 
@@ -178,14 +201,22 @@ class DB {
       });
   }
 
-  async getAllReports(): Promise<SavedReport[]> {
+  async getAllReports(userId?: string): Promise<SavedReport[]> {
     const db = await this.dbPromise;
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_REPORTS, 'readonly');
       const store = tx.objectStore(STORE_REPORTS);
-      const request = store.getAll();
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
+      
+      if (userId) {
+        const index = store.index('userId');
+        const request = index.getAll(userId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      } else {
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      }
     });
   }
 
