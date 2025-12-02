@@ -114,51 +114,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
     setShowApiKeys(prev => ({ ...prev, [keyName]: !prev[keyName] }));
   };
 
-  const handleUpgrade = async () => {
-    if (!user) {
-      alert('Please sign in to upgrade');
-      return;
-    }
-
-    setIsUpgrading(true);
-    try {
-      const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-      if (!stripeKey || stripeKey === 'your_stripe_publishable_key_here') {
-        throw new Error('Stripe is not configured. Please contact support at info@reliatrrack.org');
-      }
-
-      const response = await fetch('/.netlify/functions/create-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id }),
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
-
-      const stripe = await stripePromise;
-      
-      if (!stripe) {
-        throw new Error('Stripe failed to load. Please contact support.');
-      }
-      
-      if (data.sessionId) {
-        const result = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-        if (result.error) {
-          throw new Error(result.error.message);
-        }
-      } else {
-        throw new Error('No session ID received');
-      }
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      alert(error.message || 'Failed to start checkout. Please contact support.');
-    } finally {
-      setIsUpgrading(false);
-    }
+  const handleUpgrade = () => {
+    alert('To upgrade to Pro, please contact sales at info@reliatrrack.org');
   };
 
   const sections = [
