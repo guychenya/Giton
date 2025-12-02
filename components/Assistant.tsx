@@ -360,17 +360,16 @@ const Assistant: React.FC<AssistantProps> = ({
           <header className={`flex items-center justify-between p-4 border-b flex-shrink-0 ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
             <div className="flex items-center gap-3 flex-1">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                <div className="relative">
+                  <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>GitOn</span>
+                  <svg className="absolute -right-1 -top-1 w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
-                <div>
-                  <h2 id="assistant-title" className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                    GitOn
-                  </h2>
-                  <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Using Gemini AI</p>
-                </div>
+              </div>
+              <div className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
+                <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Gemini AI</span>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" title="Connected"></div>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -418,17 +417,11 @@ const Assistant: React.FC<AssistantProps> = ({
                 onClick={onTogglePin}
                 aria-label={isPinned ? "Unpin assistant" : "Pin assistant"}
                 title={isPinned ? "Pinned (stays open)" : "Unpinned (auto-close)"}
-                className={`transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isPinned ? 'text-purple-400' : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} ${isDarkMode ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'}`}
+                className={`transition-all rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isPinned ? 'text-purple-400' : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} ${isDarkMode ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'}`}
               >
-                {isPinned ? (
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 12V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
-                  </svg>
-                )}
+                <svg className={`w-5 h-5 transition-transform ${!isPinned ? 'rotate-45' : ''}`} fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16 12V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
+                </svg>
               </button>
             </div>
           </header>

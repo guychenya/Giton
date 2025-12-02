@@ -636,7 +636,7 @@ const App: React.FC = () => {
               <div className="flex items-center gap-6">
                 <button
                   onClick={() => setAssistantOpen(!isAssistantOpen)}
-                  className={`rounded-lg transition-colors ${isAssistantOpen ? 'bg-purple-600 text-white p-2' : 'p-0'}`}
+                  className={`rounded-lg transition-colors ${isAssistantOpen ? 'bg-purple-600 text-white p-2' : ''}`}
                   title="AI Assistant"
                 >
                   {isAssistantOpen ? (
@@ -644,9 +644,10 @@ const App: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   ) : (
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                    <div className="relative">
+                      <span className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>GitOn</span>
+                      <svg className="absolute -right-1 -top-1 w-3 h-3 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                     </div>
                   )}
