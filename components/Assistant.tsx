@@ -153,24 +153,36 @@ const Assistant: React.FC<AssistantProps> = ({
     };
   }, [handleMouseMove, handleMouseUp]);
   
-  // Auto-close when clicking outside if not pinned
+  // Hover behavior when unpinned
   useEffect(() => {
-    if (!isOpen) return;
-    if (isPinned) return; // Don't auto-close if pinned
+    if (isPinned) return;
     
-    const handleClickOutside = (event: MouseEvent) => {
-      if (assistantRef.current && !assistantRef.current.contains(event.target as Node)) {
+    const handleMouseEnter = () => {
+      if (!isPinned && !isOpen) {
         onToggle();
       }
     };
     
-    const timer = setTimeout(() => {
-      document.addEventListener('mousedown', handleClickOutside);
-    }, 100);
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (!isPinned && isOpen) {
+        const rect = assistantRef.current?.getBoundingClientRect();
+        if (rect && e.clientX > rect.right) {
+          onToggle();
+        }
+      }
+    };
+    
+    const sidebar = assistantRef.current;
+    if (sidebar) {
+      sidebar.addEventListener('mouseenter', handleMouseEnter);
+      sidebar.addEventListener('mouseleave', handleMouseLeave);
+    }
     
     return () => {
-      clearTimeout(timer);
-      document.removeEventListener('mousedown', handleClickOutside);
+      if (sidebar) {
+        sidebar.removeEventListener('mouseenter', handleMouseEnter);
+        sidebar.removeEventListener('mouseleave', handleMouseLeave);
+      }
     };
   }, [isOpen, isPinned, onToggle]);
   
@@ -385,6 +397,15 @@ const Assistant: React.FC<AssistantProps> = ({
 
   return (
     <>
+      {/* Hover trigger area when closed and unpinned */}
+      {!isOpen && !isPinned && (
+        <div 
+          onMouseEnter={() => onToggle()}
+          className="fixed left-0 top-0 w-2 h-full z-20"
+          style={{ cursor: 'pointer' }}
+        />
+      )}
+      
       <aside
         ref={assistantRef}
         className={`relative z-20 flex flex-col h-full backdrop-blur-2xl transition-all duration-300 ease-in-out ${isDarkMode ? 'bg-gray-900/40' : 'bg-white'}`}
