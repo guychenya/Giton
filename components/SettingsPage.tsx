@@ -74,49 +74,30 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
   };
 
   const validateApiKey = async (keyName: string, apiKey: string) => {
-    if (!apiKey || apiKey.trim() === '') return;
+    if (!apiKey || apiKey.trim() === '') {
+      setValidated(prev => ({ ...prev, [keyName]: false }));
+      return;
+    }
     
     setValidating(prev => ({ ...prev, [keyName]: true }));
     
-    try {
-      let isValid = false;
-      
-      if (keyName === 'geminiApiKey') {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        isValid = response.ok;
-      } else if (keyName === 'openaiApiKey') {
-        try {
-          const response = await fetch('https://api.openai.com/v1/models', {
-            method: 'GET',
-            headers: { 
-              'Authorization': `Bearer ${apiKey}`
-            }
-          });
-          isValid = response.ok;
-        } catch (err) {
-          console.error('OpenAI validation error:', err);
-          isValid = false;
-        }
-      } else if (keyName === 'openRouterApiKey') {
-        try {
-          const response = await fetch('https://openrouter.ai/api/v1/models', {
-            headers: { 'Authorization': `Bearer ${apiKey}` }
-          });
-          isValid = response.ok;
-        } catch (err) {
-          console.error('OpenRouter validation error:', err);
-          isValid = false;
-        }
-      } else {
-        isValid = true; // Skip validation for other keys
-      }
-      
-      setValidated(prev => ({ ...prev, [keyName]: isValid }));
-    } catch (error) {
-      setValidated(prev => ({ ...prev, [keyName]: false }));
-    } finally {
-      setValidating(prev => ({ ...prev, [keyName]: false }));
+    // Simple validation - just check if key has proper format
+    let isValid = false;
+    
+    if (keyName === 'geminiApiKey') {
+      isValid = apiKey.length > 20;
+    } else if (keyName === 'openaiApiKey') {
+      isValid = apiKey.startsWith('sk-') && apiKey.length > 20;
+    } else if (keyName === 'openRouterApiKey') {
+      isValid = apiKey.startsWith('sk-') && apiKey.length > 20;
+    } else {
+      isValid = apiKey.length > 10;
     }
+    
+    setTimeout(() => {
+      setValidated(prev => ({ ...prev, [keyName]: isValid }));
+      setValidating(prev => ({ ...prev, [keyName]: false }));
+    }, 500);
   };
 
   const toggleShowKey = (keyName: string) => {
