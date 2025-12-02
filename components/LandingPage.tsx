@@ -2,6 +2,53 @@ import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton } from '@clerk/clerk-react';
 import Icon from './Icon';
 
+const DemoVideo: React.FC = () => {
+  const [isMuted, setIsMuted] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 2.5;
+    }
+  }, []);
+
+  return (
+    <div className="mt-20 max-w-5xl mx-auto animate-slide-up animation-delay-800">
+      <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl group">
+        <video 
+          ref={videoRef}
+          autoPlay 
+          loop 
+          muted={isMuted}
+          playsInline
+          className="w-full h-auto"
+        >
+          <source src="/demo.mp4" type="video/mp4" />
+        </video>
+        <button
+          onClick={() => setIsMuted(!isMuted)}
+          className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100"
+          title={isMuted ? 'Unmute' : 'Mute'}
+        >
+          {isMuted ? (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+          )}
+        </button>
+      </div>
+      <p className="text-xs text-gray-500 mt-2 text-center">
+        Music: Heaven and Hell by Jeremy Blake (YouTube Audio Library)
+      </p>
+    </div>
+  );
+};
+
 const DemoSearch: React.FC = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
@@ -162,22 +209,7 @@ const LandingPage: React.FC = () => {
           </div>
 
           {/* Demo Video */}
-          <div className="mt-20 max-w-5xl mx-auto animate-slide-up animation-delay-800">
-            <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-              <video 
-                autoPlay 
-                loop 
-                muted 
-                playsInline
-                className="w-full h-auto"
-              >
-                <source src="/demo.mp4" type="video/mp4" />
-              </video>
-            </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              Music: Heaven and Hell by Jeremy Blake (YouTube Audio Library)
-            </p>
-          </div>
+          <DemoVideo />
           
           {/* Demo Search */}
           <DemoSearch />
