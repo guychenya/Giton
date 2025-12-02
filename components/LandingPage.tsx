@@ -5,12 +5,19 @@ import Icon from './Icon';
 const DemoVideo: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.playbackRate = 2.5;
     }
   }, []);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : 1;
+    }
+  }, [isMuted]);
 
   return (
     <div>
@@ -19,12 +26,19 @@ const DemoVideo: React.FC = () => {
           ref={videoRef}
           autoPlay 
           loop 
-          muted={isMuted}
+          muted
           playsInline
           className="w-full h-auto"
         >
           <source src="/demo.mp4" type="video/mp4" />
         </video>
+        <audio 
+          ref={audioRef}
+          autoPlay 
+          loop
+        >
+          <source src="/demo-audio.mp4" type="audio/mp4" />
+        </audio>
         <button
           onClick={() => setIsMuted(!isMuted)}
           className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 backdrop-blur-sm text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100"
