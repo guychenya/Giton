@@ -63,6 +63,39 @@ const Assistant: React.FC<AssistantProps> = ({
   const [width, setWidth] = useState(420);
   const isResizingRef = useRef(false);
   const assistantRef = useRef<HTMLElement>(null);
+  
+  // Model selection state
+  const [activeModel, setActiveModel] = useState<string>('gemini');
+  const [availableModels, setAvailableModels] = useState<{id: string, name: string, available: boolean}[]>([]);
+  
+  // Check available API keys on mount
+  useEffect(() => {
+    const checkAvailableModels = () => {
+      try {
+        const settings = JSON.parse(localStorage.getItem('giton-settings') || '{}');
+        const models = [
+          { id: 'gemini', name: 'Gemini AI', available: !!settings.geminiApiKey },
+          { id: 'openai', name: 'OpenAI GPT', available: !!settings.openaiApiKey },
+          { id: 'claude', name: 'Claude', available: !!settings.openRouterApiKey },
+        ];
+        setAvailableModels(models);
+        
+        // Set active model to first available
+        const firstAvailable = models.find(m => m.available);
+        if (firstAvailable) {
+          setActiveModel(firstAvailable.id);
+        }
+      } catch (e) {
+        console.error('Error checking models:', e);
+      }
+    };
+    
+    checkAvailableModels();
+    
+    // Re-check when settings change
+    const interval = setInterval(checkAvailableModels, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   useLayoutEffect(() => {
     if (mainContentRef.current) {
@@ -368,8 +401,21 @@ const Assistant: React.FC<AssistantProps> = ({
                 </div>
               </div>
               <div className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
-                <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Gemini AI</span>
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" title="Connected"></div>
+                <select
+                  value={activeModel}
+                  onChange={(e) => setActiveModel(e.target.value)}
+                  className={`bg-transparent text-xs font-medium focus:outline-none cursor-pointer ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                >
+                  {availableModels.map(model => (
+                    <option key={model.id} value={model.id} disabled={!model.available} className="bg-gray-800">
+                      {model.name} {!model.available ? '(No API Key)' : ''}
+                    </option>
+                  ))}
+                </select>
+                <div 
+                  className={`w-2 h-2 rounded-full ${availableModels.find(m => m.id === activeModel)?.available ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} 
+                  title={availableModels.find(m => m.id === activeModel)?.available ? 'Connected' : 'No API Key'}
+                ></div>
               </div>
             </div>
             <div className="flex items-center gap-1">
