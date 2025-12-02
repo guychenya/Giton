@@ -271,14 +271,16 @@ const App: React.FC = () => {
       setIsGeneratingContent(true);
       setSelectedExampleContent('');
       try {
+        geminiService.reinitialize();
         const content = await geminiService.generateDetail(example.name, repoContext); 
         generatedContentCache.current[example.name] = content;
         setSelectedExampleContent(content);
         
         // Increment usage counter after successful generation
         incrementGenerations();
-      } catch (e) {
-        setSelectedExampleContent('# Error\nFailed to generate content. Please try again.');
+      } catch (e: any) {
+        console.error('Card generation error:', e);
+        setSelectedExampleContent(`# Error\nFailed to generate content: ${e.message || 'Please check your Gemini API key in Settings.'}`);
       } finally {
         setIsGeneratingContent(false);
       }

@@ -124,20 +124,22 @@ const SavedProjectsModal: React.FC<SavedProjectsModalProps> = ({ isOpen, onClose
         const data = JSON.parse(text);
         if (!data.projects || !data.reports) throw new Error('Invalid backup file');
         
-        // Import projects and reports
+        // Import projects and reports with current userId
         for (const proj of data.projects) {
-          await db.saveProject(proj);
+          await db.saveProject({ ...proj, userId: user?.id || proj.userId });
         }
         for (const report of data.reports) {
-          await db.saveReport(report);
+          await db.saveReport({ ...report, userId: user?.id || report.userId });
         }
         
         alert(`Imported ${data.projects.length} projects and ${data.reports.length} reports`);
         await loadProjects();
-      } catch (e) {
-        alert('Import failed: ' + e);
+      } catch (e: any) {
+        console.error('Import error:', e);
+        alert('Import failed: ' + (e.message || e));
       }
     };
+    input.click();
     input.click();
   };
 
