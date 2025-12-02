@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SignInButton } from '@clerk/clerk-react';
 import Icon from './Icon';
+import TermsOfService from './TermsOfService';
+import PrivacyPolicy from './PrivacyPolicy';
+import CookieConsent from './CookieConsent';
 
 const DemoVideo: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);
@@ -165,6 +168,9 @@ const DemoSearch: React.FC = () => {
 };
 
 const LandingPage: React.FC = () => {
+  const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-900 relative overflow-hidden flex flex-col">
       {/* Animated Background */}
@@ -252,8 +258,19 @@ const LandingPage: React.FC = () => {
 
       {/* Footer */}
       <footer className="relative z-10 py-12 text-center border-t border-white/5">
-        <p className="text-gray-500 text-sm">© 2024 GitOn. Built with ❤️ by <a href="https://www.linkedin.com/in/guychenya/" target="_blank" className="text-purple-400 hover:text-purple-300 transition-colors">Guy Chenya</a></p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex gap-6 text-sm">
+            <button onClick={() => setShowTerms(true)} className="text-gray-400 hover:text-purple-400 transition-colors">Terms of Service</button>
+            <button onClick={() => setShowPrivacy(true)} className="text-gray-400 hover:text-purple-400 transition-colors">Privacy Policy</button>
+          </div>
+          <p className="text-gray-500 text-sm">© 2024 GitOn. Built with ❤️ by <a href="https://www.linkedin.com/in/guychenya/" target="_blank" className="text-purple-400 hover:text-purple-300 transition-colors">Guy Chenya</a></p>
+        </div>
       </footer>
+
+      {/* Modals */}
+      {showTerms && <TermsOfService onClose={() => setShowTerms(false)} />}
+      {showPrivacy && <PrivacyPolicy onClose={() => setShowPrivacy(false)} />}
+      <CookieConsent />
 
       <style>{`
         @keyframes blob {
