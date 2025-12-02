@@ -82,6 +82,29 @@ const LandingPage: React.FC = () => {
               <div className="text-sm text-gray-500 mt-1">Accuracy Rate</div>
             </div>
           </div>
+          
+          {/* Demo Search */}
+          <div className="mt-16 max-w-2xl mx-auto animate-slide-up animation-delay-1000">
+            <p className="text-gray-400 text-sm mb-4">Try it now - Search any GitHub repository</p>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Enter username/repo or paste GitHub URL..."
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-6 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    document.querySelector<HTMLButtonElement>('.demo-analyze-btn')?.click();
+                  }
+                }}
+              />
+              <SignInButton mode="modal">
+                <button className="demo-analyze-btn absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold px-6 py-2 rounded-lg transition-all">
+                  Analyze
+                </button>
+              </SignInButton>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">Sign in to start analyzing repositories for free</p>
+          </div>
         </div>
       </div>
 
@@ -176,6 +199,10 @@ const LandingPage: React.FC = () => {
         }
         .animation-delay-800 {
           animation-delay: 0.8s;
+          opacity: 0;
+        }
+        .animation-delay-1000 {
+          animation-delay: 1s;
           opacity: 0;
         }
         @keyframes fade-in {
