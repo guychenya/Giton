@@ -225,8 +225,20 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
 
     } catch (e: any) {
       console.error('LLM text chat error:', e);
-      setError(`There was an error communicating with the assistant: ${e.message || e}.`);
-      updateMessages(prev => prev.slice(0, -1));
+      const errorMsg = e.message || e.toString();
+      console.error('Full error:', errorMsg);
+      
+      let userMessage = 'Error: ';
+      if (errorMsg.includes('API key')) {
+        userMessage += 'Invalid API key. Please check your API key in Settings.';
+      } else if (errorMsg.includes('not initialized')) {
+        userMessage += 'Service not initialized. Please save your API key in Settings.';
+      } else {
+        userMessage += errorMsg;
+      }
+      
+      setError(userMessage);
+      updateMessages(prev => [...prev.slice(0, -1), { role: 'model', text: userMessage }]);
     } finally {
       setTextLoading(false);
       setStreamingModelResponse(null);

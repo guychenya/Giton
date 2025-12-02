@@ -178,9 +178,10 @@ class OpenAIProvider implements LLMProvider {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('OpenAI chat error:', error);
-      yield 'Sorry, I encountered an error processing your request.';
+      const errorMsg = error.message || error.toString();
+      yield `OpenAI Error: ${errorMsg}. Please check your API key in Settings.`;
     }
   }
 
