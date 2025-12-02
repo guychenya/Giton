@@ -4,6 +4,7 @@ import { AppSettings } from './SettingsModal';
 import { getUserPlan, getUsageData, getRemainingGenerations } from '../lib/usage';
 import { PlanTier } from '../lib/plan';
 import { loadStripe } from '@stripe/stripe-js';
+import { useUser } from '@clerk/clerk-react';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -28,6 +29,7 @@ const defaultSettings: AppSettings = {
 };
 
 const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode: propIsDarkMode }) => {
+  const { user } = useUser();
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [activeSection, setActiveSection] = useState('api-keys');
   const [showApiKeys, setShowApiKeys] = useState<Record<string, boolean>>({});
@@ -109,22 +111,33 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
   };
 
   const handleUpgrade = async () => {
+    if (!user) {
+      alert('Please sign in to upgrade');
+      return;
+    }
+
     setIsUpgrading(true);
     try {
-      const response = await fetch('/api/create-checkout', {
+      const response = await fetch('/.netlify/functions/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
       });
 
-      const { sessionId } = await response.json();
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
       const stripe = await stripePromise;
       
-      if (stripe) {
-        await stripe.redirectToCheckout({ sessionId });
+      if (stripe && data.sessionId) {
+        await stripe.redirectToCheckout({ sessionId: data.sessionId });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Checkout error:', error);
-      alert('Failed to start checkout. Please try again.');
+      alert(error.message || 'Failed to start checkout. Please try again.');
     } finally {
       setIsUpgrading(false);
     }
