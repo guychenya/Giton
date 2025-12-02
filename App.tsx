@@ -634,24 +634,17 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center gap-6">
-                <button
-                  onClick={() => setAssistantOpen(!isAssistantOpen)}
-                  className={`rounded-lg transition-colors ${isAssistantOpen ? 'bg-purple-600 text-white p-2' : ''}`}
-                  title="AI Assistant"
-                >
-                  {isAssistantOpen ? (
+                {!isAssistantOpen && (
+                  <button
+                    onClick={() => setAssistantOpen(true)}
+                    className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'}`}
+                    title="Open AI Assistant"
+                  >
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
-                  ) : (
-                    <div className="relative w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold text-base">G</span>
-                      <svg className="absolute -right-0.5 -top-0.5 w-3 h-3 text-white bg-purple-500 rounded-full p-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                  )}
-                </button>
+                  </button>
+                )}
                 <Logo onClick={handleGoHome} />
                 {repoData && (
                   <div className="hidden md:flex items-center gap-3 text-sm">
@@ -722,9 +715,17 @@ const App: React.FC = () => {
           {!repoData && examples.length === 0 && (
             <div className="w-full">
               <div className="w-full max-w-4xl mx-auto px-4 pt-20 pb-8 text-center">
-                <h1 className={`text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r ${isDarkMode ? 'from-purple-400 via-pink-500 to-blue-400' : 'from-purple-600 via-pink-600 to-blue-600'} mb-6`}>
-                  GitOn
-                </h1>
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <div className="relative w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                    <span className="text-white font-bold text-3xl">G</span>
+                    <svg className="absolute -right-1 -top-1 w-6 h-6 text-white bg-purple-500 rounded-full p-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  <h1 className={`text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r ${isDarkMode ? 'from-purple-400 via-pink-500 to-blue-400' : 'from-purple-600 via-pink-600 to-blue-600'}`}>
+                    GitOn
+                  </h1>
+                </div>
                 <p className={`text-xl mb-12 max-w-2xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   AI-powered GitHub repository analysis. Get instant documentation, examples, and insights.
                 </p>

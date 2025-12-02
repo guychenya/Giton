@@ -392,16 +392,17 @@ const Assistant: React.FC<AssistantProps> = ({
         <div className={`flex-1 flex flex-col min-h-0 overflow-hidden transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
           <header className={`flex items-center justify-between px-4 h-16 border-b flex-shrink-0 ${isDarkMode ? 'border-white/10' : 'border-gray-200'}`}>
             <div className="flex items-center gap-3 flex-1">
-              <div className="flex items-center gap-2">
-                <div className="relative w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">G</span>
-                  <svg className="absolute -right-1 -top-1 w-4 h-4 text-white bg-purple-500 rounded-full p-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <h2 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>GitOn</h2>
-              </div>
-              <div className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
+              <button
+                onClick={onToggle}
+                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'}`}
+                title="Close Assistant"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg">
                 <select
                   value={activeModel}
                   onChange={(e) => setActiveModel(e.target.value)}
@@ -419,7 +420,7 @@ const Assistant: React.FC<AssistantProps> = ({
                 ></div>
               </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 ml-auto">
               <button
                   onClick={handleClearChat}
                   title="New Chat"
