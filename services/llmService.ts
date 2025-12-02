@@ -131,52 +131,28 @@ class OpenAIProvider implements LLMProvider {
     ];
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('/.netlify/functions/openai-chat', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
           messages: formattedMessages,
-          stream: true,
-          temperature: 0.7,
+          apiKey: this.apiKey,
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.statusText}`);
+        const error = await response.json();
+        throw new Error(error.error || 'OpenAI API error');
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response body');
-
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data === '[DONE]') return;
-            
-            try {
-              const parsed = JSON.parse(data);
-              const content = parsed.choices?.[0]?.delta?.content;
-              if (content) yield content;
-            } catch (e) {
-              // Skip invalid JSON
-            }
-          }
-        }
+      const data = await response.json();
+      const text = data.choices?.[0]?.message?.content || 'No response';
+      
+      // Simulate streaming
+      const words = text.split(' ');
+      for (let i = 0; i < words.length; i += 3) {
+        yield words.slice(i, i + 3).join(' ') + ' ';
+        await new Promise(resolve => setTimeout(resolve, 50));
       }
     } catch (error: any) {
       console.error('OpenAI chat error:', error);
