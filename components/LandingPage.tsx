@@ -58,7 +58,10 @@ const LandingPage: React.FC = () => {
               </button>
             </SignInButton>
             
-            <button className="text-gray-300 hover:text-white text-lg font-semibold px-10 py-5 rounded-xl border-2 border-gray-700 hover:border-purple-500 transition-all duration-300 flex items-center gap-2">
+            <button 
+              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-gray-300 hover:text-white text-lg font-semibold px-10 py-5 rounded-xl border-2 border-gray-700 hover:border-purple-500 transition-all duration-300 flex items-center gap-2"
+            >
               <Icon icon="play" className="w-5 h-5" />
               Watch Demo
             </button>
@@ -83,7 +86,7 @@ const LandingPage: React.FC = () => {
       </div>
 
       {/* Features Section */}
-      <div className="relative z-10 py-32 px-4">
+      <div id="features" className="relative z-10 py-32 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Powerful Features</h2>
