@@ -3,6 +3,9 @@ import Icon from './Icon';
 import { AppSettings } from './SettingsModal';
 import { getUserPlan, getUsageData, getRemainingGenerations } from '../lib/usage';
 import { PlanTier } from '../lib/plan';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 interface SettingsPageProps {
   onClose: () => void;
@@ -33,6 +36,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
   const [validated, setValidated] = useState<Record<string, boolean | null>>({});
   const [userPlan, setUserPlan] = useState<PlanTier>('free');
   const [usageData, setUsageData] = useState({ generations: 0, remaining: 10 });
+  const [isUpgrading, setIsUpgrading] = useState(false);
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('giton-settings');
@@ -102,6 +106,28 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
 
   const toggleShowKey = (keyName: string) => {
     setShowApiKeys(prev => ({ ...prev, [keyName]: !prev[keyName] }));
+  };
+
+  const handleUpgrade = async () => {
+    setIsUpgrading(true);
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const { sessionId } = await response.json();
+      const stripe = await stripePromise;
+      
+      if (stripe) {
+        await stripe.redirectToCheckout({ sessionId });
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setIsUpgrading(false);
+    }
   };
 
   const sections = [
@@ -511,8 +537,19 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
                       ))}
                     </ul>
 
-                    <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors">
-                      Upgrade to Pro
+                    <button 
+                      onClick={handleUpgrade}
+                      disabled={isUpgrading}
+                      className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-600/50 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                    >
+                      {isUpgrading ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        'Upgrade to Pro'
+                      )}
                     </button>
                   </div>
                 )}
