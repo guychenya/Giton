@@ -626,12 +626,20 @@ const App: React.FC = () => {
               <div className="flex items-center gap-6">
                 <button
                   onClick={() => setAssistantOpen(!isAssistantOpen)}
-                  className={`p-2 rounded-lg transition-colors ${isAssistantOpen ? 'bg-purple-600 text-white' : isDarkMode ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'}`}
+                  className={`rounded-lg transition-colors ${isAssistantOpen ? 'bg-purple-600 text-white p-2' : 'p-0'}`}
                   title="AI Assistant"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                  </svg>
+                  {isAssistantOpen ? (
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                      </svg>
+                    </div>
+                  )}
                 </button>
                 <Logo onClick={handleGoHome} />
                 {repoData && (
