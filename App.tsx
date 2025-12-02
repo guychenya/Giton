@@ -980,6 +980,7 @@ const App: React.FC = () => {
           diagramCode={architectureDiagram}
           isLoading={isGeneratingDiagram}
           onSave={handleSaveToProject}
+          isDarkMode={isDarkMode}
       />
 
       <PRDModal
@@ -988,6 +989,7 @@ const App: React.FC = () => {
           content={prdContent}
           isLoading={isGeneratingPRD}
           onSave={handleSaveToProject}
+          isDarkMode={isDarkMode}
       />
 
       <SavedProjectsModal 

@@ -12,9 +12,10 @@ interface PRDModalProps {
   content: string;
   isLoading: boolean;
   onSave?: (title: string, content: string, type: 'prd') => void;
+  isDarkMode?: boolean;
 }
 
-const PRDModal: React.FC<PRDModalProps> = ({ isOpen, onClose, content, isLoading, onSave }) => {
+const PRDModal: React.FC<PRDModalProps> = ({ isOpen, onClose, content, isLoading, onSave, isDarkMode = true }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
@@ -121,17 +122,21 @@ const PRDModal: React.FC<PRDModalProps> = ({ isOpen, onClose, content, isLoading
       className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-fade-in"
       onClick={handleBackdropClick}
     >
-      <div className="bg-gray-900 border border-white/20 rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden relative">
+      <div className={`border rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden relative ${
+        isDarkMode ? 'bg-gray-900 border-white/20' : 'bg-white border-gray-300'
+      }`}>
         
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-white/10 bg-gray-800/50 z-10">
+        <div className={`flex items-center justify-between p-5 border-b z-10 ${
+          isDarkMode ? 'border-white/10 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
+        }`}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-teal-500/20 rounded-lg flex items-center justify-center border border-teal-500/30">
                 <Icon icon="document" className="w-6 h-6 text-teal-300" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Product Requirements Document</h2>
-              <p className="text-sm text-gray-400">Vibe-Spec Framework for AI Coding</p>
+              <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Product Requirements Document</h2>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Vibe-Spec Framework for AI Coding</p>
             </div>
           </div>
 
@@ -140,7 +145,11 @@ const PRDModal: React.FC<PRDModalProps> = ({ isOpen, onClose, content, isLoading
               {onSave && !isLoading && (
                   <button
                       onClick={handleSave}
-                      className="flex items-center gap-2 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/30 rounded-lg text-sm text-blue-300 transition-colors"
+                      className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm transition-colors ${
+                        isDarkMode
+                          ? 'bg-blue-600/20 hover:bg-blue-600/40 border-blue-500/30 text-blue-300'
+                          : 'bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700'
+                      }`}
                       title="Save to Project Library"
                   >
                       {isSaved ? <Icon icon="check" className="w-4 h-4 text-green-400" /> : <Icon icon="save" className="w-4 h-4" />}
@@ -151,7 +160,11 @@ const PRDModal: React.FC<PRDModalProps> = ({ isOpen, onClose, content, isLoading
               <div className="relative" ref={exportMenuRef}>
                   <button
                       onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-                      className="flex items-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm text-gray-300 transition-colors"
+                      className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm transition-colors ${
+                        isDarkMode
+                          ? 'bg-white/5 hover:bg-white/10 border-white/10 text-gray-300'
+                          : 'bg-gray-50 hover:bg-gray-100 border-gray-300 text-gray-700'
+                      }`}
                       disabled={isLoading}
                   >
                       <Icon icon="download" className="w-4 h-4" />
@@ -159,16 +172,24 @@ const PRDModal: React.FC<PRDModalProps> = ({ isOpen, onClose, content, isLoading
                   </button>
                   
                   {isExportMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-white/10 rounded-lg shadow-xl z-50 animate-fade-in-sm overflow-hidden">
-                          <button onClick={handleExportMD} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2">
+                      <div className={`absolute right-0 mt-2 w-48 border rounded-lg shadow-xl z-50 animate-fade-in-sm overflow-hidden ${
+                        isDarkMode ? 'bg-gray-800 border-white/10' : 'bg-white border-gray-300'
+                      }`}>
+                          <button onClick={handleExportMD} className={`w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2 ${
+                            isDarkMode ? 'text-gray-300 hover:bg-white/10 hover:text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                          }`}>
                               <span className="uppercase text-xs font-bold text-purple-400 w-8">MD</span>
                               Markdown
                           </button>
-                           <button onClick={handleExportTXT} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2 border-t border-white/5">
+                           <button onClick={handleExportTXT} className={`w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2 border-t ${
+                            isDarkMode ? 'text-gray-300 hover:bg-white/10 hover:text-white border-white/5' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 border-gray-200'
+                          }`}>
                               <span className="uppercase text-xs font-bold text-blue-400 w-8">TXT</span>
                               Text File
                           </button>
-                          <button onClick={handleExportPDF} className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors flex items-center gap-2 border-t border-white/5">
+                          <button onClick={handleExportPDF} className={`w-full text-left px-4 py-3 text-sm transition-colors flex items-center gap-2 border-t ${
+                            isDarkMode ? 'text-gray-300 hover:bg-white/10 hover:text-white border-white/5' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 border-gray-200'
+                          }`}>
                               <span className="uppercase text-xs font-bold text-pink-400 w-8">PDF</span>
                               Print / PDF
                           </button>
@@ -176,7 +197,9 @@ const PRDModal: React.FC<PRDModalProps> = ({ isOpen, onClose, content, isLoading
                   )}
               </div>
 
-              <button onClick={onClose} className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+              <button onClick={onClose} className={`p-2 rounded-full transition-colors ${
+                isDarkMode ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}>
                 <Icon icon="close" className="w-6 h-6" />
               </button>
           </div>
@@ -191,7 +214,7 @@ const PRDModal: React.FC<PRDModalProps> = ({ isOpen, onClose, content, isLoading
                 </div>
             ) : (
                 <div className="prose-custom max-w-none">
-                    <MarkdownRenderer content={content} />
+                    <MarkdownRenderer content={content} isDarkMode={isDarkMode} />
                 </div>
             )}
         </div>
