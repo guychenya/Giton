@@ -155,7 +155,8 @@ const Assistant: React.FC<AssistantProps> = ({
   
   // Auto-close when clicking outside if not pinned
   useEffect(() => {
-    if (!isOpen || isPinned) return;
+    if (!isOpen) return;
+    if (isPinned) return; // Don't auto-close if pinned
     
     const handleClickOutside = (event: MouseEvent) => {
       if (assistantRef.current && !assistantRef.current.contains(event.target as Node)) {
@@ -163,11 +164,12 @@ const Assistant: React.FC<AssistantProps> = ({
       }
     };
     
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside);
     }, 100);
     
     return () => {
+      clearTimeout(timer);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, isPinned, onToggle]);
