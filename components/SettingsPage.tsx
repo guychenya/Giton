@@ -104,8 +104,31 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
     setShowApiKeys(prev => ({ ...prev, [keyName]: !prev[keyName] }));
   };
 
-  const handleUpgrade = () => {
-    alert('To upgrade to Pro, please contact sales at info@reliatrrack.org');
+  const handleUpgrade = async () => {
+    if (!user) {
+      alert('Please sign in to upgrade');
+      return;
+    }
+    
+    setIsUpgrading(true);
+    try {
+      const response = await fetch('/.netlify/functions/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      window.location.href = url;
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Failed to start checkout. Please try again.');
+      setIsUpgrading(false);
+    }
   };
 
   const sections = [
