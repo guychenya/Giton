@@ -404,6 +404,7 @@ const App: React.FC = () => {
         // Step 2: Analyze with Gemini
         console.log("Analyzing repository with Gemini...");
         setLoadingProgress(75);
+        geminiService.reinitialize();
         const newExamples = await geminiService.analyzeRepository(context);
         
         setLoadingProgress(100);
