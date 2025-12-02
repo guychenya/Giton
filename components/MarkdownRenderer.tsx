@@ -47,7 +47,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ codeContent, isDarkMode = true })
 };
 
 const parseInlineMarkdown = (text: string): React.ReactNode[] => {
-  const regex = /(\*\*.*?\*\*|\*.*?\*|_.*?_|`.*?`|\[.*?\]\(.*?\))/g;
+  const regex = /(\*\*.*?\*\*|\*.*?\*|_.*?_|`.*?`|\[.*?\]\(.*?\)|https?:\/\/[^\s]+)/g;
   const parts = text.split(regex);
 
   return parts.filter(part => part).map((part, index) => {
@@ -64,6 +64,9 @@ const parseInlineMarkdown = (text: string): React.ReactNode[] => {
     if (linkMatch) {
       const [, linkText, href] = linkMatch;
       return <a key={index} href={href} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">{linkText}</a>;
+    }
+    if (part.match(/^https?:\/\//)) {
+      return <a key={index} href={part} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline break-all">{part}</a>;
     }
     return part;
   });
