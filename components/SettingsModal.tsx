@@ -107,7 +107,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, 
           {activeTab === 'api' && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-white">API Configuration</h3>
+                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>API Configuration</h3>
                 <button
                   onClick={() => setShowApiKeys(!showApiKeys)}
                   className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1"
@@ -119,7 +119,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, 
 
               {/* Gemini API Key */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Google Gemini API Key
                   <span className="text-green-400 ml-1">✓ Best Voice Experience</span>
                 </label>
@@ -128,7 +128,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, 
                   value={settings.geminiApiKey}
                   onChange={(e) => updateSetting('geminiApiKey', e.target.value)}
                   placeholder="Enter your Gemini API key"
-                  className="w-full bg-black/30 border border-white/20 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 ${isDarkMode ? 'bg-black/30 border-white/20 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
                 <p className="text-xs text-gray-400 mt-1">
                   Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-purple-400 hover:underline">Google AI Studio</a> - Enables Gemini Live
@@ -250,7 +250,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, 
 
           {activeTab === 'preferences' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-white">Application Preferences</h3>
+              <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Application Preferences</h3>
 
               {/* Voice Settings */}
               <div className="flex items-center justify-between">
@@ -335,52 +335,44 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onSave, 
             <div className="space-y-6">
               <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Billing & Subscription</h3>
               
-              <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-lg p-6">
+              <div className={`rounded-lg p-6 border ${isDarkMode ? 'bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30' : 'bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300'}`}>
                 <div className="flex items-center gap-3 mb-4">
                   <Icon icon="crown" className="w-6 h-6 text-yellow-400" />
-                  <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>GitOn Pro</h4>
+                  <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>GitOn Pro</h4>
                 </div>
-                <p className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Unlock unlimited repository analysis, priority support, and advanced AI features.
+                <p className={`text-sm mb-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Unlock unlimited analysis
                 </p>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>$19.99</span>
-                    <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>/month</span>
+                <div className="mb-6">
+                  <div className="mb-4">
+                    <span className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>$19.99</span>
+                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>/month</span>
                   </div>
+                  <ul className={`space-y-2 text-sm mb-6 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <li className="flex items-center gap-2">
+                      <Icon icon="check" className="w-4 h-4 text-green-400" />
+                      Unlimited repositories
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Icon icon="check" className="w-4 h-4 text-green-400" />
+                      Priority AI processing
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Icon icon="check" className="w-4 h-4 text-green-400" />
+                      Advanced features
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Icon icon="check" className="w-4 h-4 text-green-400" />
+                      Priority support
+                    </li>
+                  </ul>
                   <button 
                     onClick={() => window.open('https://buy.stripe.com/test_placeholder', '_blank')}
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                   >
-                    Upgrade Now
+                    Upgrade to Pro
                   </button>
                 </div>
-              </div>
-
-              <div className="space-y-3">
-                <h5 className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Pro Features:</h5>
-                <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  <li className="flex items-center gap-2">
-                    <Icon icon="check" className="w-4 h-4 text-green-400" />
-                    Unlimited repository analysis
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Icon icon="check" className="w-4 h-4 text-green-400" />
-                    Priority AI processing
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Icon icon="check" className="w-4 h-4 text-green-400" />
-                    Advanced voice features
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Icon icon="check" className="w-4 h-4 text-green-400" />
-                    Export to multiple formats
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Icon icon="check" className="w-4 h-4 text-green-400" />
-                    Priority support
-                  </li>
-                </ul>
               </div>
             </div>
           )}
