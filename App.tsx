@@ -663,19 +663,37 @@ const App: React.FC = () => {
         <main className="relative z-10 flex flex-col items-center flex-1 overflow-y-auto">
           {/* Hero Section */}
           {!repoData && examples.length === 0 && (
-            <div className="w-full max-w-4xl mx-auto px-4 pt-20 pb-12 text-center">
-              <h1 className={`text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r ${isDarkMode ? 'from-purple-400 via-pink-500 to-blue-400' : 'from-purple-600 via-pink-600 to-blue-600'} mb-6`}>
-                GitOn
-              </h1>
-              <p className={`text-xl mb-12 max-w-2xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                AI-powered GitHub repository analysis. Get instant documentation, examples, and insights.
-              </p>
+            <div className="w-full">
+              <div className="relative w-full max-w-4xl mx-auto px-4 pt-20 pb-8 text-center overflow-hidden">
+                {/* Floating cards background */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-10 left-10 w-20 h-24 bg-purple-500/10 rounded-lg border border-purple-500/20 animate-float" style={{animationDelay: '0s'}}></div>
+                  <div className="absolute top-32 right-20 w-16 h-20 bg-blue-500/10 rounded-lg border border-blue-500/20 animate-float" style={{animationDelay: '1s'}}></div>
+                  <div className="absolute bottom-20 left-1/4 w-24 h-28 bg-pink-500/10 rounded-lg border border-pink-500/20 animate-float" style={{animationDelay: '2s'}}></div>
+                  <div className="absolute top-1/3 right-10 w-18 h-22 bg-teal-500/10 rounded-lg border border-teal-500/20 animate-float" style={{animationDelay: '1.5s'}}></div>
+                </div>
+                
+                <h1 className={`relative text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r ${isDarkMode ? 'from-purple-400 via-pink-500 to-blue-400' : 'from-purple-600 via-pink-600 to-blue-600'} mb-6`}>
+                  GitOn
+                </h1>
+                <p className={`relative text-xl mb-12 max-w-2xl mx-auto ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  AI-powered GitHub repository analysis. Get instant documentation, examples, and insights.
+                </p>
+                
+                <div className="relative max-w-3xl mx-auto mb-8">
+                  <UnifiedSearch 
+                    onSelectRepo={(repoPath) => loadRepo(repoPath)}
+                    placeholder="Search by username, repo name, or paste URL..."
+                    isDarkMode={isDarkMode}
+                  />
+                </div>
+              </div>
               
-              <div className="max-w-3xl mx-auto mb-16">
-                <UnifiedSearch 
-                  onSelectRepo={(repoPath) => loadRepo(repoPath)}
-                  placeholder="Search by username, repo name, or paste URL..."
+              {/* Trending section right after search */}
+              <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <TrendingReposHero 
                   isDarkMode={isDarkMode}
+                  onSelectRepo={(owner, repo) => loadRepo(`${owner}/${repo}`)}
                 />
               </div>
             </div>
@@ -847,12 +865,6 @@ const App: React.FC = () => {
               </div>
             ) : !repoData ? (
               <div className="text-center py-12">
-                <h3 className={`text-xl font-semibold mb-8 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Popular Repositories</h3>
-                <TrendingReposHero 
-                  isDarkMode={isDarkMode}
-                  onSelectRepo={(owner, repo) => loadRepo(`${owner}/${repo}`)}
-                />
-                
                 {areSuggestionsLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse mt-8">
                     {[1, 2, 3].map(i => (
@@ -1065,6 +1077,15 @@ const App: React.FC = () => {
           }
           .animate-zoom-out {
             animation: zoom-out 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          }
+          @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(2deg); }
+            50% { transform: translateY(-10px) rotate(-2deg); }
+            75% { transform: translateY(-15px) rotate(1deg); }
+          }
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
           }
         `}
        </style>
