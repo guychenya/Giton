@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Screenshots and temp files
+CleanShot*.png
+Dia*.png
+*.gif
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

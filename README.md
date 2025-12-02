@@ -1,6 +1,11 @@
 # GitOn 🚀
 
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://giton.reliatrrack.org)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A modern SaaS application that uses AI to analyze any GitHub repository and provide instant documentation, examples, and interactive analysis.
+
+**Live Demo:** [giton.reliatrrack.org](https://giton.reliatrrack.org)
 
 ## 🌟 Features
 
@@ -41,15 +46,17 @@ A modern SaaS application that uses AI to analyze any GitHub repository and prov
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ (for development)
-- Google Gemini API key
+- Node.js 18+
+- Clerk account (for authentication)
+- Stripe account (for payments)
+- AI API keys (Gemini/OpenAI/OpenRouter)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/guychenya/Gitexplore.git
-   cd Gitexplore
+   git clone https://github.com/guychenya/giton.git
+   cd giton
    ```
 
 2. **Install dependencies**
@@ -58,10 +65,15 @@ A modern SaaS application that uses AI to analyze any GitHub repository and prov
    ```
 
 3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
+   Copy `.env.example` to `.env.local` and fill in your keys:
+   ```bash
+   cp .env.example .env.local
    ```
+   
+   Required variables:
+   - `VITE_CLERK_PUBLISHABLE_KEY` - Get from [Clerk Dashboard](https://dashboard.clerk.com)
+   - `VITE_STRIPE_PUBLISHABLE_KEY` - Get from [Stripe Dashboard](https://dashboard.stripe.com)
+   - Other keys as needed
 
 4. **Start development server**
    ```bash
@@ -198,11 +210,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Mermaid** for diagram generation
 - **Tailwind CSS** for beautiful styling
 
+## 📝 Documentation
+
+- [CHANGELOG.md](CHANGELOG.md) - Full list of changes and features
+- [STRIPE_SETUP.md](STRIPE_SETUP.md) - Stripe integration guide
+- [BILLING_IMPLEMENTATION.md](BILLING_IMPLEMENTATION.md) - Billing system details
+
 ## 📞 Support
 
 For support and questions:
 - Create an issue on GitHub
-- Contact: [Guy Chenya](https://www.linkedin.com/in/guychenya/)
+- Email: info@reliatrrack.org
+- LinkedIn: [Guy Chenya](https://www.linkedin.com/in/guychenya/)
+
+## ⚠️ Disclaimer
+
+GitOn uses AI to generate content. We do not guarantee accuracy of AI-generated documentation. See [Terms of Service](https://giton.reliatrrack.org) for details.
 
 ---
 
