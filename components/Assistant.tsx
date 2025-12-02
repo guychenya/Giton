@@ -15,7 +15,7 @@ interface AssistantProps {
   streamingModelResponse: Message | null;
   userInput: string;
   setUserInput: (input: string) => void;
-  sendTextMessage: (message: string) => void;
+  sendTextMessage: (message: string, model?: string) => void;
   startVoiceInteraction: () => void;
   stopVoiceInteraction: () => void;
   clearChat: () => void;
@@ -74,9 +74,9 @@ const Assistant: React.FC<AssistantProps> = ({
       try {
         const settings = JSON.parse(localStorage.getItem('giton-settings') || '{}');
         const models = [
-          { id: 'gemini', name: 'Gemini AI', available: !!settings.geminiApiKey },
-          { id: 'openai', name: 'OpenAI GPT', available: !!settings.openaiApiKey },
-          { id: 'claude', name: 'Claude', available: !!settings.openRouterApiKey },
+          { id: 'gemini', name: 'Google Gemini', available: !!settings.geminiApiKey },
+          { id: 'openai', name: 'OpenAI', available: !!settings.openaiApiKey },
+          { id: 'openrouter', name: 'Claude (OpenRouter)', available: !!settings.openRouterApiKey },
         ];
         setAvailableModels(models);
         
@@ -319,7 +319,7 @@ const Assistant: React.FC<AssistantProps> = ({
       if (uploadedImage) {
         message = `[IMAGE:${uploadedImage}]\n${userInput || 'Please analyze this image and extract any repository information or text you can find.'}`;
       }
-      sendTextMessage(message);
+      sendTextMessage(message, activeModel);
       setUserInput('');
       setUploadedImage(null);
     }

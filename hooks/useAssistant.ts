@@ -171,7 +171,7 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       // re-init if needed when repo changes, though chat persists
   }, [repoContext]);
 
-  const sendTextMessage = async (message: string) => {
+  const sendTextMessage = async (message: string, selectedModel: string = 'gemini') => {
     setTextLoading(true);
     setError(null);
 
@@ -189,23 +189,33 @@ export const useAssistant = (actions: AssistantActions, repoContext: string) => 
       if (isGitHubQuery && (actions as any).searchGitHub) {
         let query = message.trim();
         
-        // Handle username/repo format
         if (/^[a-zA-Z0-9-]+\/[a-zA-Z0-9-]+$/.test(query)) {
-          // Direct repo format: username/repo
           modelResponse = await (actions as any).searchGitHub(query);
         } else if (/^[a-zA-Z0-9-]+$/.test(query) && query.length < 40) {
-          // Single word - treat as username
           modelResponse = await (actions as any).searchGitHub(`user:${query}`);
         } else {
-          // Pass as-is to searchGitHub
           modelResponse = await (actions as any).searchGitHub(query);
         }
       } else {
-        const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext));
-        
-        for await (const chunk of stream) {
-          modelResponse += chunk;
-          setStreamingModelResponse({ role: 'model', text: modelResponse });
+        // Use selected model
+        if (selectedModel === 'gemini') {
+          const stream = geminiService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext));
+          for await (const chunk of stream) {
+            modelResponse += chunk;
+            setStreamingModelResponse({ role: 'model', text: modelResponse });
+          }
+        } else {
+          // Use LLM service for other models
+          const llmService = (await import('../services/llmService')).getLLMService();
+          if (llmService) {
+            const stream = llmService.chat(currentMessagesWithUser, createTextSystemInstruction(repoContext), selectedModel);
+            for await (const chunk of stream) {
+              modelResponse += chunk;
+              setStreamingModelResponse({ role: 'model', text: modelResponse });
+            }
+          } else {
+            modelResponse = 'LLM service not initialized. Please check your API keys in Settings.';
+          }
         }
       }
       
