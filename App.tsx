@@ -696,12 +696,12 @@ const App: React.FC = () => {
             <div className={`w-full border-b backdrop-blur-sm ${isDarkMode ? 'border-white/10 bg-gray-800/30' : 'border-gray-200 bg-white/50'}`}>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-start gap-3">
-                    <div>
-                      <h2 className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repoData.owner}/{repoData.repo}</h2>
-                      <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{repoData.description}</p>
+                  <div className="flex items-start gap-3 flex-1">
+                    <div className="flex-1">
+                      <h2 className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{repoData.owner}/{repoData.repo}</h2>
+                      <p className={`text-base leading-relaxed mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{repoData.description}</p>
                       {repoData.topics && repoData.topics.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
+                        <div className="flex flex-wrap gap-1.5">
                           {repoData.topics.slice(0, 5).map(topic => (
                             <span key={topic} className={`text-xs px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-blue-500/20 text-blue-300' : 'bg-blue-100 text-blue-700'}`}>
                               {topic}
@@ -710,13 +710,13 @@ const App: React.FC = () => {
                         </div>
                       )}
                     </div>
-                    <div className="relative group">
+                    <div className="relative group flex-shrink-0">
                       <button className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-white/10 text-gray-400' : 'hover:bg-gray-100 text-gray-600'}`}>
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </button>
-                      <div className={`absolute left-0 top-full mt-2 w-80 p-4 rounded-lg border shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 ${isDarkMode ? 'bg-gray-800 border-white/20' : 'bg-white border-gray-300'}`}>
+                      <div className={`absolute left-0 top-full mt-2 w-80 p-4 rounded-lg border shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[100] ${isDarkMode ? 'bg-gray-800 border-white/20' : 'bg-white border-gray-300'}`}>
                         <h3 className={`font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Repository Overview</h3>
                         <div className="space-y-2 text-sm">
                           <p className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{repoData.description}</p>
