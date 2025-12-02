@@ -50,6 +50,7 @@ const DemoVideo: React.FC = () => {
           ref={audioRef}
           autoPlay 
           loop
+          preload="auto"
         >
           <source src="/demo-audio.mp4" type="audio/mp4" />
         </audio>
