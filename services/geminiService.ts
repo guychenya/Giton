@@ -28,13 +28,13 @@ class GeminiService {
       apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY;
     }
     
-    console.log('API Key status:', apiKey ? 'Found' : 'Not found');
+    console.log('Gemini API Key status:', apiKey ? `Found (${apiKey.substring(0, 10)}...)` : 'Not found');
     
     if (apiKey && apiKey !== 'YOUR_API_KEY' && apiKey !== 'undefined') {
       this.googleAi = new GoogleGenAI({ apiKey });
       console.log('Gemini AI initialized successfully');
     } else {
-      console.warn("Gemini API Key not found. Please add it in Settings or check Netlify environment variables.");
+      console.error('Gemini API Key not found. Please add it in Settings.');
       this.googleAi = null;
     }
   }
@@ -133,6 +133,10 @@ class GeminiService {
   }
 
   async generateDetail(itemName: string, repoContext: string): Promise<string> {
+    if (!this.googleAi) {
+      throw new Error('Gemini API not initialized. Please add your API key in Settings.');
+    }
+    
     const prompt = `
       You are a technical documentation writer.
       Write a detailed documentation page (in Markdown) for the topic "${itemName}" based on the provided repository context.
@@ -140,8 +144,14 @@ class GeminiService {
       Repository Context:
       ${repoContext}
     `;
-    const res = await this.callGoogleAPI('gemini-2.5-flash', prompt);
-    return res.text || "# Error\nFailed to generate content.";
+    
+    try {
+      const res = await this.callGoogleAPI('gemini-2.5-flash', prompt);
+      return res.text || "# Error\nFailed to generate content.";
+    } catch (error: any) {
+      console.error('Gemini generateDetail error:', error);
+      throw new Error(`Gemini API error: ${error.message || 'Unknown error'}`);
+    }
   }
 
   async generateArchitectureDiagram(repoContext: string): Promise<string> {
