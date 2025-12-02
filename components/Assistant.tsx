@@ -375,14 +375,7 @@ const Assistant: React.FC<AssistantProps> = ({
                 <option value="gpt-4-mini">GPT-4 Mini</option>
               </select>
             </div>
-            <div className="flex items-center">
-              <button
-                  onClick={handleSaveChat}
-                  title="Save chat to project library"
-                  className={`transition-colors rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-900' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'}`}
-              >
-                  {isChatSaved ? <Icon icon="check" className="w-5 h-5 text-green-400" /> : <Icon icon="save" className="w-5 h-5" />}
-              </button>
+            <div className="flex items-center gap-1">
               <button
                   onClick={handleClearChat}
                   title="New Chat"
@@ -390,17 +383,23 @@ const Assistant: React.FC<AssistantProps> = ({
               >
                   <Icon icon="plus" className="w-5 h-5" />
               </button>
+              
               <div className="relative" ref={menuRef}>
                   <button
                       onClick={() => setMenuOpen(!isMenuOpen)}
-                      aria-label="Export options"
-                      title="Export Chat"
+                      aria-label="Share & Export"
+                      title="Share & Export"
                       className={`transition-colors rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isDarkMode ? 'text-gray-400 hover:text-white focus:ring-offset-gray-900' : 'text-gray-600 hover:text-gray-900 focus:ring-offset-white'}`}
                   >
-                      <Icon icon="download" className="w-5 h-5" />
+                      <Icon icon="share" className="w-5 h-5" />
                   </button>
                   {isMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-white/10 rounded-lg shadow-xl z-10 animate-fade-in-sm">
+                      <div className="absolute right-0 mt-2 w-56 bg-gray-800 border border-white/10 rounded-lg shadow-xl z-10 animate-fade-in-sm">
+                          <button onClick={() => { handleSaveChat(); setMenuOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center gap-2">
+                            {isChatSaved ? <Icon icon="check" className="w-4 h-4 text-green-400" /> : <Icon icon="save" className="w-4 h-4" />}
+                            Save to Library
+                          </button>
+                          <div className="border-t border-white/10 my-1"></div>
                           <button onClick={handleExportMD} className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center gap-2">
                             <Icon icon="document" className="w-4 h-4" />
                             Export as MD
@@ -420,15 +419,13 @@ const Assistant: React.FC<AssistantProps> = ({
               <button
                 onClick={onTogglePin}
                 aria-label={isPinned ? "Unpin assistant" : "Pin assistant"}
-                title={isPinned ? "Unpin (auto-close when clicking outside)" : "Pin (keep open)"}
+                title={isPinned ? "Pinned (stays open)" : "Unpinned (auto-close)"}
                 className={`transition-colors rounded-full p-2 -mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-400 ${isPinned ? 'text-purple-400' : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} ${isDarkMode ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'}`}
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {isPinned ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                  )}
+                <svg className="w-6 h-6" fill={isPinned ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v6a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 13v8" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 21h8" />
                 </svg>
               </button>
             </div>
