@@ -122,6 +122,11 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
 
     setIsUpgrading(true);
     try {
+      const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+      if (!stripeKey || stripeKey === 'your_stripe_publishable_key_here') {
+        throw new Error('Stripe is not configured. Please contact support at info@reliatrrack.org');
+      }
+
       const response = await fetch('/.netlify/functions/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -137,7 +142,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
       const stripe = await stripePromise;
       
       if (!stripe) {
-        throw new Error('Stripe failed to load. Please refresh and try again.');
+        throw new Error('Stripe failed to load. Please contact support.');
       }
       
       if (data.sessionId) {
@@ -150,7 +155,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ onClose, onSave, isDarkMode
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
-      alert(error.message || 'Failed to start checkout. Please try again.');
+      alert(error.message || 'Failed to start checkout. Please contact support.');
     } finally {
       setIsUpgrading(false);
     }
